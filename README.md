@@ -20,7 +20,6 @@ The list of programming languages that are included in this repository:
 - Python
 - Ruby
 - VB
-- 
 
 # Usage
 
