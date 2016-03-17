@@ -33,6 +33,4 @@ As a very basic starting point, in order to run the samples, you'll need to inpu
 
 # Disclaimer
 
-The sample code is provided as-is; BluePay does not warrant or guarantee the individual success developers may have in implementing the sample code on their development platforms or in using their own web server configurations. It is entirely up to you to take this code and use it as you may, and BluePay is not responsible for any further help beyond the sample code itself.
-
-If you are a merchant needing to implement an integration and are not a developer yourself, we highly recommend that you hire or get assistance from one. BluePay is not responsible for assisting in custom development.
+The sample code is provided as-is; BluePay does not warrant or guarantee the individual success developers may have in implementing the sample code on their development platforms or in using their own web server configurations. It is entirely up to you to take this code and use it as you may, and BluePay is not responsible for any further help beyond the sample code itself. If you are a merchant needing to implement an integration and are not a developer yourself, we highly recommend that you hire or get assistance from one.
