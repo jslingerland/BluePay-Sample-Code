@@ -1,7 +1,6 @@
 # BluePay-Sample-Code
 
 This sample code is meant for developers looking for a starting point to integrate their applications or website to the BluePay gateway.
-This code is to be used as-is.
 
 Please carefully read the comments in the sample code files for more information on how to connect your sandbox or live gateway account. Before you can start processing transactions, you must enter in your BluePay gateway Account ID and Secret Key. 
 This [helpful video](https://www.bluepay.com/video/locating-your-bluepay-secret-key-and-account-id/?width=640&height=380) shows you how and where to grab these two values.
@@ -20,3 +19,9 @@ The list of programming languages that are included in this repository:
 - Python
 - Ruby
 - VB
+
+# Disclaimer
+
+The sample code is provided as-is; BluePay does not warrant or guarantee the individual success developers may have in implementing the sample code on their development platforms or in using their own web server configurations. It is entirely up to you to take this code and use it as you may, and BluePay is not responsible for any further help beyond the sample code itself.
+
+If you are a merchant needing to implement an integration and are not a developer yourself, we highly recommend that you hire or get assistance from one. BluePay is not responsible for assisting in custom development.
