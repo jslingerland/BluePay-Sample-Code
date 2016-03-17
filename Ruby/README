@@ -1,0 +1,61 @@
+== Welcome to Bluepay
+
+Bluepay is used to process credit cards and ACH transactions using the BluePay Gateway.
+
+BluePay, Inc. is a merchant account provider and payment gateway.  The BluePay Gateway processes credit card and
+ACH transactions through a virtual terminal and various API/SDK/Payment Interfaces.
+
+To apply for a BluePay merchant account and payment gateway, visit http://www.bluepay.com.
+Additional sample code available in the test directory of the gem.
+
+== Example
+
+require "bluepay_payment"
+
+$ACCOUNT_ID = "MERCHANT'S ACCOUNT ID HERE"
+$SECRET_KEY = "MERCHANT'S SECRET KEY HERE"
+$MODE = "TEST"
+
+payment = BluePayPayment.new(
+  $ACCOUNT_ID,
+  $SECRET_KEY,
+  $MODE)
+
+payment.set_cc_information(
+  "4111111111111111",
+  "1215",
+  "123")
+
+payment.set_customer_information(
+  "Bob",
+  "Tester",
+  "123 Test St.",
+  "Testville",
+  "IL",
+  "54321",
+  "Apt #500",
+  "USA")
+
+payment.sale("3.00")
+
+response = payment.process()
+
+if (payment.get_status() == "APPROVED") then
+  puts "TRANSACTION STATUS: " + payment.get_status()
+  puts "TRANSACTION MESSAGE: " + payment.get_message()
+  puts "TRANSACTION ID: " + payment.get_trans_id()
+  puts "AVS RESPONSE: " + payment.get_avs_code()
+  puts "CVV2 RESPONSE: " + payment.get_cvv2_code()
+  puts "MASKED PAYMENT ACCOUNT: " + payment.get_masked_account()
+  puts "CARD TYPE: " + payment.get_card_type()
+  puts "AUTH CODE: " + payment.get_auth_code()
+else
+  puts payment.get_message()
+end
+
+== About
+
+Author::    Justin Slingerland
+ReadmeDoc:: Justin Slingerland
+Copyright:: Copyright (c) 2014 BluePay, Inc.
+License::   GPL - GNU General Public License - http://www.gnu.org/licenses/gpl.html
