@@ -10,6 +10,7 @@ Since this sample code only works with the BluePay gateway, you will need a gate
 
 
 # Languages Supported
+
 The list of programming languages that are included in this repository:
 - C#
 - C++
@@ -19,6 +20,17 @@ The list of programming languages that are included in this repository:
 - Python
 - Ruby
 - VB
+- 
+
+# Usage
+
+Every language is structured essentially the same and contains the following:
+- A library file that contains the methods necessary for processing transactions, pulling reports, querying the BluePay gateway, etc.
+- A directory, labeled 'Transactions', containing samples showing how to process transactions.
+- A directory, labeled 'Get Data', containing samples showing how to pull transactions from the BluePay gateway.
+- A directory, labeled 'Rebills', containing samples showing how to set up, modify, and delete BluePay rebillings.
+
+As a very basic starting point, in order to run the samples, you'll need to input your Account ID and Secret Key. In most circumstances, this is all you will need to try out the sample code.
 
 # Disclaimer
 
