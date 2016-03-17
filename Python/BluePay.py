@@ -11,6 +11,7 @@ import sys # PG: added this
 class BluePay:
 
     # Sets all the attributes to default to empty strings if not defined
+    
     # Merchant fields
     account_id = ''
     secret_key = '' 
@@ -27,6 +28,7 @@ class BluePay:
     account_number = ''
     account_type = ''
     doc_type = ''
+    track_data = ''
 
     # Customer fields
     name1 = ''
@@ -75,7 +77,9 @@ class BluePay:
     rrno = ''
     data = ''
 
+    # Processing fields
     url = ''
+    api = ''
 
     # Class constructor. Accepts:
     # accID : Merchant's Account ID
@@ -157,6 +161,8 @@ class BluePay:
     # Sets payment type. Needed if using ACH tokens
     def set_payment_type(self, pay_type):
         self.payment_type = pay_type
+
+
         
     # Passes credit card information into the transaction
     def set_cc_information(self, **params):
@@ -167,6 +173,10 @@ class BluePay:
             self.card_expire = params['card_expire']
         if 'cvv2' in params:
             self.cvv2 = params['cvv2']
+        
+    # Sets payment information for a swiped credit card transaction
+    def swipe(self, track_data):
+        self.track_data = track_data
         
     # Passes ACH information into the transaction
     def set_ach_information(self, **params):
@@ -355,6 +365,7 @@ class BluePay:
                 'MERCHANT': self.account_id,
                 'TRANSACTION_TYPE': self.trans_type,
                 'PAYMENT_TYPE': self.payment_type,
+                'TAMPER_PROOF_SEAL': self.calc_TPS(),
                 'AMOUNT': self.amount,
                 'NAME1': self.name1,
                 'NAME2': self.name2,
@@ -380,7 +391,7 @@ class BluePay:
                 'REB_EXPR': self.reb_expr,
                 'REB_CYCLES': self.reb_cycles,
                 'REB_AMOUNT': self.reb_amount,
-                'TAMPER_PROOF_SEAL': self.calc_TPS()
+                'SWIPE': self.track_data
             })
             try:
                 fields.update({

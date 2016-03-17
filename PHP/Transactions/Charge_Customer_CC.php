@@ -11,9 +11,9 @@
 
 include('../BluePay.php');
  
-$accountID = '100228390579';
-$secretKey = 'AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K';
-$mode = 'TEST';
+$accountID = "Merchant's Account ID Here";
+$secretKey = "Merchant's Secret Key Here";
+$mode = "TEST";
  
 $payment = new BluePay(
     $accountID,

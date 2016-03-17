@@ -4,7 +4,7 @@ class BluePay
   end
 
   # Returns true if response status is approved and not a duplicate, else returns false
-  def successful_response?
+  def successful_transaction?
     self.get_status == "APPROVED" && self.get_message != "DUPLICATE"
   end
 

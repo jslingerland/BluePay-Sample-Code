@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{F4349307-E96A-4726-8A67-78187D7FBAEF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>vbnet</RootNamespace>
+    <AssemblyName>vbnet</AssemblyName>
+    <UseMSBuildEngine>False</UseMSBuildEngine>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <DefineTrace>false</DefineTrace>
+    <DefineDebug>false</DefineDebug>
+    <Externalconsole>true</Externalconsole>
+    <AdditionalParameters>
+    </AdditionalParameters>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <Externalconsole>true</Externalconsole>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>false</DefineTrace>
+    <AdditionalParameters>
+    </AdditionalParameters>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Web" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Security" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application.vb" />
+    <Compile Include="AssemblyInfo.vb" />
+    <Compile Include="Transactions\Cancel_Transaction.vb" />
+    <Compile Include="Transactions\Charge_Customer_ACH.vb" />
+    <Compile Include="Transactions\Charge_Customer_CC.vb" />
+    <Compile Include="Transactions\Check_Customer_Credit.vb" />
+    <Compile Include="Transactions\Customer_Defined_Data.vb" />
+    <Compile Include="Transactions\How_To_Use_Token.vb" />
+    <Compile Include="Transactions\Return_Funds.vb" />
+    <Compile Include="Transactions\Store_Payment_Information.vb" />
+    <Compile Include="Rebill\Create_Recurring_Payment_CC.vb" />
+    <Compile Include="Rebill\Create_Recurring_Payment_ACH.vb" />
+    <Compile Include="Rebill\Get_Recurring_Payment_Status.vb" />
+    <Compile Include="Rebill\Cancel_Recurring_Payment.vb" />
+    <Compile Include="Rebill\Update_Recurring_Payment.vb" />
+    <Compile Include="Get_Data\Retrieve_Settlement_Data.vb" />
+    <Compile Include="Get_Data\Retrieve_Transaction_Data.vb" />
+    <Compile Include="Get_Data\Single_Transaction_Query.vb" />
+    <Compile Include="Get_Data\Transaction_Notification.vb" />
+    <Compile Include="Transactions\Swipe.vb" />
+    <Compile Include="BluePay.vb" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <ItemGroup>
+    <Folder Include="Transactions\" />
+    <Folder Include="Rebill\" />
+    <Folder Include="Get_Data\" />
+  </ItemGroup>
+</Project>

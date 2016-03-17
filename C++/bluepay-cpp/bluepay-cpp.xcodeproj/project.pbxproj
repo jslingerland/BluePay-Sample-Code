@@ -1,0 +1,397 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2F3C5DC31B18AA5E0018055A /* Create_Recurring_Payment_CC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DC11B18AA5E0018055A /* Create_Recurring_Payment_CC.cpp */; };
+		2F3C5DD41B18AB5D0018055A /* Cancel_Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DC41B18AB5D0018055A /* Cancel_Transaction.cpp */; };
+		2F3C5DD51B18AB5D0018055A /* Charge_Customer_ACH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DC61B18AB5D0018055A /* Charge_Customer_ACH.cpp */; };
+		2F3C5DD61B18AB5D0018055A /* Charge_Customer_CC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DC81B18AB5D0018055A /* Charge_Customer_CC.cpp */; };
+		2F3C5DD71B18AB5D0018055A /* Check_Customer_Credit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DCA1B18AB5D0018055A /* Check_Customer_Credit.cpp */; };
+		2F3C5DD81B18AB5D0018055A /* Customer_Defined_Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DCC1B18AB5D0018055A /* Customer_Defined_Data.cpp */; };
+		2F3C5DD91B18AB5D0018055A /* How_To_Use_Token.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DCE1B18AB5D0018055A /* How_To_Use_Token.cpp */; };
+		2F3C5DDA1B18AB5D0018055A /* Return_Funds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DD01B18AB5D0018055A /* Return_Funds.cpp */; };
+		2F3C5DDB1B18AB5D0018055A /* Store_Payment_Information.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DD21B18AB5D0018055A /* Store_Payment_Information.cpp */; };
+		2F3C5DDE1B18ADE70018055A /* Create_Recurring_Payment_ACH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DDC1B18ADE70018055A /* Create_Recurring_Payment_ACH.cpp */; };
+		2F3C5DE11B18B0880018055A /* Get_Recurring_Payment_Status.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DDF1B18B0880018055A /* Get_Recurring_Payment_Status.cpp */; };
+		2F3C5DE41B18B73C0018055A /* Cancel_Recurring_Payment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DE21B18B73C0018055A /* Cancel_Recurring_Payment.cpp */; };
+		2F3C5DE71B18B92D0018055A /* Update_Recurring_Payment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DE51B18B92D0018055A /* Update_Recurring_Payment.cpp */; };
+		2F3C5DEB1B18BC440018055A /* Retrieve_Transaction_Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DE91B18BC440018055A /* Retrieve_Transaction_Data.cpp */; };
+		2F3C5DEE1B18BE460018055A /* Single_Transaction_Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DEC1B18BE460018055A /* Single_Transaction_Query.cpp */; };
+		2F3C5DF11B18C2360018055A /* Retrieve_Settlement_Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F3C5DEF1B18C2360018055A /* Retrieve_Settlement_Data.cpp */; };
+		2F47546A1B165719004D264C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F4754691B165719004D264C /* main.cpp */; };
+		2F47547E1B1659A6004D264C /* BluePay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F4754741B1659A6004D264C /* BluePay.cpp */; };
+		2F47547F1B1659A6004D264C /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F47547B1B1659A6004D264C /* md5.cpp */; };
+		2F4754811B1663E4004D264C /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F4754801B1663E4004D264C /* libcurl.dylib */; };
+		2F885E061B1CCB77000212CB /* Swipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F885E041B1CCB77000212CB /* Swipe.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2F4754641B165719004D264C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2F3C5DC11B18AA5E0018055A /* Create_Recurring_Payment_CC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Create_Recurring_Payment_CC.cpp; path = Rebill/Create_Recurring_Payment_CC.cpp; sourceTree = "<group>"; };
+		2F3C5DC21B18AA5E0018055A /* Create_Recurring_Payment_CC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Create_Recurring_Payment_CC.h; path = Rebill/Create_Recurring_Payment_CC.h; sourceTree = "<group>"; };
+		2F3C5DC41B18AB5D0018055A /* Cancel_Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cancel_Transaction.cpp; path = Transactions/Cancel_Transaction.cpp; sourceTree = "<group>"; };
+		2F3C5DC51B18AB5D0018055A /* Cancel_Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cancel_Transaction.h; path = Transactions/Cancel_Transaction.h; sourceTree = "<group>"; };
+		2F3C5DC61B18AB5D0018055A /* Charge_Customer_ACH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Charge_Customer_ACH.cpp; path = Transactions/Charge_Customer_ACH.cpp; sourceTree = "<group>"; };
+		2F3C5DC71B18AB5D0018055A /* Charge_Customer_ACH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Charge_Customer_ACH.h; path = Transactions/Charge_Customer_ACH.h; sourceTree = "<group>"; };
+		2F3C5DC81B18AB5D0018055A /* Charge_Customer_CC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Charge_Customer_CC.cpp; path = Transactions/Charge_Customer_CC.cpp; sourceTree = "<group>"; };
+		2F3C5DC91B18AB5D0018055A /* Charge_Customer_CC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Charge_Customer_CC.h; path = Transactions/Charge_Customer_CC.h; sourceTree = "<group>"; };
+		2F3C5DCA1B18AB5D0018055A /* Check_Customer_Credit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Check_Customer_Credit.cpp; path = Transactions/Check_Customer_Credit.cpp; sourceTree = "<group>"; };
+		2F3C5DCB1B18AB5D0018055A /* Check_Customer_Credit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Check_Customer_Credit.h; path = Transactions/Check_Customer_Credit.h; sourceTree = "<group>"; };
+		2F3C5DCC1B18AB5D0018055A /* Customer_Defined_Data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Customer_Defined_Data.cpp; path = Transactions/Customer_Defined_Data.cpp; sourceTree = "<group>"; };
+		2F3C5DCD1B18AB5D0018055A /* Customer_Defined_Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Customer_Defined_Data.h; path = Transactions/Customer_Defined_Data.h; sourceTree = "<group>"; };
+		2F3C5DCE1B18AB5D0018055A /* How_To_Use_Token.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = How_To_Use_Token.cpp; path = Transactions/How_To_Use_Token.cpp; sourceTree = "<group>"; };
+		2F3C5DCF1B18AB5D0018055A /* How_To_Use_Token.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = How_To_Use_Token.h; path = Transactions/How_To_Use_Token.h; sourceTree = "<group>"; };
+		2F3C5DD01B18AB5D0018055A /* Return_Funds.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Return_Funds.cpp; path = Transactions/Return_Funds.cpp; sourceTree = "<group>"; };
+		2F3C5DD11B18AB5D0018055A /* Return_Funds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Return_Funds.h; path = Transactions/Return_Funds.h; sourceTree = "<group>"; };
+		2F3C5DD21B18AB5D0018055A /* Store_Payment_Information.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Store_Payment_Information.cpp; path = Transactions/Store_Payment_Information.cpp; sourceTree = "<group>"; };
+		2F3C5DD31B18AB5D0018055A /* Store_Payment_Information.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Store_Payment_Information.h; path = Transactions/Store_Payment_Information.h; sourceTree = "<group>"; };
+		2F3C5DDC1B18ADE70018055A /* Create_Recurring_Payment_ACH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Create_Recurring_Payment_ACH.cpp; path = Rebill/Create_Recurring_Payment_ACH.cpp; sourceTree = "<group>"; };
+		2F3C5DDD1B18ADE70018055A /* Create_Recurring_Payment_ACH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Create_Recurring_Payment_ACH.h; path = Rebill/Create_Recurring_Payment_ACH.h; sourceTree = "<group>"; };
+		2F3C5DDF1B18B0880018055A /* Get_Recurring_Payment_Status.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Get_Recurring_Payment_Status.cpp; path = Rebill/Get_Recurring_Payment_Status.cpp; sourceTree = "<group>"; };
+		2F3C5DE01B18B0880018055A /* Get_Recurring_Payment_Status.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Get_Recurring_Payment_Status.h; path = Rebill/Get_Recurring_Payment_Status.h; sourceTree = "<group>"; };
+		2F3C5DE21B18B73C0018055A /* Cancel_Recurring_Payment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cancel_Recurring_Payment.cpp; path = Rebill/Cancel_Recurring_Payment.cpp; sourceTree = "<group>"; };
+		2F3C5DE31B18B73C0018055A /* Cancel_Recurring_Payment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cancel_Recurring_Payment.h; path = Rebill/Cancel_Recurring_Payment.h; sourceTree = "<group>"; };
+		2F3C5DE51B18B92D0018055A /* Update_Recurring_Payment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Update_Recurring_Payment.cpp; path = Rebill/Update_Recurring_Payment.cpp; sourceTree = "<group>"; };
+		2F3C5DE61B18B92D0018055A /* Update_Recurring_Payment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Update_Recurring_Payment.h; path = Rebill/Update_Recurring_Payment.h; sourceTree = "<group>"; };
+		2F3C5DE91B18BC440018055A /* Retrieve_Transaction_Data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Retrieve_Transaction_Data.cpp; path = Get_Data/Retrieve_Transaction_Data.cpp; sourceTree = "<group>"; };
+		2F3C5DEA1B18BC440018055A /* Retrieve_Transaction_Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Retrieve_Transaction_Data.h; path = Get_Data/Retrieve_Transaction_Data.h; sourceTree = "<group>"; };
+		2F3C5DEC1B18BE460018055A /* Single_Transaction_Query.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Single_Transaction_Query.cpp; path = Get_Data/Single_Transaction_Query.cpp; sourceTree = "<group>"; };
+		2F3C5DED1B18BE460018055A /* Single_Transaction_Query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Single_Transaction_Query.h; path = Get_Data/Single_Transaction_Query.h; sourceTree = "<group>"; };
+		2F3C5DEF1B18C2360018055A /* Retrieve_Settlement_Data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Retrieve_Settlement_Data.cpp; path = Get_Data/Retrieve_Settlement_Data.cpp; sourceTree = "<group>"; };
+		2F3C5DF01B18C2360018055A /* Retrieve_Settlement_Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Retrieve_Settlement_Data.h; path = Get_Data/Retrieve_Settlement_Data.h; sourceTree = "<group>"; };
+		2F4754661B165719004D264C /* bluepay-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "bluepay-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F4754691B165719004D264C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		2F4754741B1659A6004D264C /* BluePay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BluePay.cpp; sourceTree = "<group>"; };
+		2F4754751B1659A6004D264C /* BluePay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BluePay.h; sourceTree = "<group>"; };
+		2F4754761B1659A6004D264C /* curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl.h; sourceTree = "<group>"; };
+		2F4754771B1659A6004D264C /* curlbuild.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlbuild.h; sourceTree = "<group>"; };
+		2F4754781B1659A6004D264C /* curlrules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlrules.h; sourceTree = "<group>"; };
+		2F4754791B1659A6004D264C /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlver.h; sourceTree = "<group>"; };
+		2F47547A1B1659A6004D264C /* easy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = easy.h; sourceTree = "<group>"; };
+		2F47547B1B1659A6004D264C /* md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md5.cpp; sourceTree = "<group>"; };
+		2F47547C1B1659A6004D264C /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		2F47547D1B1659A6004D264C /* multi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = multi.h; sourceTree = "<group>"; };
+		2F4754801B1663E4004D264C /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = usr/lib/libcurl.dylib; sourceTree = SDKROOT; };
+		2F885E041B1CCB77000212CB /* Swipe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Swipe.cpp; path = Transactions/Swipe.cpp; sourceTree = "<group>"; };
+		2F885E051B1CCB77000212CB /* Swipe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Swipe.h; path = Transactions/Swipe.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2F4754631B165719004D264C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F4754811B1663E4004D264C /* libcurl.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2F3C5DC01B18AA1B0018055A /* Rebill */ = {
+			isa = PBXGroup;
+			children = (
+				2F3C5DC11B18AA5E0018055A /* Create_Recurring_Payment_CC.cpp */,
+				2F3C5DC21B18AA5E0018055A /* Create_Recurring_Payment_CC.h */,
+				2F3C5DDC1B18ADE70018055A /* Create_Recurring_Payment_ACH.cpp */,
+				2F3C5DDD1B18ADE70018055A /* Create_Recurring_Payment_ACH.h */,
+				2F3C5DDF1B18B0880018055A /* Get_Recurring_Payment_Status.cpp */,
+				2F3C5DE01B18B0880018055A /* Get_Recurring_Payment_Status.h */,
+				2F3C5DE21B18B73C0018055A /* Cancel_Recurring_Payment.cpp */,
+				2F3C5DE31B18B73C0018055A /* Cancel_Recurring_Payment.h */,
+				2F3C5DE51B18B92D0018055A /* Update_Recurring_Payment.cpp */,
+				2F3C5DE61B18B92D0018055A /* Update_Recurring_Payment.h */,
+			);
+			name = Rebill;
+			sourceTree = "<group>";
+		};
+		2F3C5DE81B18BC290018055A /* Get_Data */ = {
+			isa = PBXGroup;
+			children = (
+				2F3C5DE91B18BC440018055A /* Retrieve_Transaction_Data.cpp */,
+				2F3C5DEA1B18BC440018055A /* Retrieve_Transaction_Data.h */,
+				2F3C5DEC1B18BE460018055A /* Single_Transaction_Query.cpp */,
+				2F3C5DED1B18BE460018055A /* Single_Transaction_Query.h */,
+				2F3C5DEF1B18C2360018055A /* Retrieve_Settlement_Data.cpp */,
+				2F3C5DF01B18C2360018055A /* Retrieve_Settlement_Data.h */,
+			);
+			name = Get_Data;
+			sourceTree = "<group>";
+		};
+		2F47545D1B165719004D264C = {
+			isa = PBXGroup;
+			children = (
+				2F3C5DE81B18BC290018055A /* Get_Data */,
+				2F3C5DC01B18AA1B0018055A /* Rebill */,
+				2F8C91B61B1786EC00E438AC /* Transactions */,
+				2F4754801B1663E4004D264C /* libcurl.dylib */,
+				2F4754681B165719004D264C /* bluepay-cpp */,
+				2F4754671B165719004D264C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2F4754671B165719004D264C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2F4754661B165719004D264C /* bluepay-cpp */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2F4754681B165719004D264C /* bluepay-cpp */ = {
+			isa = PBXGroup;
+			children = (
+				2F4754741B1659A6004D264C /* BluePay.cpp */,
+				2F4754751B1659A6004D264C /* BluePay.h */,
+				2F4754761B1659A6004D264C /* curl.h */,
+				2F4754771B1659A6004D264C /* curlbuild.h */,
+				2F4754781B1659A6004D264C /* curlrules.h */,
+				2F4754791B1659A6004D264C /* curlver.h */,
+				2F47547A1B1659A6004D264C /* easy.h */,
+				2F47547B1B1659A6004D264C /* md5.cpp */,
+				2F47547C1B1659A6004D264C /* md5.h */,
+				2F47547D1B1659A6004D264C /* multi.h */,
+				2F4754691B165719004D264C /* main.cpp */,
+			);
+			path = "bluepay-cpp";
+			sourceTree = "<group>";
+		};
+		2F8C91B61B1786EC00E438AC /* Transactions */ = {
+			isa = PBXGroup;
+			children = (
+				2F3C5DC41B18AB5D0018055A /* Cancel_Transaction.cpp */,
+				2F3C5DC51B18AB5D0018055A /* Cancel_Transaction.h */,
+				2F3C5DC61B18AB5D0018055A /* Charge_Customer_ACH.cpp */,
+				2F3C5DC71B18AB5D0018055A /* Charge_Customer_ACH.h */,
+				2F3C5DC81B18AB5D0018055A /* Charge_Customer_CC.cpp */,
+				2F3C5DC91B18AB5D0018055A /* Charge_Customer_CC.h */,
+				2F3C5DCA1B18AB5D0018055A /* Check_Customer_Credit.cpp */,
+				2F3C5DCB1B18AB5D0018055A /* Check_Customer_Credit.h */,
+				2F3C5DCC1B18AB5D0018055A /* Customer_Defined_Data.cpp */,
+				2F3C5DCD1B18AB5D0018055A /* Customer_Defined_Data.h */,
+				2F3C5DCE1B18AB5D0018055A /* How_To_Use_Token.cpp */,
+				2F3C5DCF1B18AB5D0018055A /* How_To_Use_Token.h */,
+				2F3C5DD01B18AB5D0018055A /* Return_Funds.cpp */,
+				2F3C5DD11B18AB5D0018055A /* Return_Funds.h */,
+				2F3C5DD21B18AB5D0018055A /* Store_Payment_Information.cpp */,
+				2F3C5DD31B18AB5D0018055A /* Store_Payment_Information.h */,
+				2F885E041B1CCB77000212CB /* Swipe.cpp */,
+				2F885E051B1CCB77000212CB /* Swipe.h */,
+			);
+			name = Transactions;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2F4754651B165719004D264C /* bluepay-cpp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F47546D1B165719004D264C /* Build configuration list for PBXNativeTarget "bluepay-cpp" */;
+			buildPhases = (
+				2F4754621B165719004D264C /* Sources */,
+				2F4754631B165719004D264C /* Frameworks */,
+				2F4754641B165719004D264C /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "bluepay-cpp";
+			productName = "bluepay-cpp";
+			productReference = 2F4754661B165719004D264C /* bluepay-cpp */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2F47545E1B165719004D264C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "BluePay Processing";
+				TargetAttributes = {
+					2F4754651B165719004D264C = {
+						CreatedOnToolsVersion = 6.3.2;
+					};
+				};
+			};
+			buildConfigurationList = 2F4754611B165719004D264C /* Build configuration list for PBXProject "bluepay-cpp" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2F47545D1B165719004D264C;
+			productRefGroup = 2F4754671B165719004D264C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2F4754651B165719004D264C /* bluepay-cpp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2F4754621B165719004D264C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F3C5DF11B18C2360018055A /* Retrieve_Settlement_Data.cpp in Sources */,
+				2F47546A1B165719004D264C /* main.cpp in Sources */,
+				2F885E061B1CCB77000212CB /* Swipe.cpp in Sources */,
+				2F3C5DEE1B18BE460018055A /* Single_Transaction_Query.cpp in Sources */,
+				2F47547F1B1659A6004D264C /* md5.cpp in Sources */,
+				2F3C5DD81B18AB5D0018055A /* Customer_Defined_Data.cpp in Sources */,
+				2F3C5DD61B18AB5D0018055A /* Charge_Customer_CC.cpp in Sources */,
+				2F3C5DD71B18AB5D0018055A /* Check_Customer_Credit.cpp in Sources */,
+				2F3C5DDB1B18AB5D0018055A /* Store_Payment_Information.cpp in Sources */,
+				2F3C5DE11B18B0880018055A /* Get_Recurring_Payment_Status.cpp in Sources */,
+				2F47547E1B1659A6004D264C /* BluePay.cpp in Sources */,
+				2F3C5DE41B18B73C0018055A /* Cancel_Recurring_Payment.cpp in Sources */,
+				2F3C5DD41B18AB5D0018055A /* Cancel_Transaction.cpp in Sources */,
+				2F3C5DDE1B18ADE70018055A /* Create_Recurring_Payment_ACH.cpp in Sources */,
+				2F3C5DEB1B18BC440018055A /* Retrieve_Transaction_Data.cpp in Sources */,
+				2F3C5DDA1B18AB5D0018055A /* Return_Funds.cpp in Sources */,
+				2F3C5DD91B18AB5D0018055A /* How_To_Use_Token.cpp in Sources */,
+				2F3C5DE71B18B92D0018055A /* Update_Recurring_Payment.cpp in Sources */,
+				2F3C5DD51B18AB5D0018055A /* Charge_Customer_ACH.cpp in Sources */,
+				2F3C5DC31B18AA5E0018055A /* Create_Recurring_Payment_CC.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2F47546B1B165719004D264C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2F47546C1B165719004D264C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2F47546E1B165719004D264C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2F47546F1B165719004D264C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2F4754611B165719004D264C /* Build configuration list for PBXProject "bluepay-cpp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F47546B1B165719004D264C /* Debug */,
+				2F47546C1B165719004D264C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F47546D1B165719004D264C /* Build configuration list for PBXNativeTarget "bluepay-cpp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F47546E1B165719004D264C /* Debug */,
+				2F47546F1B165719004D264C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2F47545E1B165719004D264C /* Project object */;
+}

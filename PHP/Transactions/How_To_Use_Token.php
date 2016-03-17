@@ -9,11 +9,10 @@
 
 include('../BluePay.php');
 
-$accountID = '100228390579';
-$secretKey = 'AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K';
-$mode = 'TEST';
-
-$token = "100228422096"; # The transaction ID of a previous sale
+$accountID = "Merchant's Account ID Here";
+$secretKey = "Merchant's Secret Key Here";
+$mode = "TEST";
+$token = "Transaction ID here"; 
 
 $payment = new BluePay(
     $accountID,
@@ -23,7 +22,7 @@ $payment = new BluePay(
 
 $payment->sale(
 	'3.00', 
-	$token # The transaction ID of a previous sale
+	$token 
 );
 
 $payment->process();

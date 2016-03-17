@@ -1,0 +1,1 @@
+/Users/pgrenning/Desktop/vbnet/vbnet/obj/x86/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.vb

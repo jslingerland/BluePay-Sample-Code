@@ -14,7 +14,7 @@ import cgi
 
 vars = cgi.FieldStorage()
 
-secret_key = "YCBJNEUEKNINP5PWEH1HRQDSQHYANPM/"
+secret_key = "Merchant's Secret Key Here"
 try:
     # Assign values
     trans_id = vars["trans_id"]

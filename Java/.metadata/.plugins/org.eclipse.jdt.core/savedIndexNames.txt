@@ -1,0 +1,2 @@
+INDEX VERSION 1.127+/Users/pgrenning/Google Drive/bluepay-sample-code/Java/.metadata/.plugins/org.eclipse.jdt.core
+2078267704.index

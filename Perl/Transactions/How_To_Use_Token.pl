@@ -10,11 +10,10 @@ use strict;
 use lib '..';
 use bluepay;
 
-my $account_id = "100228390579";
-my $secret_key = "AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K";
+my $account_id = "Merchant's Account ID Here";
+my $secret_key = "Merchant's Secret Key Here";
 my $mode = "TEST";
-
-my $token = "100231150475"; # The transaction ID of a previous sale
+my $token = "Transaction ID here"; 
 
 my $payment = BluePay->new(
 	$account_id, 
@@ -24,7 +23,7 @@ my $payment = BluePay->new(
        
 $payment->sale({
 	amount => '3.00',
-	trans_id => $token # The transaction ID of a previous sale
+	trans_id => $token 
 }); 
 
 # Makes the API Request

@@ -43,6 +43,7 @@ class BluePay {
     private $ccNum;
     private $cardExpire;
     private $cvv2;
+    private $trackData;
 
     // ACH fields
     private $accountType;
@@ -172,6 +173,11 @@ class BluePay {
         if(isset($params["cvv2"])) {
             $this->cvv2 = $params["cvv2"];
         }
+    }
+
+    // Sets payment information for a swiped credit card transaction
+    public function swipe($trackData) {
+        $this->trackData = $trackData;
     }
 
     // Passes ACH information into the transaction
@@ -458,6 +464,7 @@ class BluePay {
                 $post["REB_EXPR"] = $this->rebillExpr;
                 $post["REB_CYCLES"] = $this->rebillCycles;
                 $post["REB_AMOUNT"] = $this->rebillAmount;
+                $post["SWIPE"] = $this->trackData;  
                 $post["TAMPER_PROOF_SEAL"] = $this->calcTPS();    
                 if(isset($_SERVER["REMOTE_ADDR"])){
                     $post["REMOTE_IP"] = $_SERVER["REMOTE_ADDR"];

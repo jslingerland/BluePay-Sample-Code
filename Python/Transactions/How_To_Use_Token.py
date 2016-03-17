@@ -11,15 +11,15 @@ import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
 
-account_id = "100228390579"
-secret_key = "AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K"
-mode = "TEST"
-token = "100228422096" # the transaction id of a previous sale
+account_id = "Merchant's Account ID Here"
+secret_key = "Merchant's Secret Key Here"
+mode = "TEST"  
+token = "Transaction ID here" 
 
 payment = BluePay(
-    account_id = account_id, # Merchant's Account ID
-    secret_key = secret_key, # Merchant's Secret Key
-    mode = mode # Transaction Mode: TEST (can also be LIVE)
+    account_id = account_id, 
+    secret_key = secret_key, 
+    mode = mode
 )
 
 # Charges a customer $3.00 using the payment information from a previous transaction.

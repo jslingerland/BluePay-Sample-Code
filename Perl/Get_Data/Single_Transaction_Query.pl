@@ -11,8 +11,8 @@ use strict;
 use lib '..';
 use bluepay;
 
-my $account_id = "100228390579";
-my $secret_key = "AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K";
+my $account_id = "Merchant's Account ID Here";
+my $secret_key = "Merchant's Secret Key Here";
 my $mode = "TEST";
 
 my $report = BluePay->new(
@@ -22,7 +22,7 @@ my $report = BluePay->new(
 );
 
 $report->get_single_transaction_query({
-	transaction_id => '100231239274', # required
+	transaction_id => 'ID of previous transaction', # required
 	report_start_date => '2013-01-01', #YYYY-MM-DD, required
 	report_end_date => '2015-05-30', #YYYY-MM-DD, required
 	exclude_errors => '1' # Do not include errored transactions? Yes

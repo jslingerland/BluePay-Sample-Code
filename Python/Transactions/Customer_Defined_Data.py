@@ -12,17 +12,16 @@ import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
 
-account_id = "100228390579"
-secret_key = "AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K"
-mode = "TEST"
+account_id = "Merchant's Account ID Here"
+secret_key = "Merchant's Secret Key Here"
+mode = "TEST"  
 
 payment = BluePay(
-    account_id = account_id, # Merchant's Account ID
-    secret_key = secret_key, # Merchant's Secret Key
-    mode = mode # Transaction Mode: TEST (can also be LIVE)
+    account_id = account_id, 
+    secret_key = secret_key, 
+    mode = mode
 )
 
-# Set Customer Information
 payment.set_customer_information(
     name1 = "Bob",
     name2 = "Tester",
@@ -34,7 +33,6 @@ payment.set_customer_information(
     country = "USA"
 )
 
-# Set Credit Card Information
 payment.set_cc_information(
     card_number = "4111111111111111",
     card_expire = "1215",
@@ -42,16 +40,16 @@ payment.set_cc_information(
 )
 
 # Optional fields users can set
-payment.phone = "1231231234" # Phone #: 123-123-1234
-payment.email = "test@bluepay.com" # Email Address: test@bluepay.com
-payment.custom_id1 = "12345" # Custom ID1: 12345
-payment.custom_id2 = "09866" # Custom ID2: 09866
-payment.invoice_id = "500000" # Invoice ID: 50000
-payment.order_id = "10023145" # Order ID: 10023145
-payment.amount_tip = "6.00" # Tip Amount: $6.00
-payment.amount_tax = "3.50" # Tax Amount: $3.50
-payment.amount_food = "3.11" # Food Amount: $3.11
-payment.amount_misc = "5.00" # Miscellaneous Amount: $5.00
+payment.phone = "1231231234" # Phone #
+payment.email = "test@bluepay.com" # Email Address
+payment.custom_id1 = "12345" # Custom ID1
+payment.custom_id2 = "09866" # Custom ID2
+payment.invoice_id = "500000" # Invoice ID
+payment.order_id = "10023145" # Order ID
+payment.amount_tip = "6.00" # Tip Amount
+payment.amount_tax = "3.50" # Tax Amount
+payment.amount_food = "3.11" # Food Amount
+payment.amount_misc = "5.00" # Miscellaneous Amount
 payment.memo = "Enter any comments about the transaction here." # Comments
 
 # Sale Amount: $25.00

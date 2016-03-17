@@ -9,17 +9,16 @@ import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
 
-account_id = "100228390579"
-secret_key = "AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K"
-mode = "TEST"
+account_id = "Merchant's Account ID Here"
+secret_key = "Merchant's Secret Key Here"
+mode = "TEST"  
 
 payment = BluePay(
-    account_id = account_id, # Merchant's Account ID
-    secret_key = secret_key, # Merchant's Secret Key
-    mode = mode # Transaction Mode: TEST (can also be LIVE)
+    account_id = account_id, 
+    secret_key = secret_key, 
+    mode = mode
 )
 
-# Set Customer Information
 payment.set_customer_information(
     name1 = "Bob",
     name2 = "Tester",
@@ -33,8 +32,8 @@ payment.set_customer_information(
 
 # Set ACH Payment Information
 payment.set_ach_information(
-    routing_number = "123123123", # Routing Number: 123123123
-    account_number = "05125121", # Account Number: 0523421
+    routing_number = "123123123", # Routing Number
+    account_number = "05125121", # Account Number
     account_type = "C", # Account Type: Checking
     doc_type = "WEB" # ACH Document Type: WEB
 )

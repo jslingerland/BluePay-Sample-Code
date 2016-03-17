@@ -11,8 +11,8 @@ use strict;
 use lib '..';
 use bluepay;
 
-my $account_id = "100228390579";
-my $secret_key = "AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K";
+my $account_id = "Merchant's Account ID Here";
+my $secret_key = "Merchant's Secret Key Here";
 my $mode = "TEST";
 
 my $payment = BluePay->new(

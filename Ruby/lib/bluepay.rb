@@ -10,8 +10,7 @@ require_relative "api_response"
 class BluePay
   SERVER = "secure.bluepay.com"
   # Make sure this is the correct path to your CA certificates directory
-  # For testing purposes, this gem comes with a CA bundle.
-  RootCA = "."
+  RootCA = "/"
 
   def initialize(params = {})
     @ACCOUNT_ID = params[:account_id]
@@ -32,6 +31,8 @@ class BluePay
   # routing: Bank routing number
   # account: Customer's checking or savings account number
   # doc_type: WEB, TEL, ARC, etc -- see docs.  Optional.
+  # REMEMBER: Ach requires some other fields,
+  # such as address and phone 
   def set_ach_information(params = {})
     @PARAM_HASH['PAYMENT_TYPE'] = 'ACH'
     @PARAM_HASH['ACH_ROUTING'] = params[:ach_routing]
@@ -78,6 +79,14 @@ class BluePay
     @PARAM_HASH['AMOUNT'] = ''
     @PARAM_HASH['RRNO'] = trans_id
     @api = "bp10emu"
+  end
+
+  # Sets payment information for a swiped credit card transaction
+  def swipe(track_data)
+    @PARAM_HASH['SWIPE'] = track_data
+    #  Regex matchers 
+      # track1_and_track2 = /(%B)\d{0,19}\^([\w\s]*)\/([\w\s]*)([\s]*)\^\d{7}\w*\?;\d{0,19}=\d{7}\w*\?/.match(track_data).to_s
+      # track2 = /;\d{0,19}=\d{7}\w*\?/.match(track_data).to_s
   end
 
   # Sets customer information for the transaction
@@ -156,7 +165,6 @@ class BluePay
     @PARAM_HASH['REB_EXPR'] = params[:reb_expr]
     @PARAM_HASH['REB_CYCLES'] = params[:reb_cycles]
     @PARAM_HASH['REB_AMOUNT'] = params[:reb_amount]
-    # @api = "bp10emu"
   end
 
   # Set fields to do an update on an existing rebilling cycle
@@ -221,6 +229,11 @@ class BluePay
     @PARAM_HASH["id"] = params[:transaction_id]
     @PARAM_HASH["EXCLUDE_ERRORS"] = params[:exclude_errors] || ''
     @api = "stq"    
+  end
+
+  # Queries by a specific Transaction ID. To be used with get_single_trans_query
+  def query_by_transaction_id(trans_id)
+    @PARAM_HASH["id"] = trans_id
   end
 
   # Queries by a specific Payment Type. To be used with get_single_trans_query

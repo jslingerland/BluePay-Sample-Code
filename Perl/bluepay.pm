@@ -8,12 +8,11 @@ use Digest::MD5 qw(md5_hex);
 use LWP::UserAgent;
 use URI::Escape;
 use CGI;
-use Mozilla::CA
+use Mozilla::CA;
 
 my $URL  = '';
 my $MODE = '';
 my $TAMPER_PROOF_SEAL;
-
 
 # New
 sub new {
@@ -83,7 +82,6 @@ sub calc_tps {
     return $TAMPER_PROOF_SEAL;
 }
 
-
 # Makes the API request and gets response
 sub process {
     my $self = shift;
@@ -103,12 +101,13 @@ sub process {
         $request .= "&$key=" . uri_escape( $value || '' );
     }
 
-    # Prints the full api request url
+    # prints the full api request url 
     # print "\n" . "request: "  . "\n" . $request . "\n \n";
 
     # Create Agent
     my $ua = new LWP::UserAgent;
     my $content;
+    
     if ($self->{API} eq 'bp10emu' ) {
         my $req = new HTTP::Request 'POST', $self->{URL};
         $req->content($request);
@@ -170,7 +169,6 @@ sub is_successful_response{
     # return 1
 }
 
-
 # Set CC information
 sub set_cc_information {
     my $self = shift;
@@ -179,6 +177,13 @@ sub set_cc_information {
     $self->{CC_NUM} = $params->{cc_number};
     $self->{CC_EXPIRES} = $params->{cc_expiration};
     $self->{CVCVV2} = $params->{cvv2}; 
+}
+
+# Sets payment information for a swiped credit card transaction
+sub swipe {
+    my $self = shift;
+    my $track_data = shift;
+    $self->{SWIPE} = $track_data;
 }
 
 # Set Customer Information
@@ -205,7 +210,7 @@ sub set_ach_information{
     $self->{ACH_ROUTING} = $params->{ach_routing};
     $self->{ACH_ACCOUNT} = $params->{ach_account};
     $self->{ACH_ACCOUNT_TYPE} = $params->{ach_account_type};
-    $self->{DOC_TYPE} = $params->{doc_type}; #|| ''
+    $self->{DOC_TYPE} = $params->{doc_type}; #optional
 }
 
 # Set Sale Transaction

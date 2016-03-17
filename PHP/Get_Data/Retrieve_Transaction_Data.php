@@ -10,17 +10,16 @@
   
 include('../BluePay.php');
   
-$accountID = "100228390579";
-$secretKey = 'AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K';
-$mode = 'TEST';
+$accountID = "Merchant's Account ID Here";
+$secretKey = "Merchant's Secret Key Here";
+$mode = "TEST";
   
 $report = new BluePay(
     $accountID,
     $secretKey,
     $mode
 );
-  
-/* RUN A TRANSACTION REPORT */
+   
 $report->getTransactionReport(array(
     'reportStart' => '2015-01-01', // Report Start Date: YYYY-MM-DD
     'reportEnd' => '2015-04-30', // Report End Date: YYYY-MM-DD

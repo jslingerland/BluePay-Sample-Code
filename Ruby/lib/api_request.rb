@@ -4,7 +4,8 @@ class BluePay
   def uri_query(param_hash)
     array = []
     param_hash.each_pair {|key, val| array << (URI.escape(key) + "=" + URI.escape(val))}
-    array.join("&")
+    uri_query_string = array.join("&")
+    return uri_query_string
   end
 
   # Sets TAMPER_PROOF_SEAL in @PARAM_HASH
@@ -47,10 +48,10 @@ class BluePay
   # Calculates TAMPER_PROOF_SEAL to be used with Trans Notify API 
   def self.calc_trans_notify_tps(secret_key, trans_id, trans_status, trans_type, amount, batch_id, batch_status, total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
     Digest::MD5.hexdigest(
-      secret_key + 
+      @SECRET_KEY + 
       trans_id + 
       trans_status + 
-      trans_type + 
+      transtype + 
       amount + 
       batch_id + 
       batch_status + 
@@ -65,8 +66,11 @@ class BluePay
 
  # sends HTTPS POST to BluePay gateway for processing
   def process
+    
     ua = Net::HTTP.new(SERVER, 443)
     ua.use_ssl = true
+    
+    # Checks presence of CA certificate
     if File.directory?(RootCA)
       ua.ca_path = RootCA
       ua.verify_mode = OpenSSL::SSL::VERIFY_PEER
@@ -75,13 +79,14 @@ class BluePay
       puts "Invalid CA certificates directory. Exiting..."
       exit
     end
+    
+    # Sets REMOTE_IP parameter
     begin
     	@PARAM_HASH["REMOTE_IP"] = request.env['REMOTE_ADDR']
       rescue Exception
     end
-    # Generate the query string and headers
-    
-    # Chooses which API to make request to
+
+    # Generate the query string and headers.  Chooses which API to make request to.
     case @api
     when "bpdailyreport2"
       calc_report_tps
@@ -102,7 +107,7 @@ class BluePay
       query = "ACCOUNT_ID=#{@ACCOUNT_ID}&" + uri_query(@PARAM_HASH)
     end
     queryheaders = {
-      'User-Agent' => 'BluePay Ruby Library/1.0.4',
+      'User-Agent' => 'Bluepay Ruby Client',
       'Content-Type' => 'application/x-www-form-urlencoded'
     }
     # Response version to be returned

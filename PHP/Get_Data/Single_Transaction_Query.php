@@ -10,10 +10,9 @@
 
 include('../BluePay.php');
 
-$accountID = "100228390579";
-$secretKey = 'AKGIF9X9WT9CLQCWDFONC8N3HXRL9Y5K';
-$mode = 'TEST';
-$transactionID = "100229767898";
+$accountID = "Merchant's Account ID Here";
+$secretKey = "Merchant's Secret Key Here";
+$mode = "TEST";
 
 $report = new BluePay(
     $accountID,
@@ -22,8 +21,8 @@ $report = new BluePay(
 );
 
 $report->getSingleTransQuery(array(
-		'transID' => '100230382782', // required
-		'reportStart' => '2015-01-01', // Report Start Date: YYYY-MM-DD; required
+	'transID' => 'Transaction ID here', // required
+	'reportStart' => '2015-01-01', // Report Start Date: YYYY-MM-DD; required
     'reportEnd' => '2015-05-30', // Report End Date: YYYY-MM-DD; required
     'errors'=> '1' // Do not include errored transactions? Yes
 ));
