@@ -29,7 +29,7 @@ Every language is structured essentially the same and contains the following:
 - A directory, labeled 'Get Data', containing samples showing how to pull transactions from the BluePay gateway.
 - A directory, labeled 'Rebills', containing samples showing how to set up, modify, and delete BluePay rebillings.
 
-As a very basic starting point, in order to run the samples, you'll need to input your Account ID and Secret Key. In most circumstances, this is all you will need to try out the sample code.
+As a very basic starting point in order to run the samples, you'll need to input your Account ID and Secret Key. In most circumstances, this is all you will need to run the sample code.
 
 # Disclaimer
 
