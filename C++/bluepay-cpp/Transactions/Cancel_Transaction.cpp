@@ -8,7 +8,8 @@
 // an approval and even dollar amounts will return a decline.
 
 #include "Cancel_Transaction.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void cancelTransaction(){

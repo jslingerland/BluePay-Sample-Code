@@ -1,4 +1,12 @@
 #include "BluePay.h"
+#include <curl/curl.h>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
+#include <cctype>
+#include <cstring>
 
 /// <summary>
 /// BluePay constructor
@@ -659,7 +667,7 @@ void BluePay::calcTps()
 {
   std::string tamper_proof_seal = this->secretKey + this->accountId + this->transType + this->amount + this->doRebill + this->rebillFirstDate +
     this->rebillExpr + this->rebillCycles + this->rebillAmount + this->masterId + this->mode;
-  this->Tps = md5(tamper_proof_seal);
+  this->Tps = sha512(tamper_proof_seal);
 }
 
 /// <summary>
@@ -704,6 +712,245 @@ std::string BluePay::calcTransNotifyTps(std::string secretKey, std::string trans
   std::string tamper_proof_seal = secretKey + transId + transStatus + transType + amount + batchId + batchStatus +
     totalCount + totalAmount + batchUploadId + rebillId + rebillAmount + rebillStatus;
   return md5(tamper_proof_seal);
+}
+
+/// <summary>
+/// Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with GenerateURL.
+/// </summary>
+std::string BluePay::setCardTypes() 
+{
+  std::string creditCards = "vi-mc";
+  creditCards = (discoverImage.compare(0,6,"discvr") == 0) ? (creditCards.append("-di")) : creditCards;
+  creditCards = (amexImage.compare(0,4,"amex") == 0) ? (creditCards.append("-am")) : creditCards;
+  return creditCards; 
+}
+
+/// <summary>
+/// Sets the receipt Tamperproof Seal string. Must be used with GenerateURL.
+/// </summary>
+std::string BluePay::setReceiptTpsString()
+{
+  return this->secretKey + this->accountId + this->receiptFormID + this->returnURL + this->dba + this->amexImage + this->discoverImage + this->receiptTpsDef; 
+}
+        
+/// <summary>
+/// Adds optional protected keys to a string. Must be used with GenerateURL.
+/// </summary>
+/// <param name="input"></param>
+std::string BluePay::addDefProtectedStatus(std::string input) {
+  if (std::toupper(this->protectAmount[0]) == 'Y') {
+    input.append(" AMOUNT");
+  }
+  if (std::toupper(this->rebillProtect[0]) == 'Y') {
+    input.append(" REBILLING REB_CYCLES REB_AMOUNT REB_EXPR REB_FIRST_DATE");
+  }
+  if (std::toupper(this->protectCustomID1[0]) == 'Y') {
+    input.append(" CUSTOM_ID");
+  }
+  if (std::toupper(this->protectCustomID2[0]) == 'Y') {
+    input.append(" CUSTOM_ID2");
+  } 
+  return input;
+}
+
+/// <summary>
+/// Adds optional protected values to a string. Must be used with GenerateURL.
+/// </summary>
+/// <param name="input"></param>
+std::string BluePay::addStringProtectedStatus(std::string input) 
+{
+  if (std::toupper(this->protectAmount[0]) == 'Y') { 
+    input += this->amount;
+  }
+  if (std::toupper(this->rebillProtect[0]) == 'Y') {
+    input += this->doRebill + this->rebillCycles + this->rebillAmount + this->rebillExpr + this->rebillFirstDate;
+  }
+  if (std::toupper(this->protectCustomID1[0]) == 'Y') { 
+    input += this->customId1;
+  }
+  if (std::toupper(this->protectCustomID2[0]) == 'Y') {
+    input += this->customId2;
+  }
+  return input;
+}
+
+/// <summary>
+/// Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with GenerateURL.
+/// </summary>
+std::string BluePay::setBp10emuTpsString() 
+{
+  std::string bp10emu = this->secretKey + this->accountId + this->receiptURL + this->receiptURL + this->receiptURL + this->mode + this->transType + this->bp10emuTpsDef;
+  return addStringProtectedStatus(bp10emu);
+}
+
+/// <summary>
+/// Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with GenerateURL.
+/// </summary>
+std::string BluePay::setShpfTpsString() 
+{
+  std::string shpf = this->secretKey + this->shpfFormID + this->accountId + this->dba + this->bp10emuTamperProofSeal + this->amexImage + this->discoverImage + this->bp10emuTpsDef + this->shpfTpsDef; 
+  return addStringProtectedStatus(shpf);
+}
+
+/// <summary>
+/// Generates a Tamperproof Seal for a url. Must be used with GenerateURL.
+/// </summary>
+/// <param name="input"></param>
+std::string BluePay::calcURLTps(std::string input)
+{
+  return md5(input);
+}
+
+/// <summary>
+/// Encodes a string into a URL. Must be used with GenerateURL.
+/// </summary>
+/// <param name="input"></param>
+std::string BluePay::encodeURL(std::string input)
+{
+  std::string output;
+  for (std::string::size_type i = 0; i < input.size(); ++i){
+    if (isalnum(input[i])) {
+      output += input[i];
+    }
+    else {
+      std::stringstream encoded;
+      encoded << std::hex << std::setw(2) << std::setfill('0') << (int)input[i];
+      std::string encodedString = encoded.str();
+      std::transform(encodedString.begin(), encodedString.end(),encodedString.begin(), ::toupper);
+      output += '%' + encodedString;
+    }
+  }
+  return output;
+}
+
+/// <summary>
+/// Sets the receipt url or uses the remote url provided. Must be used with GenerateURL.
+/// </summary>
+std::string BluePay::setReceiptURL()
+{
+  std::string output ="";
+  if (this->receiptFormID.compare(0,10,"remote_url") == 0) {
+    output = this->remoteURL;
+    }
+  else 
+  {
+    output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + this->receiptFormID +
+    "&SHPF_ACCOUNT_ID=" + this->accountId + 
+    "&SHPF_TPS_DEF="    + encodeURL(receiptTpsDef) + 
+    "&SHPF_TPS="        + encodeURL(receiptTamperProofSeal) + 
+    "&RETURN_URL="      + encodeURL(returnURL) +
+    "&DBA="             + encodeURL(dba) + 
+    "&AMEX_IMAGE="      + encodeURL(amexImage) + 
+    "&DISCOVER_IMAGE="  + encodeURL(discoverImage);
+  }
+  return output;
+}
+
+/// <summary>
+/// Generates the final url for the Simple Hosted Payment Form. Must be used with GenerateURL.
+/// </summary>
+std::string BluePay::calcURLResponse() 
+{                  
+  std::string output = "https://secure.bluepay.com/interfaces/shpf?";
+  output += "SHPF_FORM_ID="         + encodeURL(shpfFormID);
+  output += "&SHPF_ACCOUNT_ID="     + encodeURL(accountId);
+  output += "&SHPF_TPS_DEF="        + encodeURL(shpfTpsDef);
+  output += "&SHPF_TPS="            + encodeURL(shpfTamperProofSeal);
+  output += "&MODE="                + encodeURL(mode);
+  output += "&TRANSACTION_TYPE="    + encodeURL(transType);
+  output += "&DBA="                 + encodeURL(dba);
+  output += "&AMOUNT="              + encodeURL(amount);
+  output += "&TAMPER_PROOF_SEAL="   + encodeURL(bp10emuTamperProofSeal);
+  output += "&CUSTOM_ID="           + encodeURL(customId1);
+  output += "&CUSTOM_ID2="          + encodeURL(customId2);
+  output += "&REBILLING="           + encodeURL(doRebill);
+  output += "&REB_CYCLES="          + encodeURL(rebillCycles);
+  output += "&REB_AMOUNT="          + encodeURL(rebillAmount);
+  output += "&REB_EXPR="            + encodeURL(rebillExpr);
+  output += "&REB_FIRST_DATE="      + encodeURL(rebillFirstDate);
+  output += "&AMEX_IMAGE="          + encodeURL(amexImage);
+  output += "&DISCOVER_IMAGE="      + encodeURL(discoverImage);
+  output += "&REDIRECT_URL="        + encodeURL(receiptURL);
+  output += "&TPS_DEF="             + encodeURL(bp10emuTpsDef);
+  output += "&CARD_TYPES="          + encodeURL(cardTypes);            
+  return output;           
+}
+
+/// <summary>
+/// Calls the methods necessary to generate a SHPF URL
+/// Required arguments for generate_url:
+/// <param name="merchantName"></param> Merchant name that will be displayed in the payment page.
+/// <param name="returnURL"></param> Link to be displayed on the transacton results page. Usually the merchant's web site home page.
+/// <param name="transactionType"></param> SALE/AUTH -- Whether the customer should be charged or only check for enough credit available.
+/// <param name="acceptDiscover"></param> Yes/No -- Yes for most US merchants. No for most Canadian merchants.
+/// <param name="acceptAmex"></param> Yes/No -- Has an American Express merchant account been set up?
+/// <param name="amount"></param> The amount if the merchant is setting the initial amount.
+/// <param name="protectAmount"></param> Yes/No -- Should the amount be protected from changes by the tamperproof seal?
+/// <param name="rebilling"></param> Yes/No -- Should a recurring transaction be set up?
+/// <param name="paymentTemplate"></param> Select one of our payment form template IDs or your own customized template ID. If the customer should not be allowed to change the amount, add a 'D' to the end of the template ID. Example: 'mobileform01D'
+  /// mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
+  /// default1v5 -- Credit Card Only - Gray Horizontal 
+  /// default7v5 -- Credit Card Only - Gray Horizontal Donation
+  /// default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
+  /// default3v4 -- Credit Card Only - Blue Vertical with card swipe
+  /// mobileform02 -- Credit Card & ACH - White Vertical (mobile capable)
+  /// default8v5 -- Credit Card & ACH - Gray Horizontal Donation
+  /// default8v5R -- Credit Card & ACH - Gray Horizontal Donation with Recurring
+  /// mobileform03 -- ACH Only - White Vertical (mobile capable)
+/// <param name="receiptTemplate"></param> Select one of our receipt form template IDs, your own customized template ID, or "remote_url" if you have one.
+  /// mobileresult01 -- Default without signature line - White Responsive (mobile)
+  /// defaultres1 -- Default without signature line – Blue
+  /// V5results -- Default without signature line – Gray
+  /// V5Iresults -- Default without signature line – White
+  /// defaultres2 -- Default with signature line – Blue
+  /// remote_url - Use a remote URL
+/// <param name="receiptTempRemoteURL"></param> Your remote URL ** Only required if receipt_template = "remote_url".
+
+/// Optional arguments for generate_url:
+/// <param name="rebProtect"></param> Yes/No -- Should the rebilling fields be protected by the tamperproof seal?
+/// <param name="ebAmount"></param> Amount that will be charged when a recurring transaction occurs.
+/// <param name="rebCycles"></param> Number of times that the recurring transaction should occur. Not set if recurring transactions should continue until canceled.
+/// <param name="rebStartDate"></param> Date (yyyy-mm-dd) or period (x units) until the first recurring transaction should occur. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 2016-04-01 or 1 MONTH)
+/// <param name="rebFrequency"></param> How often the recurring transaction should occur. Format is 'X UNITS'. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 1 MONTH) 
+/// <param name="customID1"></param> A merchant defined custom ID value.
+/// <param name="protectCustomID1"></param> Yes/No -- Should the Custom ID value be protected from change using the tamperproof seal?
+/// <param name="customID2"></param> A merchant defined custom ID 2 value.
+/// <param name="protectCustomID2"></param> Yes/No -- Should the Custom ID 2 value be protected from change using the tamperproof seal?
+/// </summary>
+std::string BluePay::generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate, std::string receiptTemplate, std::string receiptTempRemoteURL, std::string rebilling, std::string rebProtect, std::string rebAmount, std::string rebCycles, std::string rebStartDate, std::string rebFrequency, std::string customID1, std::string protectCustomID1, std::string customID2, std::string protectCustomID2)
+{
+  this->dba = merchantName;
+  this->returnURL = returnURL;
+  this->transType = transactionType;
+  this->discoverImage =(std::toupper(acceptDiscover[0]) == 'Y') ? "discvr.gif" : "spacer.gif";
+  this->amexImage =(std::toupper(acceptAmex[0]) == 'Y') ? "amex.gif" : "spacer.gif";
+  this->amount = amount;
+  this->protectAmount = protectAmount;
+  this->shpfFormID = paymentTemplate;
+  this->receiptFormID = receiptTemplate;
+  this->remoteURL = receiptTempRemoteURL;
+  this->doRebill =(std::toupper(rebilling[0]) == 'Y') ? "1" : "0";
+  this->rebillProtect = rebProtect;
+  this->rebillAmount = rebAmount;
+  this->rebillCycles = rebCycles;
+  this->rebillFirstDate = rebStartDate;
+  this->rebillExpr = rebFrequency;
+  this->customId1 = customID1;
+  this->protectCustomID1 = protectCustomID1;
+  this->customId2 = customID2;
+  this->protectCustomID2 = protectCustomID2;
+  this->cardTypes = setCardTypes();
+  this->receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF";
+  this->receiptTpsString = setReceiptTpsString();
+  this->receiptTamperProofSeal = calcURLTps(this->receiptTpsString);
+  this->receiptURL = setReceiptURL();
+  this->bp10emuTpsDef = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF");
+  this->bp10emuTpsString = setBp10emuTpsString();
+  this->bp10emuTamperProofSeal = calcURLTps(this->bp10emuTpsString);
+  this->shpfTpsDef = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF");
+  this->shpfTpsString = setShpfTpsString();
+  this->shpfTamperProofSeal = calcURLTps(this->shpfTpsString);
+  return calcURLResponse();
 }
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -756,7 +1003,8 @@ char* getResponseField(char *nvp, const char *Name, char *Value)
       return Value;
     }
   }
-    return "Error";
+  char * error_string = strdup("Error");
+  return error_string;
 }
 
 char* BluePay::process()
@@ -825,6 +1073,7 @@ char* BluePay::process()
       "&AMOUNT_FOOD=" + (this->amountFood) +
       "&AMOUNT_MISC=" + (this->amountMisc) +
       "&SWIPE=" + (this->trackData) +
+      "&TPS_HASH_TYPE=SHA512" +
       "&RESPONSEVERSION=1"
       ;
       // std::cout << postData;
@@ -862,7 +1111,7 @@ char* BluePay::process()
 
   curl = curl_easy_init();
   if (curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, this->URL);
+    curl_easy_setopt(curl, CURLOPT_URL, this->URL.c_str());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postToBp);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0);

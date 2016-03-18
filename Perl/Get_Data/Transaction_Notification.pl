@@ -38,7 +38,7 @@ if (defined $vars->param("trans_id")) {
     my $rebill_status = $vars->param("status");
 
     # Calculate expected bp_stamp
-    my $bp_stamp = BluePay::BluePayPayment_BP10Emu::calc_trans_notify_tps(
+    my $bp_stamp = calc_trans_notify_tps(
         $secretkey +
         $trans_id +
         $trans_status +

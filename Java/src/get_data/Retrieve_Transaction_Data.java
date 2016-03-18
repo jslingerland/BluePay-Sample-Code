@@ -15,8 +15,8 @@ public class Retrieve_Transaction_Data {
 
   public static void main(String[] args) {
  
-    String ACCOUNT_ID = "Merchant's Account ID Here"
-    String SECRET_KEY = "Merchant's Secret Key Here"
+    String ACCOUNT_ID = "Merchant's Account ID Here";
+    String SECRET_KEY = "Merchant's Secret Key Here";
     String MODE = "TEST";
      
     BluePay report = new BluePay(

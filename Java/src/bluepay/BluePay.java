@@ -88,6 +88,30 @@ public class BluePay
   private String QUERY_BY_HIERARCHY = "";
   private String EXCLUDE_ERRORS = "";
   
+  // generating Simple Hosted Payment Form URL fields
+  private String DBA = "";
+  private String RETURN_URL = "";
+  private String DISCOVER_IMAGE = "";
+  private String AMEX_IMAGE = "";
+  private String PROTECT_AMOUNT = "No";
+  private String REB_PROTECT = "Yes";
+  private String PROTECT_CUSTOM_ID1 = "No";
+  private String PROTECT_CUSTOM_ID2 = "No";
+  private String SHPF_FORM_ID = "mobileform01";
+  private String RECEIPT_FORM_ID = "mobileresult01";
+  private String REMOTE_URL = "";
+  private String CARD_TYPES = "";
+  private String RECEIPT_TPS_DEF = "";
+  private String RECEIPT_TPS_STRING = "";
+  private String RECEIPT_TAMPER_PROOF_SEAL = "";
+  private String RECEIPT_URL = "";
+  private String BP10EMU_TPS_DEF = "";
+  private String BP10EMU_TPS_STRING = "";
+  private String BP10EMU_TAMPER_PROOF_SEAL = "";
+  private String SHPF_TPS_DEF = "";
+  private String SHPF_TPS_STRING = "";
+  private String SHPF_TAMPER_PROOF_SEAL = "";
+
   // private String MASTER_ID = "";
   private String RRNO = "";
   private String ID = "";
@@ -543,6 +567,30 @@ public class BluePay
   }
 
   /**
+   * Calculates a hex sha512 based on input.
+   *
+   * @param message String to calculate sha512 of.
+   *
+   */
+  private String sha512(String message) throws java.security.NoSuchAlgorithmException
+  {
+    MessageDigest sha512 = null;
+    try {
+      sha512 = MessageDigest.getInstance("SHA-512");
+    }
+    catch (java.security.NoSuchAlgorithmException ex) {
+      ex.printStackTrace();
+      throw ex;
+    }
+    byte[] dig = sha512.digest((byte[]) message.getBytes());
+    StringBuffer code = new StringBuffer();
+    for (int i = 0; i < dig.length; ++i)
+    {
+      code.append(Integer.toHexString(0x0100 + (dig[i] & 0x00FF)).substring(1));
+    }
+    return code.toString();
+  }
+  /**
    * Calculates a hex MD5 based on input.
    *
    * @param message String to calculate MD5 of.
@@ -567,6 +615,8 @@ public class BluePay
     return code.toString();
   }
 
+
+
   /**
    * Calculates the TAMPER_PROOF_SEAL string to send with each transaction
    *
@@ -578,7 +628,7 @@ public class BluePay
     // System.out.println(RRNO);
     String tps = BP_SECRET_KEY + BP_MERCHANT + TRANSACTION_TYPE + AMOUNT + REBILLING 
                  + REB_FIRST_DATE + REB_EXPR + REB_CYCLES + REB_AMOUNT + RRNO + BP_MODE;
-    return md5(tps);
+    return sha512(tps);
   }
   
   /**
@@ -616,6 +666,248 @@ public class BluePay
   	String tps = secretKey + transID + transStatus + transType + amount + batchID + batchStatus + 
   	totalCount + totalAmount + batchUploadID + rebillID + rebillAmount + rebillStatus;
   	return md5(tps);
+  }
+
+  /**
+  * Calls the methods necessary to generate a SHPF URL
+  * Required arguments for generate_url:
+  * @param merchantName: Merchant name that will be displayed in the payment page.
+  * @param returnURL: Link to be displayed on the transacton results page. Usually the merchant's web site home page.
+  * @param transactionType: SALE/AUTH -- Whether the customer should be charged or only check for enough credit available.
+  * @param acceptDiscover: Yes/No -- Yes for most US merchants. No for most Canadian merchants.
+  * @param acceptAmex: Yes/No -- Has an American Express merchant account been set up?
+  * @param amount: The amount if the merchant is setting the initial amount.
+  * @param protectAmount: Yes/No -- Should the amount be protected from changes by the tamperproof seal?
+  * @param rebilling: Yes/No -- Should a recurring transaction be set up?
+  * @param paymentTemplate: Select one of our payment form template IDs or your own customized template ID. If the customer should not be allowed to change the amount, add a 'D' to the end of the template ID. Example: 'mobileform01D'
+    * mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
+    * default1v5 -- Credit Card Only - Gray Horizontal 
+    * default7v5 -- Credit Card Only - Gray Horizontal Donation
+    * default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
+    * default3v4 -- Credit Card Only - Blue Vertical with card swipe
+    * mobileform02 -- Credit Card & ACH - White Vertical (mobile capable)
+    * default8v5 -- Credit Card & ACH - Gray Horizontal Donation
+    * default8v5R -- Credit Card & ACH - Gray Horizontal Donation with Recurring
+    * mobileform03 -- ACH Only - White Vertical (mobile capable)
+  * @param receiptTemplate: Select one of our receipt form template IDs, your own customized template ID, or "remote_url" if you have one.
+    * mobileresult01 -- Default without signature line - White Responsive (mobile)
+    * defaultres1 -- Default without signature line – Blue
+    * V5results -- Default without signature line – Gray
+    * V5Iresults -- Default without signature line – White
+    * defaultres2 -- Default with signature line – Blue
+    * remote_url - Use a remote URL
+  * @param receiptTempRemoteURL: Your remote URL ** Only required if receipt_template = "remote_url".
+  *
+  * Optional arguments for generate_url:
+  * @param rebProtect: Yes/No -- Should the rebilling fields be protected by the tamperproof seal?
+  * @param rebAmount: Amount that will be charged when a recurring transaction occurs.
+  * @param rebCycles: Number of times that the recurring transaction should occur. Not set if recurring transactions should continue until canceled.
+  * @param rebStartDate: Date (yyyy-mm-dd) or period (x units) until the first recurring transaction should occur. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 2016-04-01 or 1 MONTH)
+  * @param rebFrequency: How often the recurring transaction should occur. Format is 'X UNITS'. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 1 MONTH) 
+  * @param customID1: A merchant defined custom ID value.
+  * @param protectCustomID1: Yes/No -- Should the Custom ID value be protected from change using the tamperproof seal?
+  * @param customID2: A merchant defined custom ID 2 value.
+  * @param protectCustomID2: Yes/No -- Should the Custom ID 2 value be protected from change using the tamperproof seal?
+  *
+  * @return hosted payment form url
+  */
+  public String generateURL(HashMap<String, String> params) throws java.security.NoSuchAlgorithmException{
+    DBA  = params.get("merchantName");
+    RETURN_URL  = params.get("returnURL");
+    TRANSACTION_TYPE  = params.get("transactionType"); 
+    DISCOVER_IMAGE  = params.get("acceptDiscover").toUpperCase().startsWith("Y") ? "discvr.gif" : "spacer.gif";
+    AMEX_IMAGE  = params.get("acceptAmex").toUpperCase().startsWith("Y") ? "amex.gif" : "spacer.gif";
+    AMOUNT  = params.get("amount");
+    PROTECT_AMOUNT  = params.get("protectAmount");
+    REBILLING  = params.get("rebilling").toUpperCase().startsWith("Y") ? "1" : "0";
+    REB_PROTECT  = params.get("rebProtect");
+    REB_AMOUNT  = params.get("rebAmount");
+    REB_CYCLES  = params.get("rebCycles");
+    REB_FIRST_DATE  = params.get("rebStartDate"); 
+    REB_EXPR  = params.get("rebFrequency");
+    CUSTOM_ID1  = params.get("customID1"); 
+    PROTECT_CUSTOM_ID1  = params.get("protectCustomID1");
+    CUSTOM_ID2  = params.get("customID2"); 
+    PROTECT_CUSTOM_ID2  = params.get("protectCustomID2");
+    SHPF_FORM_ID  = params.get("paymentTemplate");
+    RECEIPT_FORM_ID  = params.get("receiptTemplate");
+    REMOTE_URL  = params.get("receiptTempRemoteURL");
+    CARD_TYPES = setCardTypes();
+    RECEIPT_TPS_DEF = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF";
+    RECEIPT_TPS_STRING = setReceiptTpsString();
+    RECEIPT_TAMPER_PROOF_SEAL = calcURLTps(RECEIPT_TPS_STRING);
+    RECEIPT_URL = setReceiptURL();
+    BP10EMU_TPS_DEF = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF");
+    BP10EMU_TPS_STRING = setBp10emuTpsString();
+    BP10EMU_TAMPER_PROOF_SEAL = calcURLTps(BP10EMU_TPS_STRING); 
+    SHPF_TPS_DEF = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF");
+    SHPF_TPS_STRING = setShpfTpsString();
+    SHPF_TAMPER_PROOF_SEAL = calcURLTps(SHPF_TPS_STRING);      
+    return calcURLResponse();
+  }
+
+  /**
+  * Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generateURL.
+  * 
+  * @return string of credit card types
+  */
+  public String setCardTypes()
+  {
+    String creditCards = "vi-mc";
+    creditCards = (DISCOVER_IMAGE == "discvr.gif") ? (creditCards + "-di") : creditCards;
+    creditCards = (AMEX_IMAGE == "amex.gif") ? (creditCards + "-am") : creditCards;
+    return creditCards;   
+  }
+
+  /**
+  * Sets the receipt Tamperproof Seal string. Must be used with GenerateURL.
+  *
+  * @return receipt Tamperproof Seal string
+  */
+  public String setReceiptTpsString()
+  {
+    return BP_SECRET_KEY + BP_MERCHANT + RECEIPT_FORM_ID + RETURN_URL + DBA + AMEX_IMAGE + DISCOVER_IMAGE + RECEIPT_TPS_DEF;
+  }
+
+  /**
+  * Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with GenerateURL.
+  *
+  * @return bp10emu Tamperproof Seal string
+  */
+  public String setBp10emuTpsString()
+  {
+    String bp10emu = BP_SECRET_KEY + BP_MERCHANT + RECEIPT_URL + RECEIPT_URL + RECEIPT_URL + BP_MODE + TRANSACTION_TYPE + BP10EMU_TPS_DEF;
+    return addStringProtectedStatus(bp10emu);
+
+  }
+
+  /**
+  * Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with GenerateURL.
+  *
+  * @return shpf Tamperproof Seal string
+  */
+  public String setShpfTpsString()
+  {
+    String shpf = BP_SECRET_KEY + SHPF_FORM_ID + BP_MERCHANT + DBA + BP10EMU_TAMPER_PROOF_SEAL + AMEX_IMAGE + DISCOVER_IMAGE + BP10EMU_TPS_DEF + SHPF_TPS_DEF; 
+    return addStringProtectedStatus(shpf);
+  }
+
+  /**
+  * Sets the receipt url or uses the remote url provided. Must be used with GenerateURL.
+  *
+  * @return receipt URL string
+  */
+  public String setReceiptURL()
+  {
+    String output ="";
+    if (RECEIPT_FORM_ID.equals("remote_url"))
+        output = REMOTE_URL;
+    else 
+    {
+        output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + RECEIPT_FORM_ID +
+        "&SHPF_ACCOUNT_ID=" + BP_MERCHANT + 
+        "&SHPF_TPS_DEF="    + encodeURL(RECEIPT_TPS_DEF) + 
+        "&SHPF_TPS="        + encodeURL(RECEIPT_TAMPER_PROOF_SEAL) + 
+        "&RETURN_URL="      + encodeURL(RETURN_URL) +
+        "&DBA="             + encodeURL(DBA) + 
+        "&AMEX_IMAGE="      + encodeURL(AMEX_IMAGE) + 
+        "&DISCOVER_IMAGE="  + encodeURL(DISCOVER_IMAGE);
+    }
+    return output;
+  }
+
+  /**
+  * Adds optional protected keys to a string. Must be used with GenerateURL.
+  *
+  * @return additonal string of keys to be used when calculating the Tamperproof Seal
+  */
+  public String addDefProtectedStatus(String input)
+  {
+    if (PROTECT_AMOUNT.equals("Yes")) {input += " AMOUNT";}
+    if (REB_PROTECT.equals("Yes")) {input += " REBILLING REB_CYCLES REB_AMOUNT REB_EXPR REB_FIRST_DATE";}
+    if (PROTECT_CUSTOM_ID1.equals("Yes")) {input += " CUSTOM_ID";}
+    if (PROTECT_CUSTOM_ID2.equals("Yes")) {input += " CUSTOM_ID2";} 
+    return input;
+  }
+
+  /**
+  * Adds optional protected values to a string. Must be used with GenerateURL.
+  *
+  * @return additional string of values to be used when calculating the Tamperproof Seal
+  */
+  public String addStringProtectedStatus(String input)
+  {
+    if (PROTECT_AMOUNT.equals("Yes")) {input += AMOUNT;}
+    if (REB_PROTECT.equals("Yes")) {input += REBILLING + REB_CYCLES + REB_AMOUNT + REB_EXPR + REB_FIRST_DATE;}
+    if (PROTECT_CUSTOM_ID1.equals("Yes")) {input += CUSTOM_ID1;}
+    if (PROTECT_CUSTOM_ID2.equals("Yes")) {input += CUSTOM_ID2;}
+    return input;
+  }
+
+  /**
+  * Encodes a string into a URL. Must be used with GenerateURL.
+  *
+  * @return URL encoded string
+  */
+  public String encodeURL(String input)
+  {
+    StringBuilder encodedString = new StringBuilder();
+    for(int i = 0; i < input.length(); i++)
+    {
+        char c = input.charAt(i);
+        boolean notEncoded = Character.isLetterOrDigit(c);
+        if (notEncoded) 
+          encodedString.append(c);
+        else 
+        {
+          int value = (int) c;
+          String hex = Integer.toHexString(value);
+          encodedString.append("%" + hex.toUpperCase());
+        }
+    }
+    return encodedString.toString();
+  }
+
+  /**
+  * Generates a Tamperproof Seal for a URL. Must be used with GenerateURL.
+  *
+  * @return Tamperproof Seal for a URL.
+  */
+  public String calcURLTps(String input) throws java.security.NoSuchAlgorithmException
+  {
+    return md5(input);
+  }
+
+  /**
+  * Generates the final url for the Simple Hosted Payment Form. Must be used with GenerateURL.
+  *
+  * @return final Simple Hosted Payment Form URL
+  */
+  public String calcURLResponse()
+  {
+  return                  
+    "https://secure.bluepay.com/interfaces/shpf?"                   +
+    "SHPF_FORM_ID="         + encodeURL(SHPF_FORM_ID)               +
+    "&SHPF_ACCOUNT_ID="     + encodeURL(BP_MERCHANT)                +
+    "&SHPF_TPS_DEF="        + encodeURL(SHPF_TPS_DEF)               +
+    "&SHPF_TPS="            + encodeURL(SHPF_TAMPER_PROOF_SEAL)     +
+    "&MODE="                + encodeURL(BP_MODE)                    +
+    "&TRANSACTION_TYPE="    + encodeURL(TRANSACTION_TYPE)           +
+    "&DBA="                 + encodeURL(DBA)                        +
+    "&AMOUNT="              + encodeURL(AMOUNT)                     +
+    "&TAMPER_PROOF_SEAL="   + encodeURL(BP10EMU_TAMPER_PROOF_SEAL)  +
+    "&CUSTOM_ID="           + encodeURL(CUSTOM_ID1)                 +
+    "&CUSTOM_ID2="          + encodeURL(CUSTOM_ID2)                 +
+    "&REBILLING="           + encodeURL(REBILLING)                  +
+    "&REB_CYCLES="          + encodeURL(REB_CYCLES)                 +
+    "&REB_AMOUNT="          + encodeURL(REB_AMOUNT)                 +
+    "&REB_EXPR="            + encodeURL(REB_EXPR)                   +
+    "&REB_FIRST_DATE="      + encodeURL(REB_FIRST_DATE)             +
+    "&AMEX_IMAGE="          + encodeURL(AMEX_IMAGE)                 +
+    "&DISCOVER_IMAGE="      + encodeURL(DISCOVER_IMAGE)             +
+    "&REDIRECT_URL="        + encodeURL(RECEIPT_URL)                +
+    "&TPS_DEF="             + encodeURL(BP10EMU_TPS_DEF)            +
+    "&CARD_TYPES="          + encodeURL(CARD_TYPES);               
   }
 
   /**
@@ -679,6 +971,7 @@ public class BluePay
         nameValuePairs.add(new BasicNameValuePair("REB_CYCLES", REB_CYCLES));
         nameValuePairs.add(new BasicNameValuePair("REB_AMOUNT", REB_AMOUNT));
         nameValuePairs.add(new BasicNameValuePair("SWIPE", SWIPE));
+        nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", "SHA512"));
         if (PAYMENT_TYPE.equals("CREDIT")) {
         	  nameValuePairs.add(new BasicNameValuePair("CC_NUM", CARD_NUM));  
         	  nameValuePairs.add(new BasicNameValuePair("CC_EXPIRES", CARD_EXPIRE));

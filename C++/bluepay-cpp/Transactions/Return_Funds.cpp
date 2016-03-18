@@ -10,7 +10,8 @@
 
 
 #include "Return_Funds.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void returnFunds(){

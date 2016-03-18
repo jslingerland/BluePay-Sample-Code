@@ -4,15 +4,16 @@
 #include <iterator>
 //#include <Windows.h> 
 //#include <wininet.h>
-#pragma comment(lib, "Wininet")
+// #pragma comment(lib, "Wininet")
 
 #pragma once
-
+// #include <iostream>
 #include <stdio.h>
 //#include <tchar.h>
 
+#include "Sha512.h"
 #include "md5.h"
-#include "curl.h"
+#include <curl/curl.h>
 #define ToHex(Y) (Y>='0'&&Y<='9'?Y-'0':Y-'A'+10)
 
 
@@ -20,7 +21,7 @@ class BluePay {
 private:
   // required for every transaction
   std::string accountId;
-  char * URL;
+  std::string URL;
   std::string secretKey;
   std::string mode;
 
@@ -83,6 +84,30 @@ private:
   std::string queryBySettlement;
   std::string queryByHierarchy;
   std::string excludeErrors;
+
+  // Generating Simple Hosted Payment Form URL fields
+  std::string dba;
+  std::string returnURL;
+  std::string discoverImage;
+  std::string amexImage;
+  std::string protectAmount;
+  std::string rebillProtect;
+  std::string protectCustomID1;
+  std::string protectCustomID2;
+  std::string shpfFormID;
+  std::string receiptFormID;
+  std::string remoteURL;
+  std::string cardTypes;
+  std::string receiptTpsDef;
+  std::string receiptTpsString;
+  std::string receiptTamperProofSeal;
+  std::string receiptURL;
+  std::string bp10emuTpsDef;
+  std::string bp10emuTpsString;
+  std::string bp10emuTamperProofSeal;
+  std::string shpfTpsDef;
+  std::string shpfTpsString;
+  std::string shpfTamperProofSeal;
 
   std::string api;
 
@@ -181,6 +206,18 @@ public:
   static std::string calcTransNotifyTps(std::string secretKey, std::string transId, std::string transStatus, std::string transType,
     std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
     std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus);
+
+  std::string setCardTypes();
+  std::string setReceiptTpsString();
+  std::string calcURLTps(std::string);
+  std::string setReceiptURL();
+  std::string encodeURL(std::string);
+  std::string addStringProtectedStatus(std::string);
+  std::string addDefProtectedStatus(std::string);
+  std::string setBp10emuTpsString();
+  std::string setShpfTpsString();
+  std::string calcURLResponse(); 
+  std::string generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate = "mobileform01", std::string receiptTemplate = "mobileresult01", std::string receiptTempRemoteURL = "", std::string rebilling = "No", std::string rebProtect = "Yes", std::string rebAmount = "", std::string rebCycles = "", std::string rebStartDate = "", std::string rebFrequency = "", std::string customID1 = "", std::string protectCustomID1 = "No", std::string customID2 = "", std::string protectCustomID2 = "No");
 
   void addHeader(const std::string& s);
   size_t rcvHeaders(void *buffer, size_t size, size_t nmemb, void *userp);

@@ -16,9 +16,9 @@ public class Charge_Customer_CC {
   
   public static void main(String[] args) {
     
-    String ACCOUNT_ID = "Merchant's Account ID Here"
-    String SECRET_KEY = "Merchant's Secret Key Here"
-    String MODE = "TEST"; 
+    String ACCOUNT_ID = "Merchant's Account ID Here";
+    String SECRET_KEY = "Merchant's Secret Key Here";
+    String MODE = "TEST";
 
     BluePay payment = new BluePay(
         ACCOUNT_ID, 

@@ -4,7 +4,8 @@
 // This code sample creates a recurring payment charging $15.00 per month for one year.
 
 #include "Create_Recurring_Payment_CC.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void createRecurringPaymentCC(){

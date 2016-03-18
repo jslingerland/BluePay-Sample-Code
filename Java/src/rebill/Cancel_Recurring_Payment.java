@@ -14,8 +14,8 @@ import java.util.HashMap;
 public class Cancel_Recurring_Payment {
   public static void main(String[] args) {
 
-    String ACCOUNT_ID = "Merchant's Account ID Here"
-    String SECRET_KEY = "Merchant's Secret Key Here"
+    String ACCOUNT_ID = "Merchant's Account ID Here";
+    String SECRET_KEY = "Merchant's Secret Key Here";
     String MODE = "TEST";
 
     BluePay rebill = new BluePay(

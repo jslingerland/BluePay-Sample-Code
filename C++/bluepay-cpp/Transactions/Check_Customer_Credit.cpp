@@ -7,7 +7,8 @@
 // an approval and even dollar amounts will return a decline.
 
 #include "Check_Customer_Credit.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void checkCustomerCredit(){

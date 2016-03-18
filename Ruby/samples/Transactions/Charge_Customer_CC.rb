@@ -9,8 +9,11 @@
 
 require_relative "../../lib/bluepay.rb"
 
-ACCOUNT_ID = "Merchant's Account ID Here"
-SECRET_KEY = "Merchant's Secret Key Here"
+ACCOUNT_ID = "999000000002"
+SECRET_KEY = "8MQ4JNQEX/TEXGKPHG2JS46Q.QJWBDYH"
+
+# ACCOUNT_ID = "100298087412"
+# SECRET_KEY = "SGN1P1R1TZ4GT/IM9IDNAI6XXDISTSJC"
 MODE = "TEST"  
 
 payment = BluePay.new(

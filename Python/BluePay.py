@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import urllib
 from urllib2 import Request, urlopen, URLError, HTTPError
 import urlparse
@@ -70,6 +71,19 @@ class BluePay:
     subaccounts_searched = ''
     do_not_escape = ''
     excludeErrors = ''
+
+    # Generating Simple Hosted Payment Form URL fields
+    dba = ''
+    return_url = ''
+    accept_discover = ''
+    accept_amex = ''
+    protect_amount = ''
+    reb_protect = ''
+    protect_custom_id = ''
+    protect_custom_id2 = ''
+    shpf_form_id = ''
+    receipt_form_id = ''
+    remote_url = ''
     
     # Response fields
     reb_status = ''
@@ -302,7 +316,7 @@ class BluePay:
         tps_string = (self.secret_key + self.account_id + self.trans_type + self.amount +
                       self.do_rebill + self.reb_first_date + self.reb_expr + self.reb_cycles + 
                       self.reb_amount + self.rrno + self.mode)
-        m = hashlib.md5()
+        m = hashlib.sha512()
         m.update(tps_string)
         return m.hexdigest()
 
@@ -324,6 +338,228 @@ class BluePay:
         m = hashlib.md5()
         m.update(tps_string)
         return m.hexdigest()
+
+    # Required arguments for generate_url:
+    # merchant_name: Merchant name that will be displayed in the payment page.
+    # return_url: Link to be displayed on the transacton results page. Usually the merchant's web site home page.
+    # transaction_type: SALE/AUTH -- Whether the customer should be charged or only check for enough credit available.
+    # accept_discover: Yes/No -- Yes for most US merchants. No for most Canadian merchants.
+    # accept_amex: Yes/No -- Has an American Express merchant account been set up?
+    # amount: The amount if the merchant is setting the initial amount.
+    # protect_amount: Yes/No -- Should the amount be protected from changes by the tamperproof seal?
+    # rebilling: Yes/No -- Should a recurring transaction be set up?
+    # paymentTemplate: Select one of our payment form template IDs or your own customized template ID. If the customer should not be allowed to change the amount, add a 'D' to the end of the template ID. Example: 'mobileform01D'
+        # mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
+        # default1v5 -- Credit Card Only - Gray Horizontal 
+        # default7v5 -- Credit Card Only - Gray Horizontal Donation
+        # default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
+        # default3v4 -- Credit Card Only - Blue Vertical with card swipe
+        # mobileform02 -- Credit Card & ACH - White Vertical (mobile capable)
+        # default8v5 -- Credit Card & ACH - Gray Horizontal Donation
+        # default8v5R -- Credit Card & ACH - Gray Horizontal Donation with Recurring
+        # mobileform03 -- ACH Only - White Vertical (mobile capable)
+    # receiptTemplate: Select one of our receipt form template IDs, your own customized template ID, or "remote_url" if you have one.
+        # mobileresult01 -- Default without signature line - White Responsive (mobile)
+        # defaultres1 -- Default without signature line – Blue
+        # V5results -- Default without signature line – Gray
+        # V5Iresults -- Default without signature line – White
+        # defaultres2 -- Default with signature line – Blue
+        # remote_url - Use a remote URL
+    # receipt_temp_remote_url: Your remote URL ** Only required if receipt_template = "remote_url".
+
+    # Optional arguments for generate_url:
+    # reb_protect: Yes/No -- Should the rebilling fields be protected by the tamperproof seal?
+    # reb_amount: Amount that will be charged when a recurring transaction occurs.
+    # reb_cycles: Number of times that the recurring transaction should occur. Not set if recurring transactions should continue until canceled.
+    # reb_start_date: Date (yyyy-mm-dd) or period (x units) until the first recurring transaction should occur. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 2016-04-01 or 1 MONTH)
+    # reb_frequency: How often the recurring transaction should occur. Format is 'X UNITS'. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 1 MONTH) 
+    # custom_id: A merchant defined custom ID value.
+    # protect_custom_id: Yes/No -- Should the Custom ID value be protected from change using the tamperproof seal?
+    # custom_id2: A merchant defined custom ID 2 value.
+    # protect_custom_id2: Yes/No -- Should the Custom ID 2 value be protected from change using the tamperproof seal?
+    def generate_url(self, **params):
+        self.dba = params['merchant_name'] 
+        self.return_url = params['return_url']  
+        self.trans_type = params['transaction_type']  
+        self.accept_discover = 'discvr.gif' if re.match(r'(^[Yy])', params['accept_discover']) else 'spacer.gif'
+        self.accept_amex = 'amex.gif' if re.match(r'(^[Yy])', params['accept_amex']) else 'spacer.gif'
+        if 'amount' in params:
+            self.amount = params['amount']
+        if 'protect_amount' in params:
+            self.protect_amount = params['protect_amount']
+        else:
+            self.protect_amount ="No" 
+        self.do_rebill = '1' if re.match(r'(^[Yy])', params['rebilling']) else '0'
+        if 'reb_protect' in params:
+            self.reb_protect = params['reb_protect']
+        else:
+            self.reb_protect = 'Yes' 
+        if 'reb_protect' in params:
+            self.reb_amount = params['reb_amount']
+        if 'reb_cycles' in params:
+            self.reb_cycles = params['reb_cycles']
+        if 'reb_start_date' in params:
+            self.reb_first_date = params['reb_start_date']
+        if 'reb_frequency' in params:
+            self.reb_expr = params['reb_frequency']
+        if 'custom_id' in params:
+            self.custom_id1 = params['custom_id']
+        if 'protect_custom_id' in params:
+            self.protect_custom_id = params['protect_custom_id']
+        else:
+            self.protect_custom_id = "No"
+        if 'custom_id2' in params:
+            self.custom_id2 = params['custom_id2']
+        if 'protect_custom_id2' in params:
+            self.protect_custom_id2 = params['protect_custom_id2']
+        else:
+            self.protect_custom_id2 = "No" 
+        if 'payment_template' in params:
+            self.shpf_form_id = params['payment_template']
+        else:
+            self.shpf_form_id = "mobileform01"
+        if 'receipt_template' in params:
+            self.receipt_form_id = params['receipt_template']
+        else:
+            self.receipt_form_id = "mobileresult01"
+        if 'receipt_temp_remote_url' in params:
+            self.remote_url = params['receipt_temp_remote_url'] 
+        self.card_types = self.set_card_types()
+        self.receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF'
+        self.receipt_tps_string = self.set_receipt_tps_string()
+        self.receipt_tamper_proof_seal = self.calc_url_tps(self.receipt_tps_string)
+        self.receipt_url = self.set_receipt_url()
+        self.bp10emu_tps_def = self.add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF')
+        self.bp10emu_tps_string = self.set_bp10emu_tps_string()
+        self.bp10emu_tamper_proof_seal = self.calc_url_tps(self.bp10emu_tps_string)
+        self.shpf_tps_def = self.add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF')
+        self.shpf_tps_string = self.set_shpf_tps_string()
+        self.shpf_tamper_proof_seal = self.calc_url_tps(self.shpf_tps_string)
+        return self.calc_url_response()
+
+    # Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generate_url.
+    def set_card_types(self):
+        credit_cards = 'vi-mc'
+        if self.accept_discover == 'discvr.gif':
+            credit_cards += '-di'
+        if self.accept_amex == 'amex.gif':
+            credit_cards += '-am'
+        return credit_cards
+
+    # Sets the receipt Tamperproof Seal string. Must be used with generate_url.
+    def set_receipt_tps_string(self):
+        return ''.join(self.secret_key +
+            self.account_id +
+            self.receipt_form_id +
+            self.return_url +
+            self.dba +
+            self.accept_amex +
+            self.accept_discover +
+            self.receipt_tps_def)
+
+    # Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with generate_url.
+    def set_bp10emu_tps_string(self):
+        bp10emu = ''.join(self.secret_key +
+            self.account_id + 
+            self.receipt_url + 
+            self.receipt_url +
+            self.receipt_url +
+            self.mode +
+            self.trans_type +
+            self.bp10emu_tps_def)
+        return self.add_string_protected_status(bp10emu)
+
+    # Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with generate_url.
+    def set_shpf_tps_string(self):
+        shpf = ''.join(self.secret_key +
+            self.shpf_form_id +
+            self.account_id + 
+            self.dba + 
+            self.bp10emu_tamper_proof_seal +
+            self.accept_amex +
+            self.accept_discover +
+            self.bp10emu_tps_def +
+            self.shpf_tps_def)
+        return self.add_string_protected_status(shpf)
+
+    # Sets the receipt url or uses the remote url provided. Must be used with generate_url.
+    def set_receipt_url(self):
+        if self.receipt_form_id == 'remote_url':
+            return self.remote_url
+        else:
+            return ''.join('https://secure.bluepay.com/interfaces/shpf?' + 
+            'SHPF_FORM_ID=' + self.receipt_form_id + 
+            '&SHPF_ACCOUNT_ID=' + self.account_id + 
+            '&SHPF_TPS_DEF=' + self.url_encode(self.receipt_tps_def) + 
+            '&SHPF_TPS=' + self.url_encode(self.receipt_tamper_proof_seal) + 
+            '&RETURN_URL=' + self.url_encode(self.return_url) + 
+            '&DBA=' + self.url_encode(self.dba) + 
+            '&AMEX_IMAGE=' + self.url_encode(self.accept_amex) + 
+            '&DISCOVER_IMAGE=' + self.url_encode(self.accept_discover))
+
+    # Adds optional protected keys to a string. Must be used with generate_url.
+    def add_def_protected_status(self, string):
+        if self.protect_amount == 'Yes':
+            string +=' AMOUNT'
+        if self.reb_protect == 'Yes':
+            string += ' REBILLING REB_CYCLES REB_AMOUNT REB_EXPR REB_FIRST_DATE'
+        if self.protect_custom_id == 'Yes':
+            string += ' CUSTOM_ID'
+        if self.protect_custom_id2 == 'Yes':
+            string += ' CUSTOM_ID2'
+        return string 
+
+    # Adds optional protected values to a string. Must be used with generate_url.
+    def add_string_protected_status(self, string):
+        if self.protect_amount == 'Yes':
+            string += self.amount
+        if self.reb_protect == 'Yes':
+            string += self.do_rebill + self.reb_cycles + self.reb_amount + self.reb_expr + self.reb_first_date
+        if self.protect_custom_id == 'Yes':
+            string += self.custom_id1
+        if self.protect_custom_id2 == 'Yes':
+            string += self.custom_id2
+        return string
+
+    # Encodes a string into a URL. Must be used with generate_url.
+    def url_encode(self, string):
+        encoded_string = ''
+        for char in string:
+            if re.match(r'[^A-Za-z0-9]', char):
+                char = "%%%02X" % ord(char)
+            encoded_string += char
+        return encoded_string
+    
+    # Generates a Tamperproof Seal for a url. Must be used with generate_url.
+    def calc_url_tps(self, tps_type):
+        m = hashlib.md5()
+        m.update(tps_type)
+        return m.hexdigest()
+
+    # Generates the final url for the Simple Hosted Payment Form. Must be used with generate_url.
+    def calc_url_response(self):
+        return ''.join('https://secure.bluepay.com/interfaces/shpf?' +
+            'SHPF_FORM_ID='       + self.url_encode(self.shpf_form_id) +
+            '&SHPF_ACCOUNT_ID='   + self.url_encode(self.account_id) +
+            '&SHPF_TPS_DEF='      + self.url_encode(self.shpf_tps_def) +
+            '&SHPF_TPS='          + self.url_encode(self.shpf_tamper_proof_seal) +
+            '&MODE='              + self.url_encode(self.mode) +
+            '&TRANSACTION_TYPE='  + self.url_encode(self.trans_type) +
+            '&DBA='               + self.url_encode(self.dba) +
+            '&AMOUNT='            + self.url_encode(self.amount) +
+            '&TAMPER_PROOF_SEAL=' + self.url_encode(self.bp10emu_tamper_proof_seal) +
+            '&CUSTOM_ID='         + self.url_encode(self.custom_id1) +
+            '&CUSTOM_ID2='        + self.url_encode(self.custom_id2) +
+            '&REBILLING='         + self.url_encode(self.do_rebill) +
+            '&REB_CYCLES='        + self.url_encode(self.reb_cycles) +
+            '&REB_AMOUNT='        + self.url_encode(self.reb_amount) +
+            '&REB_EXPR='          + self.url_encode(self.reb_expr) +
+            '&REB_FIRST_DATE='    + self.url_encode(self.reb_first_date) +
+            '&AMEX_IMAGE='        + self.url_encode(self.accept_amex) +
+            '&DISCOVER_IMAGE='    + self.url_encode(self.accept_discover) +
+            '&REDIRECT_URL='      + self.url_encode(self.receipt_url) +
+            '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def)+
+            '&CARD_TYPES='        + self.url_encode(self.card_types))
 
     ### PROCESSES THE API REQUEST ####
     def process(self, card=None, customer=None, order=None):
@@ -391,7 +627,8 @@ class BluePay:
                 'REB_EXPR': self.reb_expr,
                 'REB_CYCLES': self.reb_cycles,
                 'REB_AMOUNT': self.reb_amount,
-                'SWIPE': self.track_data
+                'SWIPE': self.track_data,
+                'TPS_HASH_TYPE': 'SHA512'
             })
             try:
                 fields.update({

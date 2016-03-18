@@ -7,7 +7,8 @@
 // If using TEST mode, only TEST transactions will be returned.
 
 #include "Single_Transaction_Query.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void singleTransactionQuery(){

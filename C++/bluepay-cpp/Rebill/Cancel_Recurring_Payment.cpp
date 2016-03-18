@@ -8,7 +8,8 @@
 // rebilling cycle.
  
 #include "Cancel_Recurring_Payment.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void cancelRecurringPayment(){

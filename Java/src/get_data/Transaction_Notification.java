@@ -13,14 +13,15 @@ import bluepay.*;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import java.security.NoSuchAlgorithmException;
 
 public class Transaction_Notification extends HttpServlet {
   
   protected void doPost(HttpServletRequest request, HttpServletResponse response) 
   throws ServletException, IOException {
 
-    String ACCOUNT_ID = "Merchant's Account ID Here"
-    String SECRET_KEY = "Merchant's Secret Key Here"
+    String ACCOUNT_ID = "Merchant's Account ID Here";
+    String SECRET_KEY = "Merchant's Secret Key Here";
     String MODE = "TEST";
 
     BluePay tps = new BluePay(
@@ -43,7 +44,9 @@ public class Transaction_Notification extends HttpServlet {
     String REBILL_STATUS = request.getParameter("status");
 
     // calculate expected bp_stamp
-    String bpStamp = tps.calcTransNotifyTPS(
+    String bpStamp;
+    try { 
+      bpStamp = tps.calcTransNotifyTPS(
         SECRET_KEY,
         TRANS_ID,
         TRANS_STATUS,
@@ -71,5 +74,8 @@ public class Transaction_Notification extends HttpServlet {
     } else {
         System.out.println("ERROR IN RECEIVING DATA FROM BLUEPAY");
     }
+  } catch (NoSuchAlgorithmException e) { 
+      e.printStackTrace(); 
+  }
   }
 }

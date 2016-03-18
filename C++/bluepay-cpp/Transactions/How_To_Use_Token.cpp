@@ -6,7 +6,8 @@
 // an approval and even dollar amounts will return a decline.
 
 #include "How_To_Use_Token.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void howToUseToken(){

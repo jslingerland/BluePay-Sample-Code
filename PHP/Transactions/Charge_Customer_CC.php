@@ -10,9 +10,13 @@
 */
 
 include('../BluePay.php');
- 
-$accountID = "Merchant's Account ID Here";
-$secretKey = "Merchant's Secret Key Here";
+
+$accountID = "100298087412";
+$secretKey = "SGN1P1R1TZ4GT/IM9IDNAI6XXDISTSJC";
+// $accountID = "999000000002";
+// $secretKey = "8MQ4JNQEX/TEXGKPHG2JS46Q.QJWBDYH"; 
+// $accountID = "Merchant's Account ID Here";
+// $secretKey = "Merchant's Secret Key Here";
 $mode = "TEST";
  
 $payment = new BluePay(
@@ -36,7 +40,7 @@ $payment->setCustomerInformation(array(
  
 $payment->setCCInformation(array(
     'cardNumber' => '4111111111111111', // Card Number: 4111111111111111
-    'cardExpire' => '1215', // Card Expire: 12/15
+    'cardExpire' => '1217', // Card Expire: 12/15
     'cvv2' => '123' // Card CVV2: 123
 ));
  

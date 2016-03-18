@@ -10,7 +10,7 @@ class BluePay
 
   # Sets TAMPER_PROOF_SEAL in @PARAM_HASH
   def calc_tps
-    @PARAM_HASH["TAMPER_PROOF_SEAL"] = Digest::MD5.hexdigest(
+    @PARAM_HASH["TAMPER_PROOF_SEAL"] = Digest::SHA512.hexdigest(
         @SECRET_KEY + 
         @ACCOUNT_ID + 
         (@PARAM_HASH["TRANSACTION_TYPE"] || '') + 
@@ -99,7 +99,7 @@ class BluePay
     when "bp10emu"
       calc_tps
       path = "/interfaces/bp10emu"
-      query = "MERCHANT=#{@ACCOUNT_ID}&" + uri_query(@PARAM_HASH)
+      query = "MERCHANT=#{@ACCOUNT_ID}&" + uri_query(@PARAM_HASH) + "&TPS_HASH_TYPE=SHA512"
       # puts "****"; puts uri_query(@PARAM_HASH).inspect
     when "bp20rebadmin"
       calc_rebill_tps

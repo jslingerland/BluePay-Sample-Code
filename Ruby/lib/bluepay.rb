@@ -1,6 +1,7 @@
 require "net/http"
 require "net/https"
 require "uri"
+require "digest/sha2"
 require "digest/md5"
 
 # Files
@@ -259,5 +260,202 @@ class BluePay
   # Queries by a specific Last Name. To be used with get_single_trans_query
   def query_by_name2(name2) 
     @PARAM_HASH["name2"] = name2
+  end
+
+  # Required arguments for generate_url:
+  # merchant_name: Merchant name that will be displayed in the payment page.
+  # return_url: Link to be displayed on the transacton results page. Usually the merchant's web site home page.
+  # transaction_type: SALE/AUTH -- Whether the customer should be charged or only check for enough credit available.
+  # accept_discover: Yes/No -- Yes for most US merchants. No for most Canadian merchants.
+  # accept_amex: Yes/No -- Has an American Express merchant account been set up?
+  # amount: The amount if the merchant is setting the initial amount.
+  # protect_amount: Yes/No -- Should the amount be protected from changes by the tamperproof seal?
+  # rebilling: Yes/No -- Should a recurring transaction be set up?
+  # paymentTemplate: Select one of our payment form template IDs or your own customized template ID. If the customer should not be allowed to change the amount, add a 'D' to the end of the template ID. Example: 'mobileform01D'
+      # mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
+      # default1v5 -- Credit Card Only - Gray Horizontal 
+      # default7v5 -- Credit Card Only - Gray Horizontal Donation
+      # default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
+      # default3v4 -- Credit Card Only - Blue Vertical with card swipe
+      # mobileform02 -- Credit Card & ACH - White Vertical (mobile capable)
+      # default8v5 -- Credit Card & ACH - Gray Horizontal Donation
+      # default8v5R -- Credit Card & ACH - Gray Horizontal Donation with Recurring
+      # mobileform03 -- ACH Only - White Vertical (mobile capable)
+  # receiptTemplate: Select one of our receipt form template IDs, your own customized template ID, or "remote_url" if you have one.
+      # mobileresult01 -- Default without signature line - White Responsive (mobile)
+      # defaultres1 -- Default without signature line – Blue
+      # V5results -- Default without signature line – Gray
+      # V5Iresults -- Default without signature line – White
+      # defaultres2 -- Default with signature line – Blue
+      # remote_url - Use a remote URL
+  # receipt_temp_remote_url: Your remote URL ** Only required if receipt_template = "remote_url".
+
+  # Optional arguments for generate_url:
+  # reb_protect: Yes/No -- Should the rebilling fields be protected by the tamperproof seal?
+  # reb_amount: Amount that will be charged when a recurring transaction occurs.
+  # reb_cycles: Number of times that the recurring transaction should occur. Not set if recurring transactions should continue until canceled.
+  # reb_start_date: Date (yyyy-mm-dd) or period (x units) until the first recurring transaction should occur. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 2016-04-01 or 1 MONTH)
+  # reb_frequency: How often the recurring transaction should occur. Format is 'X UNITS'. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 1 MONTH) 
+  # custom_id: A merchant defined custom ID value.
+  # protect_custom_id: Yes/No -- Should the Custom ID value be protected from change using the tamperproof seal?
+  # custom_id2: A merchant defined custom ID 2 value.
+  # protect_custom_id2: Yes/No -- Should the Custom ID 2 value be protected from change using the tamperproof seal?
+   
+  def generate_url(params={})
+    @PARAM_HASH['DBA'] = params[:merchant_name] 
+    @PARAM_HASH['RETURN_URL'] = params[:return_url]  
+    @PARAM_HASH['TRANSACTION_TYPE'] = params[:transaction_type]  
+    @PARAM_HASH['DISCOVER_IMAGE'] = params[:accept_discover].start_with?("y","Y") ? "discvr.gif" : "spacer.gif"
+    @PARAM_HASH['AMEX_IMAGE'] = params[:accept_amex].start_with?("y","Y") ? "amex.gif" : "spacer.gif"
+    @PARAM_HASH['AMOUNT'] = params[:amount] || '' 
+    @PARAM_HASH['PROTECT_AMOUNT'] = params[:protect_amount] || "No" 
+    @PARAM_HASH['REBILLING'] = params[:rebilling].start_with?("y","Y") ? "1" : "0"
+    @PARAM_HASH['REB_PROTECT'] = params[:reb_protect] || 'Yes' 
+    @PARAM_HASH['REB_AMOUNT'] = params[:reb_amount] || '' 
+    @PARAM_HASH['REB_CYCLES'] = params[:reb_cycles] || '' 
+    @PARAM_HASH['REB_FIRST_DATE'] = params[:reb_start_date] || ''  
+    @PARAM_HASH['REB_EXPR'] = params[:reb_frequency] || '' 
+    @PARAM_HASH['CUSTOM_ID'] = params[:custom_id] || ''  
+    @PARAM_HASH['PROTECT_CUSTOM_ID'] = params[:protect_custom_id] || "No"
+    @PARAM_HASH['CUSTOM_ID2'] = params[:custom_id2] || ''  
+    @PARAM_HASH['PROTECT_CUSTOM_ID2'] = params[:protect_custom_id2] || "No" 
+    @PARAM_HASH['SHPF_FORM_ID'] = params[:payment_template] || "mobileform01"
+    @PARAM_HASH['RECEIPT_FORM_ID'] = params[:receipt_template] || "mobileresult01"
+    @PARAM_HASH['REMOTE_URL'] = params[:receipt_temp_remote_url] || '' 
+    @card_types = set_card_types
+    @receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF'
+    @receipt_tps_string = set_receipt_tps_string
+    @receipt_tamper_proof_seal = calc_url_tps(@receipt_tps_string)
+    @receipt_url = set_receipt_url
+    @bp10emu_tps_def = add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF')
+    @bp10emu_tps_string = set_bp10emu_tps_string
+    @bp10emu_tamper_proof_seal = calc_url_tps(@bp10emu_tps_string)
+    @shpf_tps_def = add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF')
+    @shpf_tps_string = set_shpf_tps_string
+    @shpf_tamper_proof_seal = calc_url_tps(@shpf_tps_string)
+    return calc_url_response
+  end
+
+  # Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generate_url.
+  def set_card_types
+    credit_cards = 'vi-mc'
+    credit_cards.concat('-di') if @PARAM_HASH['DISCOVER_IMAGE'] == 'discvr.gif'
+    credit_cards.concat('-am') if @PARAM_HASH['AMEX_IMAGE'] == 'amex.gif'
+    return credit_cards 
+  end
+
+  # Sets the receipt Tamperproof Seal string. Must be used with generate_url.
+  def set_receipt_tps_string
+    [@SECRET_KEY, 
+    @ACCOUNT_ID, 
+    @PARAM_HASH['RECEIPT_FORM_ID'], 
+    @PARAM_HASH['RETURN_URL'], 
+    @PARAM_HASH['DBA'], 
+    @PARAM_HASH['AMEX_IMAGE'], 
+    @PARAM_HASH['DISCOVER_IMAGE'], 
+    @receipt_tps_def].join('')
+  end
+
+  # Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with generate_url.
+  def set_bp10emu_tps_string
+    bp10emu = [
+    @SECRET_KEY,
+    @ACCOUNT_ID,
+    @receipt_url,
+    @receipt_url,
+    @receipt_url,
+    @PARAM_HASH['MODE'],
+    @PARAM_HASH['TRANSACTION_TYPE'],
+    @bp10emu_tps_def].join('')
+    return add_string_protected_status(bp10emu)
+  end
+
+  # Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with generate_url.
+  def set_shpf_tps_string 
+    shpf = ([@SECRET_KEY,
+    @PARAM_HASH['SHPF_FORM_ID'], 
+    @ACCOUNT_ID, 
+    @PARAM_HASH['DBA'], 
+    @bp10emu_tamper_proof_seal, 
+    @PARAM_HASH['AMEX_IMAGE'], 
+    @PARAM_HASH['DISCOVER_IMAGE'], 
+    @bp10emu_tps_def, 
+    @shpf_tps_def].join(''))
+    return add_string_protected_status(shpf)
+  end
+
+  # Sets the receipt url or uses the remote url provided. Must be used with generate_url.
+  def set_receipt_url
+    if @PARAM_HASH['RECEIPT_FORM_ID']== 'remote_url'
+      return @PARAM_HASH['REMOTE_URL']
+    else
+      return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' + @PARAM_HASH['RECEIPT_FORM_ID'] + 
+      '&SHPF_ACCOUNT_ID=' + ACCOUNT_ID + 
+      '&SHPF_TPS_DEF='    + url_encode(@receipt_tps_def) + 
+      '&SHPF_TPS='        + url_encode(@receipt_tamper_proof_seal) + 
+      '&RETURN_URL='      + url_encode(@PARAM_HASH['RETURN_URL']) + 
+      '&DBA='             + url_encode(@PARAM_HASH['DBA']) + 
+      '&AMEX_IMAGE='      + url_encode(@PARAM_HASH['AMEX_IMAGE']) + 
+      '&DISCOVER_IMAGE='  + url_encode(@PARAM_HASH['DISCOVER_IMAGE'])
+    end
+  end
+
+  # Adds optional protected keys to a string. Must be used with generate_url.
+  def add_def_protected_status(string)
+    string.concat(' AMOUNT') if @PARAM_HASH['PROTECT_AMOUNT'] == 'Yes'
+    string.concat(' REBILLING REB_CYCLES REB_AMOUNT REB_EXPR REB_FIRST_DATE') if @PARAM_HASH['REB_PROTECT'] == 'Yes'
+    string.concat(' CUSTOM_ID') if @PARAM_HASH['PROTECT_CUSTOM_ID'] == 'Yes'
+    string.concat(' CUSTOM_ID2') if @PARAM_HASH['PROTECT_CUSTOM_ID2'] == 'Yes'
+    return string 
+  end
+  
+  # Adds optional protected values to a string. Must be used with generate_url.
+  def add_string_protected_status(string)
+    string.concat(@PARAM_HASH['AMOUNT']) if @PARAM_HASH['PROTECT_AMOUNT'] == 'Yes'
+    string.concat([@PARAM_HASH['REBILLING'], @PARAM_HASH['REB_CYCLES'], @PARAM_HASH['REB_AMOUNT'], @PARAM_HASH['REB_EXPR'], @PARAM_HASH['REB_FIRST_DATE']].join('')) if @PARAM_HASH['REB_PROTECT'] == 'Yes'
+    string.concat(@PARAM_HASH['CUSTOM_ID']) if @PARAM_HASH['PROTECT_CUSTOM_ID'] == 'Yes'
+    string.concat(@PARAM_HASH['CUSTOM_ID2']) if @PARAM_HASH['PROTECT_CUSTOM_ID2'] == 'Yes'
+    return string 
+  end
+
+  # Encodes a string into a URL. Must be used with generate_url.
+  def url_encode(string) 
+    encoded_string = ''
+    string.each_char do |char|
+      char = ("%%%02X" % char.ord) if char.match(/[A-Za-z0-9]/) == nil
+      encoded_string << char
+    end
+   return encoded_string
+  end
+
+  # Generates a Tamperproof Seal for a url. Must be used with generate_url.
+  def calc_url_tps(tps_type)
+    Digest::MD5.hexdigest(tps_type)
+  end
+
+  # Generates the final url for the Simple Hosted Payment Form. Must be used with generate_url.
+  def calc_url_response
+    'https://secure.bluepay.com/interfaces/shpf?'                                     +
+    'SHPF_FORM_ID='       .concat(url_encode    (@PARAM_HASH['SHPF_FORM_ID'])       ) +
+    '&SHPF_ACCOUNT_ID='   .concat(url_encode    (@ACCOUNT_ID)                       ) +
+    '&SHPF_TPS_DEF='      .concat(url_encode    (@shpf_tps_def)                     ) +
+    '&SHPF_TPS='          .concat(url_encode    (@shpf_tamper_proof_seal)           ) +
+    '&MODE='              .concat(url_encode    (@PARAM_HASH['MODE'])               ) +
+    '&TRANSACTION_TYPE='  .concat(url_encode    (@PARAM_HASH['TRANSACTION_TYPE'])   ) +
+    '&DBA='               .concat(url_encode    (@PARAM_HASH['DBA'])                ) +
+    '&AMOUNT='            .concat(url_encode    (@PARAM_HASH['AMOUNT'])             ) +
+    '&TAMPER_PROOF_SEAL=' .concat(url_encode    (@bp10emu_tamper_proof_seal)        ) +
+    '&CUSTOM_ID='         .concat(url_encode    (@PARAM_HASH['CUSTOM_ID'])          ) +
+    '&CUSTOM_ID2='        .concat(url_encode    (@PARAM_HASH['CUSTOM_ID2'])         ) +
+    '&REBILLING='         .concat(url_encode    (@PARAM_HASH['REBILLING'])          ) +
+    '&REB_CYCLES='        .concat(url_encode    (@PARAM_HASH['REB_CYCLES'])         ) +
+    '&REB_AMOUNT='        .concat(url_encode    (@PARAM_HASH['REB_AMOUNT'])         ) +
+    '&REB_EXPR='          .concat(url_encode    (@PARAM_HASH['REB_EXPR'])           ) +
+    '&REB_FIRST_DATE='    .concat(url_encode    (@PARAM_HASH['REB_FIRST_DATE'])     ) +
+    '&AMEX_IMAGE='        .concat(url_encode    (@PARAM_HASH['AMEX_IMAGE'])         ) +
+    '&DISCOVER_IMAGE='    .concat(url_encode    (@PARAM_HASH['DISCOVER_IMAGE'])     ) +
+    '&REDIRECT_URL='      .concat(url_encode    (@receipt_url)                      ) +
+    '&TPS_DEF='           .concat(url_encode    (@bp10emu_tps_def)                  ) +
+    '&CARD_TYPES='        .concat(url_encode    (@card_types)                       )
   end
 end

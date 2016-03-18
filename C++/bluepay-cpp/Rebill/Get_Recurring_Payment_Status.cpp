@@ -9,7 +9,8 @@
 // rebilling cycle.
 
 #include "Get_Recurring_Payment_Status.h"
-#include "BluePay.h"
+#include "../bluepay-cpp/BluePay.h"
+#include <iostream>
 using namespace std;
 
 void getRecurringPaymentStatus(){

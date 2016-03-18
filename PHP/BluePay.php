@@ -52,7 +52,7 @@ class BluePay {
     private $routingNum;
   
     // Transaction data
-	private $amount;
+    private $amount;
     private $paymentType;
     private $transType;
     private $masterID;
@@ -60,7 +60,7 @@ class BluePay {
     // Rebilling fields
     private $doRebill;
     private $rebillFirstDate;
-	private $rebillNextDate;
+    private $rebillNextDate;
     private $rebillExpr;
     private $rebillCycles;
     private $rebillAmount;
@@ -76,6 +76,19 @@ class BluePay {
     private $doNotEscape;
     private $excludeErrors;
  
+    // Generating Simple Hosted Payment Form URL fields
+    private $dba;
+    private $returnURL;
+    private $discoverImage;
+    private $amexImage;
+    private $protectAmount;
+    private $rebillProtect;
+    private $protectCustomID1;
+    private $protectCustomID2;
+    private $shpfFormID;
+    private $receiptFormID;
+    private $remoteURL;
+
     // Response fields
     private $transID;
     private $maskedAccount;
@@ -96,10 +109,10 @@ class BluePay {
 
     // Performs a SALE
     public function sale($amount, $masterID=null) {
-            $this->api = 'bp10emu';
-            $this->transType = "SALE";
-            $this->amount = $amount;
-            $this->masterID = $masterID;
+        $this->api = 'bp10emu';
+        $this->transType = "SALE";
+        $this->amount = $amount;
+        $this->masterID = $masterID;
         }
 
     // Performs an AUTH
@@ -403,7 +416,7 @@ class BluePay {
     public final function calcTPS() {
         $tpsString = $this->secretKey . $this->accountID . $this->transType . $this->amount . $this->doRebill . $this->rebillFirstDate .
         $this->rebillExpr . $this->rebillCycles . $this->rebillAmount . $this->masterID . $this->mode;
-        return bin2hex(md5($tpsString, true));
+        return bin2hex(hash('sha512', $tpsString, true));
     }
 
     public final function calcRebillTPS() {
@@ -419,8 +432,188 @@ class BluePay {
     public static final function calcTransNotifyTPS($secretKey, $transID, $transStatus, $transType, $amount, $batchID, $batchStatus, 
         $totalCount, $totalAmount, $batchUploadID, $rebillID, $rebillAmount, $rebillStatus) {
         $tpsString = $secretKey + $transID + $transStatus + $transType + $amount + $batchID + $batchStatus + $totalCount +
-		$totalAmount + $batchUploadID + $rebillID + $rebillAmount + $rebillStatus;
+        $totalAmount + $batchUploadID + $rebillID + $rebillAmount + $rebillStatus;
         return bin2hex(md5($tpsString, true));
+    }
+
+    // Required arguments for generate_url:
+    // merchantName: Merchant name that will be displayed in the payment page.
+    // returnURL: Link to be displayed on the transacton results page. Usually the merchant's web site home page.
+    // transactionType: SALE/AUTH -- Whether the customer should be charged or only check for enough credit available.
+    // acceptDiscover: Yes/No -- Yes for most US merchants. No for most Canadian merchants.
+    // acceptAmex: Yes/No -- Has an American Express merchant account been set up?
+    // amount: The amount if the merchant is setting the initial amount.
+    // protectAmount: Yes/No -- Should the amount be protected from changes by the tamperproof seal?
+    // rebilling: Yes/No -- Should a recurring transaction be set up?
+    // paymentTemplate: Select one of our payment form template IDs or your own customized template ID. If the customer should not be allowed to change the amount, add a 'D' to the end of the template ID. Example: 'mobileform01D'
+        // mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
+        // default1v5 -- Credit Card Only - Gray Horizontal 
+        // default7v5 -- Credit Card Only - Gray Horizontal Donation
+        // default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
+        // default3v4 -- Credit Card Only - Blue Vertical with card swipe
+        // mobileform02 -- Credit Card & ACH - White Vertical (mobile capable)
+        // default8v5 -- Credit Card & ACH - Gray Horizontal Donation
+        // default8v5R -- Credit Card & ACH - Gray Horizontal Donation with Recurring
+        // mobileform03 -- ACH Only - White Vertical (mobile capable)
+    // receiptTemplate: Select one of our receipt form template IDs, your own customized template ID, or "remote_url" if you have one.
+        // mobileresult01 -- Default without signature line - White Responsive (mobile)
+        // defaultres1 -- Default without signature line – Blue
+        // V5results -- Default without signature line – Gray
+        // V5Iresults -- Default without signature line – White
+        // defaultres2 -- Default with signature line – Blue
+        // remote_url - Use a remote URL
+    // receiptTempRemoteURL: Your remote URL ** Only required if receipt_template = "remote_url".
+
+    // Optional arguments for generate_url:
+    // rebProtect: Yes/No -- Should the rebilling fields be protected by the tamperproof seal?
+    // rebAmount: Amount that will be charged when a recurring transaction occurs.
+    // rebCycles: Number of times that the recurring transaction should occur. Not set if recurring transactions should continue until canceled.
+    // rebStartDate: Date (yyyy-mm-dd) or period (x units) until the first recurring transaction should occur. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 2016-04-01 or 1 MONTH)
+    // rebFrequency: How often the recurring transaction should occur. Format is 'X UNITS'. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 1 MONTH) 
+    // customID1: A merchant defined custom ID value.
+    // protectCustomID1: Yes/No -- Should the Custom ID value be protected from change using the tamperproof seal?
+    // customID2: A merchant defined custom ID 2 value.
+    // protectCustomID2: Yes/No -- Should the Custom ID 2 value be protected from change using the tamperproof seal?
+     
+    public function generateURL($params){
+        $this->dba = $params['merchantName'];
+        $this->returnURL = $params['returnURL'];
+        $this->transType = $params['transactionType'];
+        $this->discoverImage = empty(preg_match('/^[yY]/', $params['acceptDiscover'], $matches)) ? 'spacer.gif' : 'discvr.gif';
+        $this->amexImage = empty(preg_match('/^[yY]/', $params['acceptAmex'], $matches)) ? 'spacer.gif' : 'amex.gif';
+        $this->amount = empty($params['amount']) ? '' : $params['amount'];
+        $this->protectAmount = empty($params['protectAmount']) ? 'No' : $params['protectAmount'];
+        $this->doRebill = empty(preg_match('/^[yY]/', $params['rebilling'], $matches)) ? '0' : '1';
+        $this->rebillProtect = empty($params['rebProtect']) ? 'Yes' : $params['rebProtect'];
+        $this->rebillAmount = empty($params['rebAmount']) ? '' : $params['rebAmount'];
+        $this->rebillCycles = empty($params['rebCycles']) ? '' : $params['rebCycles'];
+        $this->rebillFirstDate = empty($params['rebStartDate']) ? '' : $params['rebStartDate'];
+        $this->rebillExpr = empty($params['rebFrequency']) ? '' : $params['rebFrequency'];
+        $this->customID1 = empty($params['customID1']) ? '' : $params['customID1'];
+        $this->protectCustomID1 = empty($params['protectCustomID1']) ? 'No' : $params['protectCustomID1'];
+        $this->customID2 = empty($params['customID2']) ? '' : $params['customID2'];
+        $this->protectCustomID2 = empty($params['protectCustomID2']) ? 'No' : $params['protectCustomID2'];
+        $this->shpfFormID = empty($params['paymentTemplate']) ? 'mobileform01' : $params['paymentTemplate'];
+        $this->receiptFormID = empty($params['receiptTemplate']) ? 'mobileresult01' : $params['receiptTemplate'];
+        $this->remoteURL = empty($params['receiptTempRemoteURL']) ? '' : $params['receiptTempRemoteURL'];
+        $this->cardTypes = $this->setCardTypes();
+        $this->receiptTpsDef = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF';
+        $this->receiptTpsString = $this->setReceiptTpsString();
+        $this->receiptTamperProofSeal = $this->calcURLTps($this->receiptTpsString);
+        $this->receiptURL = $this->setReceiptURL();
+        $this->bp10emuTpsDef = $this->addDefProtectedStatus('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF');
+        $this->bp10emuTpsString = $this->setBp10emuTpsString();
+        $this->bp10emuTamperProofSeal = $this->calcURLTps($this->bp10emuTpsString);
+        $this->shpfTpsDef = $this->addDefProtectedStatus('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF');
+        $this->shpfTpsString = $this->setShpfTpsString();
+        $this->shpfTamperProofSeal = $this->calcURLTps($this->shpfTpsString);
+        return $this->calcURLResponse();
+    }
+    // Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generateURL.
+    public function setCardTypes() {
+        $creditCards = 'vi-mc';
+        if($this->discoverImage == 'discvr.gif') $creditCards .= '-di';
+        if($this->amexImage == 'amex.gif') $creditCards .= '-am';
+        return $creditCards; 
+    }
+
+    // Sets the receipt Tamperproof Seal string. Must be used with generateURL.
+    public function setReceiptTpsString() {
+        return $this->secretKey . $this->accountID . $this->receiptFormID. $this->returnURL . $this->dba . $this->amexImage . $this->discoverImage . $this->receiptTpsDef; 
+    }
+
+    // Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with generateURL.
+    public function setBp10emuTpsString() {
+        $bp10emu = $this->secretKey . $this->accountID . $this->receiptURL . $this->receiptURL . $this->receiptURL . $this->mode . $this->transType . $this->bp10emuTpsDef;
+        return $this->addStringProtectedStatus($bp10emu);
+    }
+
+    // Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with generateURL.
+    public function setShpfTpsString() {
+        $shpf = $this->secretKey . $this->shpfFormID . $this->accountID . $this->dba . $this->bp10emuTamperProofSeal . $this->amexImage . $this->discoverImage . $this->bp10emuTpsDef . $this->shpfTpsDef; 
+        return $this->addStringProtectedStatus($shpf);
+    }
+
+    // Sets the receipt url or uses the remote url provided. Must be used with generateURL.
+    public function setReceiptURL() {
+        if($this->receiptFormID== 'remote_url') {
+            return $this->remoteURL;
+        } else {
+            return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' . $this->receiptFormID. 
+            '&SHPF_ACCOUNT_ID=' . $this->accountID . 
+            '&SHPF_TPS_DEF='    . $this->encodeURL($this->receiptTpsDef) . 
+            '&SHPF_TPS='        . $this->encodeURL($this->receiptTamperProofSeal) . 
+            '&RETURN_URL='      . $this->encodeURL($this->returnURL) .
+            '&DBA='             . $this->encodeURL($this->dba) . 
+            '&AMEX_IMAGE='      . $this->encodeURL($this->amexImage) . 
+            '&DISCOVER_IMAGE='  . $this->encodeURL($this->discoverImage);
+        }
+    }
+
+    // Adds optional protected keys to a string. Must be used with generateURL.
+    public function addDefProtectedStatus($string) {
+        if($this->protectAmount == 'Yes') $string .= ' AMOUNT';
+        if($this->rebillProtect == 'Yes') $string .= ' REBILLING REB_CYCLES REB_AMOUNT REB_EXPR REB_FIRST_DATE';
+        if($this->protectCustomID1 == 'Yes') $string .= ' CUSTOM_ID';
+        if($this->protectCustomID2 == 'Yes') $string .= ' CUSTOM_ID2';
+        return $string;
+    }
+
+    // Adds optional protected values to a string. Must be used with generateURL.
+    public function addStringProtectedStatus($string) {
+        if($this->protectAmount == 'Yes') $string .= $this->amount;
+        if($this->rebillProtect == 'Yes') $string .= $this->doRebill . $this->rebillCycles . $this->rebillAmount . $this->rebillExpr . $this->rebillFirstDate;
+        if($this->protectCustomID1 == 'Yes') $string .= $this->customID1;
+        if($this->protectCustomID2 == 'Yes') $string .= $this->customID2;
+        return $string;
+    }
+
+   // Encodes a string into a URL. Must be used with generateURL.
+    public function encodeURL($string) {
+        $encodedString = '';
+        for( $i = 0; $i < strlen($string); $i++ ) {
+            $char = substr($string, $i, 1);
+            if(preg_match('/[A-Za-z0-9]/', $char, $match)) {
+                $matchString = implode(',', $match);
+                $encodedString .= $matchString;
+            } else {
+                $encodedChar = '%' . strtoupper(dechex(ord($char)));
+                $encodedString .= $encodedChar;
+            }
+        }
+        return $encodedString;
+    }
+
+    // Generates a Tamperproof Seal for a url. Must be used with generateURL.
+    public final function calcURLTps($tpsType) {
+        return bin2hex(md5($tpsType, true));
+    }
+
+    // Generates the final url for the Simple Hosted Payment Form. Must be used with generateURL.
+    public function calcURLResponse() {
+        return                  
+        'https://secure.bluepay.com/interfaces/shpf?'                               .
+        'SHPF_FORM_ID='         . $this->encodeURL($this->shpfFormID)               .
+        '&SHPF_ACCOUNT_ID='     . $this->encodeURL($this->accountID)                .
+        '&SHPF_TPS_DEF='        . $this->encodeURL($this->shpfTpsDef)               .
+        '&SHPF_TPS='            . $this->encodeURL($this->shpfTamperProofSeal)      .
+        '&MODE='                . $this->encodeURL($this->mode)                     .
+        '&TRANSACTION_TYPE='    . $this->encodeURL($this->transType)                .
+        '&DBA='                 . $this->encodeURL($this->dba)                      .
+        '&AMOUNT='              . $this->encodeURL($this->amount)                   .
+        '&TAMPER_PROOF_SEAL='   . $this->encodeURL($this->bp10emuTamperProofSeal)   .
+        '&CUSTOM_ID='           . $this->encodeURL($this->customID1)                .
+        '&CUSTOM_ID2='          . $this->encodeURL($this->customID2)                .
+        '&REBILLING='           . $this->encodeURL($this->doRebill)                 .
+        '&REB_CYCLES='          . $this->encodeURL($this->rebillCycles)             .
+        '&REB_AMOUNT='          . $this->encodeURL($this->rebillAmount)             .
+        '&REB_EXPR='            . $this->encodeURL($this->rebillExpr)               .
+        '&REB_FIRST_DATE='      . $this->encodeURL($this->rebillFirstDate)          .
+        '&AMEX_IMAGE='          . $this->encodeURL($this->amexImage)                .
+        '&DISCOVER_IMAGE='      . $this->encodeURL($this->discoverImage)            .
+        '&REDIRECT_URL='        . $this->encodeURL($this->receiptURL)               .
+        '&TPS_DEF='             . $this->encodeURL($this->bp10emuTpsDef)            .
+        '&CARD_TYPES='          . $this->encodeURL($this->cardTypes);
     }
 
     public function process() {
@@ -465,7 +658,8 @@ class BluePay {
                 $post["REB_CYCLES"] = $this->rebillCycles;
                 $post["REB_AMOUNT"] = $this->rebillAmount;
                 $post["SWIPE"] = $this->trackData;  
-                $post["TAMPER_PROOF_SEAL"] = $this->calcTPS();    
+                $post["TAMPER_PROOF_SEAL"] = $this->calcTPS();  
+                $post["TPS_HASH_TYPE"] = "SHA512";
                 if(isset($_SERVER["REMOTE_ADDR"])){
                     $post["REMOTE_IP"] = $_SERVER["REMOTE_ADDR"];
                 }
