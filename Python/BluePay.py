@@ -685,13 +685,14 @@ class BluePay:
         """
         try:
             r = urlopen(self.url, data)
-            response = r.read()
+            #response = r.read()
+	    response = r.geturl()
             return response
         except HTTPError, e:
             if re.match("https://secure.bluepay.com/interfaces/wlcatch", e.geturl()):
                 response = e.geturl()
                 return response
-                return e.read()
+                #return e.read()
             return "ERROR"
     
     def parse_response(self, response):
