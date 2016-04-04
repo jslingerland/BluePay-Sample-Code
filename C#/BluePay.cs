@@ -122,6 +122,8 @@ namespace BluePayLibrary
         public string TPS = "";
         public string BPheaderstring = "";
 
+        public int numRetries = 0;
+
         public BluePay(string accountID, string secretKey, string mode)
         {
             this.accountID = accountID;
@@ -1018,66 +1020,70 @@ namespace BluePayLibrary
                 break;
             }
 
+            PerformPost(postData);
+            return GetStatus();
+        }
+
+        public void PerformPost(string post)
+        {
             //Create HTTPS POST object and send to BluePay
             ASCIIEncoding encoding = new ASCIIEncoding();
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(this.URL));
             request.AllowAutoRedirect = false;
 
-            byte[] data = encoding.GetBytes(postData);
+            ServicePointManager.CheckCertificateRevocationList = true;
+
+            byte[] data = encoding.GetBytes(post);
 
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = data.Length;
 
-            Stream postdata = request.GetRequestStream();
-            postdata.Write(data, 0, data.Length);
-            postdata.Close();
-
-            //get response    
             try
             {
-                HttpWebResponse httpResponse = (HttpWebResponse)request.GetResponse();
+                Stream postdata = request.GetRequestStream();
+                postdata.Write(data, 0, data.Length);
+                postdata.Close();
+
+                // Get response
                 GetResponse(request);
-                httpResponse.Close();
             }
             catch (WebException e)
             {
+
                 HttpWebResponse httpResponse = (HttpWebResponse)e.Response;
-                GetResponse(e);
-                httpResponse.Close();
+                try
+                {
+                    GetResponse(e, post);
+                    httpResponse.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An error has occurred while connecting to BluePay. Retrying connection...");
+                }
             }
-            return GetStatus();
         }
 
         public void GetResponse(HttpWebRequest request)
         {
             HttpWebResponse httpResponse = (HttpWebResponse)request.GetResponse();
-            ResponseParams(httpResponse);
-        }
 
-        public void GetResponse(WebException request)
-        {
-            HttpWebResponse httpResponse = (HttpWebResponse)request.Response;
-            ResponseParams(httpResponse);
-        }
-
-        public string ResponseParams(HttpWebResponse httpResponse)
-        {
-            Stream receiveStream = httpResponse.GetResponseStream();
-            Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
-            // Pipes the stream to a higher level stream reader with the required encoding format. 
-            StreamReader readStream = new StreamReader(receiveStream, encode);
-            Char[] read = new Char[512];
-            int count = readStream.Read(read, 0, 512);
-            while (count > 0)
-            {
-                // Dumps the 256 characters on a string and displays the string to the console.
-                String str = new String(read, 0, count);
-                response = response + HttpUtility.UrlDecode(str);
-                count = readStream.Read(read, 0, 512);
-            }
+            // add this line to match previous library
+            response = httpResponse.GetResponseHeader("Location");
             httpResponse.Close();
-            return response;
+        }
+
+        public void GetResponse(WebException request, string postData)
+        {
+            // Due to how Microsoft handles SSL/TLS session caching, a retry on a failed connection with an expired set of keys may be necessary.
+            if (numRetries < 1 && request.Message == "The request was aborted: Could not create SSL/TLS secure channel.")
+            {
+                numRetries++;
+                PerformPost(postData);
+                return;
+            }
+            HttpWebResponse httpResponse = (HttpWebResponse)request.Response;
+
         }
 
         public bool IsSuccessfulTransaction()
