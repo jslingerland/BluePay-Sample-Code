@@ -1,17 +1,46 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bluepay-c#", "bluepay-c#.csproj", "{585C5E89-4BAD-4B2A-8861-32DC156909D1}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluePayLibrary.Interfaces.Test", "bluepay-csharp-test\BluePayLibrary.Interfaces.Test.csproj", "{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bluepay-c#", "bluepay-c#\bluepay-c#.csproj", "{585C5E89-4BAD-4B2A-8861-32DC156909D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluePayLibrary.Interfaces", "BluePayLibrary\BluePayLibrary.Interfaces.csproj", "{E76D5100-D379-4DBF-AE60-DD41E76B72C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC3BC3E3-0A6A-4F21-BBED-D6DC47CCD90D}.Release|x86.Build.0 = Release|Any CPU
+		{585C5E89-4BAD-4B2A-8861-32DC156909D1}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{585C5E89-4BAD-4B2A-8861-32DC156909D1}.Debug|x86.ActiveCfg = Debug|x86
 		{585C5E89-4BAD-4B2A-8861-32DC156909D1}.Debug|x86.Build.0 = Debug|x86
+		{585C5E89-4BAD-4B2A-8861-32DC156909D1}.Release|Any CPU.ActiveCfg = Release|x86
 		{585C5E89-4BAD-4B2A-8861-32DC156909D1}.Release|x86.ActiveCfg = Release|x86
 		{585C5E89-4BAD-4B2A-8861-32DC156909D1}.Release|x86.Build.0 = Release|x86
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Debug|x86.Build.0 = Debug|Any CPU
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Release|x86.ActiveCfg = Release|Any CPU
+		{E76D5100-D379-4DBF-AE60-DD41E76B72C3}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
