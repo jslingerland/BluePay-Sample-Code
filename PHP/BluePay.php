@@ -713,7 +713,7 @@ class BluePay {
             curl_setopt($ch, CURLOPT_POST, 1); // Perform a POST
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // Turns off verification of the SSL certificate.
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); // Turns off verification of the SSL certificate.
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // If not set, curl prints output to the browser
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
             if ($this->postURL == "https://secure.bluepay.com/interfaces/bp10emu") {
