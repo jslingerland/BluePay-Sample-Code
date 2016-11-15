@@ -27,8 +27,5 @@ report.get_settled_transaction_report(
 	exclude_errors: '1' # Do not include errored transactions? Yes
 )
 
-# Makes the API request with BluePay
-report.process
-
-# Reads the response from BluePay
-puts report.get_response
+# Makes the API request with BluePay and returns response
+puts report.process

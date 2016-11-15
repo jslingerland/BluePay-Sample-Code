@@ -121,10 +121,14 @@ class BluePay
     else
       response = headers.body
     end
-    response.split("&").each do |pair| 
-      (key, val) = pair.split("=")
-      val = "" if val == nil
-      @RESPONSE_HASH[URI.unescape(key)] = URI.unescape(val) 
+    if path == "/interfaces/bpdailyreport2"
+      response
+    else
+      response.split("&").each do |pair| 
+        (key, val) = pair.split("=")
+        val = "" if val == nil
+        @RESPONSE_HASH[URI.unescape(key)] = URI.unescape(val) 
+      end
     end
   end
 end
