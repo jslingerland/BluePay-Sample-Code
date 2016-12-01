@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/C#/bin/Debug
+/C#/.vs/bluepay-c#/v14
+/C#/bluepay-csharp-test/bin/Debug
+/C#/bluepay-csharp-test/obj/Debug
+/C#/obj/x86/Debug
+/C#/packages
+/C#/TestResults
+/C#/bluepay-c#/bin/Debug
+/C#/bluepay-c#/obj/x86/Debug
+/C#/BluePayLibrary/bin/Debug
+/C#/BluePayLibrary/obj/Debug

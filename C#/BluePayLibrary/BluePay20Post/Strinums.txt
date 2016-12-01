@@ -1,0 +1,350 @@
+﻿#
+# generate enum-like typesafe structs for code to have enum-like semantics, but
+# with the flexibility of knowing that the valuees can comeback as something unknown at compiletime
+# The format is as follows:
+#	Name:
+#		Value - VariableName - Doc Comments (optional)
+#
+
+CardType
+	V - Visa
+	M - MasterCard
+	A - AmericanExpress
+	D - Discover
+	N - PinOnly - PIN Only (Non-Visa/MasterCard/Amex/Discover)
+
+CardUsage
+	C - CreditHybrid - Credit Hybrid (meaning it has pin capability also)
+	E - PinDebitEbt - PIN Only Debit with Electronic Benefit Transfer
+	H - DebitHybrid - Debit Hybrid (PIN and Signature)
+	J - UsaCommercialDebitSigNoPin - USA Commercial Debit, Signature Only, No PIN Access
+	K - UsaCommercialDebitPin - USA Commercial Debit, PIN Capable
+	L - NonUsaConsumerDebitNoPin - Non USA Consumer Debit, No PIN Access
+	M - NonUsaCommercialDebitNoPin - Non USA Commercial Debit, No PIN Access
+	N - NonUsaConsumerDebitPin - Non USA Consumer Debit, PIN Capable
+	O - NonUsaCommercialDebitPin - Non USA Commercial Debit, PIN Capable
+	P - PinDebit - PIN Only Debit without Electronic Benefit Transfer
+	R - PrivateLabelCredit - Private Label Credit (MasterCard)
+	S - SignatureOnlyDebit - Signature only Debit, No PIN Access
+	X - Credit - True credit, No PIN/Signature capability
+
+
+Networks
+  A5   - PavdFiserv   - PAVD FISERV
+  01   - Shazam   - SHAZAM
+  02   - Nyce   - NYCE
+  03   - Pulse   - PULSE
+  05   - StarWest   - STAR-WEST
+  07   - StarEast   - STAR-EAST
+  14   - StarNe   - STAR NE
+  15   - Pavd   - PAVD
+  16   - CnbEnid   - CNB-ENID
+  17   - AthScotiaBank   - ATH-SCOTIA BANK
+  18   - AthDirect   - ATH-DIRECT
+  19   - Interlink   - INTERLINK
+  20   - InteracEverlink   - INTERAC EVERLINK
+  21   - EverlinkInteracIcu   - EVERLINK INTERAC ICU
+  25   - MaestroDirect   - MAESTRO DIRECT
+  26   - Mcx   - MCX
+  29   - EbtAcs   - EBT ACS
+  30   - MaestroStarWest   - MAESTRO STAR WEST
+  31   - StarWestOption   - STAR WEST OPTION
+  33   - JeanieStarWest   - JEANIE STAR WEST
+  34   - JeanieDirect   - JEANIE DIRECT
+  35   - AffnDirect   - AFFN DIRECT
+  36   - Cu24Direct   - CU24-DIRECT
+  37   - EbtTeamOfTexas   - EBT TEAM OF TEXAS
+  39   - EbtJpchase   - EBT JPCHASE
+  41   - Svs   - SVS
+  42   - Exxon   - EXXON
+  43   - Base24Interac   - BASE 24/INTERAC
+  46   - Cu24Fidelity   - CU24-FIDELITY
+  47   - EbtEfunds   - EBT EFUNDS
+  48   - AffnFidelity   - AFFN FIDELITY
+  49   - EbtNorthrupGrumman   - EBT NORTHRUP GRUMMAN
+  51   - Cu24Fiserv   - CU24-FISERV
+  52   - AffnFiserv   - AFFN FISERV
+  56   - StarEastFiserv   - STAR-EAST FISERV
+  57   - PulseFiserv   - PULSE FISERV
+  59   - NyceFiserv   - NYCE FISERV
+  62   - StarWestFiserv   - STAR-WEST FISERV
+  63   - StarNeFiserv   - STAR NE FISERV
+  64   - MaestroFiserv   - MAESTRO FISERV
+  65   - InterlinkFiserv   - INTERLINK FISERV
+  67   - EbtFiserv   - EBT-FISERV
+  68   - AccelFiserv   - ACCEL FISERV
+  69   - OptionFiserv   - OPTION-FISERV
+  A   - PinlessPos   - PINLESS POS
+  B   - PinnedPosPinlessBillpay   - PINNED POS, PINLESS BILLPAY
+  C   - PinlessBillpayPinlessPos   - PINLESS BILLPAY, PINLESS POS
+  D   - PinnedPosPinlessPos   - PINNED POS, PINLESS POS
+  E   - PinnedPosPinlessBillpayPinlessPos   - PINNED POS, PINLESS BILLPAY, PINLESS POS
+  L   - PinlessBillpay   - PINLESS BILLPAY
+  P   - PinnedPos   - PINNED POS
+
+Prepaid    
+	   - NotAPrepaidCard - Not a Prepaid Card
+	P  - PrepaidCard - Prepaid Card
+
+
+CardProductSubCategory
+  A   - VisaTraditional   - Visa Traditional
+  B   - VisaTraditionalRewards   - Visa Traditional Rewards
+  C   - VisaSignature   - Visa Signature
+  D   - VisaSignaturePreferred   - Visa Signature Preferred
+  E   - VisaProprietaryAtm   - Visa Proprietary ATM
+  F   - VisaClassic   - Visa Classic
+  G   - VisaBusiness   - Visa Business
+  G1   - VisaSignatureBusinessNonUs   - Visa Signature Business (non-US)
+  G1   - VisaBusinessTier3Us   - Visa Business Tier 3 (US)
+  G3   - VisaBusinessEnhancedNonUs   - Visa Business Enhanced (non-US)
+  G3   - VisaBusinessTier2Us   - Visa Business Tier 2 (US)
+  G4   - VisaInfiniteBusinessNonUs   - Visa Infinite Business (non-US)
+  G4   - VisaBusinessTier4Us   - Visa Business Tier 4 (US)
+  G5   - VisaBusinessRewards   - Visa Business Rewards
+  I^   - VisaInfinite   - Visa Infinite
+  I1   - VisaInfinitePrivilege   - Visa Infinite Privilege
+  I2   - VisaUltraHighNetWorth   - Visa Ultra High Net Worth
+  J3   - VisaHealthcare   - Visa Healthcare
+  K^   - VisaCorporateTE   - Visa Corporate T&E
+  K1   - VisaGsaCorporateTEUsVisaGovernmentCorporateTEGlobal   - Visa GSA Corporate T&E (US)?Visa Government Corporate T&E (global)
+  L^   - VisaElectron   - Visa Electron
+  N^   - VisaPlatinum   - Visa Platinum
+  N1   - VisaRewards   - Visa Rewards
+  N2   - VisaSelect   - Visa Select
+  P^   - VisaGold   - Visa Gold
+  Q^   - VisaPrivateLabel   - Visa Private Label
+  Q2   - VisaPrivateLabelBasic   - Visa Private Label Basic
+  Q3   - VisaPrivateLabelStandard   - Visa Private Label Standard
+  Q4   - VisaPrivateLabelEnhanced   - Visa Private Label Enhanced
+  Q5   - VisaPrivateLabelSpecialized   - Visa Private Label Specialized
+  Q6   - VisaPrivateLabelPremium   - Visa Private Label Premium
+  R^   - VisaProprietary   - Visa Proprietary
+  S^   - VisaPurchasing   - Visa Purchasing
+  S1   - VisaPurchasingWithFleet   - Visa Purchasing with Fleet
+  S2   - VisaGsaPurchasingUsVisaGovernmentPurchasingGlobal   - Visa GSA Purchasing (US)?Visa Government Purchasing (Global)
+  S3   - VisaGsaPurchasingWithFleetUsVisaGovernmentPurchasingWithFleetGlobal   - Visa GSA Purchasing with Fleet (US)?Visa Government Purchasing With Fleet (global)
+  S4   - VisaGovernmentServicesLoan   - Visa Government Services Loan
+  S5   - VisaCommercialTransportEbt   - Visa Commercial Transport (EBT)
+  S6   - VisaBusinessLoan   - Visa Business Loan
+  U^   - VisaTravelMoney   - Visa Travel Money
+  V^   - VisaVPay   - Visa V Pay
+  BPD   - MastercardBusinessPremiumDebit   - MasterCard Business Premium Debit
+  DAG   - MastercardGoldDebitMastercardSalary   - MasterCard Gold Debit MasterCard Salary
+  DAP   - MastercardPlatinumDebitMastercardSalary   - MasterCard Platinum Debit MasterCard Salary
+  DAS   - MastercardStandardDebitMastercardSalary   - MasterCard Standard Debit MasterCard Salary
+  DLG   - MastercardGoldDelayedDebit   - MasterCard Gold Delayed Debit
+  DLH   - MastercardWorldEmbossedDelayedDebit   - MasterCard World Embossed Delayed Debit
+  DLP   - MastercardPlatinumDelayedDebit   - MasterCard Platinum Delayed Debit
+  DLS   - MastercardCardDelayedDebit   - MasterCard Card Delayed Debit
+  DOS   - MastercardStandardDebitSocial   - MasterCard Standard Debit Social
+  MAB   - MastercardWorldEliteForBusiness   - MasterCard World Elite for Business
+  MAC   - MastercardWorldEliteCorporateCard2   - MasterCard World Elite Corporate Card
+  MAP   - MastercardMapCommercialPaymentsAccount   - MasterCard MAP Commercial Payments Account
+  MAQ   - MastercardPrepaidCommercialPaymentsAccount   - MasterCard Prepaid Commercial Payments Account
+  MBB   - MastercardPrepaidConsumer   - MasterCard Prepaid Consumer
+  MBC   - MastercardPrepaidVoucher   - MasterCard Prepaid Voucher
+  MBD   - MastercardProfessionalDebitBusinesscardCard   - MasterCard Professional Debit BusinessCard Card
+  MBE   - MastercardElectronicBusinessCard   - MasterCard Electronic Business Card
+  MBF   - MastercardPrepaidFood   - MasterCard Prepaid Food
+  MBK   - MastercardBlackCard   - MasterCard Black Card
+  MBM   - MastercardPrepaidMeal   - MasterCard Prepaid Meal
+  MBP   - MastercardCorporatePrepaid   - MasterCard Corporate Prepaid
+  MBS   - MastercardB2BProduct   - MasterCard B2B Product
+  MBT   - MastercardCorporatePrepaidTravel   - MasterCard Corporate Prepaid Travel
+  MBW   - MastercardWorldMastercardBlackEditionDebit   - MasterCard World MasterCard Black Edition Debit
+  MCB   - MastercardBusinessCard   - MasterCard Business Card
+  MCC   - MastercardCreditCardMixedBin   - MasterCard Credit Card (Mixed BIN)
+  MCD   - MastercardDebitCard   - MasterCard Debit Card
+  MCE   - MastercardElectronicCard   - MasterCard Electronic Card
+  MCF   - MastercardFleetCard   - MasterCard Fleet Card
+  MCG   - MastercardGoldCard   - MasterCard Gold Card
+  MCH   - MastercardPremiumCharge   - MasterCard Premium Charge
+  MCO   - MastercardCorporateCard   - MasterCard Corporate Card
+  MCP   - MastercardPurchasingCard   - MasterCard Purchasing Card
+  MCS   - MastercardStandardCard   - MasterCard Standard Card
+  MCT   - MastercardTitaniumCard   - MasterCard Titanium Card
+  MCV   - MastercardMerchantBrandedProgram   - MasterCard Merchant-Branded Program
+  MCW   - MastercardWorldCard2   - MasterCard World Card
+  MDB   - MastercardBusinessDebitCard   - MasterCard Business Debit Card
+  MDG   - MastercardGoldDebitCard   - MasterCard Gold Debit Card
+  MDH   - MastercardOtherEmbossedDebitCard   - MasterCard Other Embossed Debit Card
+  MDJ   - MastercardDebitEnhanced   - MasterCard Debit Enhanced
+  MDL   - MastercardBusinessDebitOtherEmbossed   - MasterCard Business Debit Other Embossed
+  MDO   - MastercardDebitOther   - MasterCard Debit Other
+  MDP   - MastercardPlatinumDebitCard   - MasterCard Platinum Debit Card
+  MDR   - MastercardDebitBrokerage1   - MasterCard Debit Brokerage 1
+  MDS   - MastercardDebitCard2   - MasterCard Debit Card
+  MDT   - MastercardCommercialDebitCard   - MasterCard Commercial Debit Card
+  MDW   - MastercardWorldBlackDebitLacRegionExcludingMexico   - MasterCard World Black Debit (LAC region excluding Mexico)
+  MEB   - MastercardExecutiveBusinessCard   - MasterCard Executive Business Card
+  MEC   - MastercardElectronicCommercial   - MasterCard Electronic Commercial
+  MEF   - MastercardElectronicPaymentAccount   - MasterCard Electronic Payment Account
+  MEO   - MastercardCorporateExecutiveCard   - MasterCard Corporate Executive Card
+  MFB   - MastercardFlexWorldElite   - MasterCard Flex World Elite
+  MFD   - MastercardFlexPlatinum   - MasterCard Flex Platinum
+  MFE   - MastercardFlexChargeWorldElite   - MasterCard Flex Charge World Elite
+  MFH   - MastercardFlexWorld   - MasterCard Flex World
+  MFL   - MastercardFlexChargePlatinum   - MasterCard Flex Charge Platinum
+  MFW   - MastercardFlexChargeWorld   - MasterCard Flex Charge World
+  MGF   - MastercardGovernmentCommercialCard   - MasterCard Government Commercial Card
+  MHA   - MastercardHealthcarePrepaidNonTax   - MasterCard Healthcare Prepaid Non-Tax
+  MHB   - MastercardHsaSubstantiated   - MasterCard HSA Substantiated
+  MHD   - MastercardHelocDebitStandard   - MasterCard HELOC Debit Standard
+  MHH   - MastercardHsaNonSubstantiated   - MasterCard HSA Non-Substantiated
+  MHK   - MastercardMagnaHealthAccessCard   - MasterCard Magna Health Access Card
+  MHL   - MastercardHelocDebitGold   - MasterCard HELOC Debit Gold
+  MHM   - MastercardHelocDebitPlatinum   - MasterCard HELOC Debit Platinum
+  MHN   - MastercardHelocDebitPremium   - MasterCard HELOC Debit Premium
+  MIA   - MastercardPrepaidUnembossedStudentCard   - MasterCard Prepaid Unembossed Student Card
+  MIP   - MastercardPrepaidStudentCard   - MasterCard Prepaid Student Card
+  MIU   - MastercardDebitUnembossedNonUs   - MasterCard Debit Unembossed (Non-US)
+  MLA   - MastercardCentralTravelSolutionsAirCard   - MasterCard Central Travel Solutions Air Card
+  MLB   - MastercardBrazilBenefitForHomeImprovement   - MasterCard Brazil Benefit for Home Improvement
+  MLD   - MastercardDistributionCard   - MasterCard Distribution Card
+  MLE   - MastercardBrazilGeneralBenefits   - MasterCard Brazil General Benefits
+  MLF   - MastercardAgro   - MasterCard Agro
+  MLL   - MastercardCentralTravelSolutionsLandCard   - MasterCard Central Travel Solutions Land Card
+  MNF   - MastercardPublicSectorCommercialCard   - MasterCard Public Sector Commercial Card
+  MNW   - MastercardWorldCard   - MasterCard World Card
+  MOC   - MastercardStandardMaestroSocial   - MasterCard Standard Maestro Social
+  MOG   - MastercardMaestroGoldCard   - MasterCard Maestro Gold Card
+  MOP   - MastercardMaestroPlatinum   - MasterCard Maestro Platinum
+  MOW   - MastercardWorldMaestro   - MasterCard World Maestro
+  MPA   - MastercardPrepaidDebitStandardPayroll   - MasterCard Prepaid Debit Standard Payroll
+  MPB   - MastercardPreferredBusinessCard   - MasterCard Preferred Business Card
+  MPF   - MastercardPrepaidDebitStandardGift   - MasterCard Prepaid Debit Standard Gift
+  MPG   - MastercardDebitStandardPrepaidGeneralSpend   - MasterCard Debit Standard Prepaid General Spend
+  MPH   - MastercardCash   - MasterCard Cash
+  MPJ   - MastercardPrepaidDebitVoucherMealFoodCard   - MasterCard Prepaid Debit Voucher Meal/Food Card
+  MPK   - MastercardPrepaidGovernmentCommercialCard   - MasterCard Prepaid Government Commercial Card
+  MPL   - MastercardPlatinumCard   - MasterCard Platinum Card
+  MPM   - MastercardPrepaidDebitStandardConsumerIncentive   - MasterCard Prepaid Debit Standard Consumer Incentive
+  MPN   - MastercardPrepaidDebitStandardInsurance   - MasterCard Prepaid Debit Standard Insurance
+  MPO   - MastercardPrepaidDebitStandardOther   - MasterCard Prepaid Debit Standard Other
+  MPP   - MastercardPrepaidCard   - MasterCard Prepaid Card
+  MPR   - MastercardPrepaidDebitStandardTravel   - MasterCard Prepaid Debit Standard Travel
+  MPT   - MastercardPrepaidDebitStandardTeen   - MasterCard Prepaid Debit Standard Teen
+  MPV   - MastercardPrepaidDebitStandardGovernment   - MasterCard Prepaid Debit Standard Government
+  MPW   - MastercardDebitBusinessCardPrepaidWorkplaceBusinessToBusiness   - MasterCard Debit Business Card Prepaid Workplace Business to Business
+  MPX   - MastercardPrepaidDebitStandardFlexBenefit   - MasterCard Prepaid Debit Standard Flex Benefit
+  MPY   - MastercardPrepaidDebitStandardEmployeeIncentive   - MasterCard Prepaid Debit Standard Employee Incentive
+  MPZ   - MastercardPrepaidDebitStandardGovernmentConsumer   - MasterCard Prepaid Debit Standard Government Consumer
+  MRC   - MastercardPrepaidElectronicCardNonUs   - MasterCard Prepaid Electronic Card (Non-US)
+  MRF   - MastercardStandardDeferred   - MasterCard Standard Deferred
+  MRG   - MastercardPrepaidCardNonUs   - MasterCard Prepaid Card (Non-US)
+  MRH   - MastercardPlatinumPrepaidTravelCard   - MasterCard Platinum Prepaid Travel Card
+  MRJ   - MastercardPrepaidMastercardVoucherMealFoodCard   - MasterCard Prepaid MasterCard Voucher Meal/Food Card
+  MRK   - MastercardPrepaidMastercardPublicSectorCommercialCard   - MasterCard Prepaid MasterCard Public Sector Commercial Card
+  MRO   - MastercardRewardsOnly   - MasterCard Rewards Only
+  MRL   - MastercardPrepaidBusinessPreferred   - MasterCard Prepaid Business Preferred
+  MRP   - MastercardStandardRetailerCentricPayments   - MasterCard Standard Retailer Centric Payments
+  MRW   - MastercardPrepaidBusinessCardNonUs   - MasterCard Prepaid Business Card (Non-US)
+  MSA   - MastercardPrepaidMaestroPayrollCard   - MasterCard Prepaid Maestro Payroll Card
+  MSB   - MastercardMaestroSmallBusinessCard   - MasterCard Maestro Small Business Card
+  MSF   - MastercardPrepaidMaestroGiftCard   - MasterCard Prepaid Maestro Gift Card
+  MSG   - MastercardPrepaidMaestroConsumerReloadableCard   - MasterCard Prepaid Maestro Consumer Reloadable Card
+  MSI   - MastercardMaestroCard   - MasterCard Maestro Card
+  MSJ   - MastercardMaestroPrepaidVoucherMealAndFoodCard   - MasterCard Maestro Prepaid Voucher Meal and Food Card
+  MSM   - MastercardMaestroPrepaidConsumerPromotionCard   - MasterCard Maestro Prepaid Consumer Promotion Card
+  MSN   - MastercardMaestroPrepaidInsuranceCard   - MasterCard Maestro Prepaid Insurance Card
+  MSO   - MastercardMaestroPrepaidOtherCard   - MasterCard Maestro Prepaid Other Card
+  MSQ   - MastercardReservedForFutureUse   - MasterCard Reserved for future use
+  MSR   - MastercardPrepaidMaestroTravelCard   - MasterCard Prepaid Maestro Travel Card
+  MST   - MastercardPrepaidMaestroTeenCard   - MasterCard Prepaid Maestro Teen Card
+  MSV   - MastercardPrepaidMaestroGovernmentBenefitCard   - MasterCard Prepaid Maestro Government Benefit Card
+  MSW   - MastercardPrepaidMaestroCorporateCard   - MasterCard Prepaid Maestro Corporate Card
+  MSX   - MastercardPrepaidMaestroFlexBenefitCard   - MasterCard Prepaid Maestro Flex Benefit Card
+  MSY   - MastercardPrepaidMaestroEmployeeIncentiveCard   - MasterCard Prepaid Maestro Employee Incentive Card
+  MSZ   - MastercardPrepaidMaestroEmergencyAssistanceCard   - MasterCard Prepaid Maestro Emergency Assistance Card
+  MTP   - MastercardPlatinumPrepaidTravelCard2   - MasterCard Platinum Prepaid Travel Card
+  MUW   - MastercardWorldDomesticAffluent   - MasterCard World Domestic Affluent
+  MWB   - MastercardWorldForBusinessCard   - MasterCard World for Business Card
+  MWD   - MastercardWorldDeferred   - MasterCard World Deferred
+  MWE   - MastercardWorldElite   - MasterCard World Elite
+  MWO   - MastercardWorldEliteCorporateCard   - MasterCard World Elite Corporate Card
+  MWR   - MastercardWorldRetailerCentricPauments   - MasterCard World Retailer Centric Pauments
+  OLB   - MastercardMaestroSmallBusinssDelayedDebit   - MasterCard Maestro Small Businss Delayed Debit
+  OLG   - MastercardMaestroGoldDelayedDebit   - MasterCard Maestro Gold Delayed Debit
+  OLP   - MastercardMaestroPlatinumDelayedDebit   - MasterCard Maestro Platinum Delayed Debit
+  OLS   - MastercardMaestroDelayedDebit   - MasterCard Maestro Delayed Debit
+  OLW   - MastercardWorldMaestroDelayedDebit   - MasterCard World Maestro Delayed Debit
+  PMC   - MastercardProprietaryCreditCardSwedenDomestic   - MasterCard Proprietary Credit Card (Sweden domestic)
+  PMD   - MastercardProprietaryDebitCardSwedenDomestic   - MasterCard Proprietary Debit Card (Sweden domestic)
+  PSC   - MastercardCommonProprietarySwedishCreditCard   - MasterCard Common Proprietary Swedish Credit Card
+  PSD   - MastercardCommonProprietarySwedishDebitCard   - MasterCard Common Proprietary Swedish Debit Card
+  PVA   - MastercardPrivateLabelA   - MasterCard Private Label A
+  PVB   - MastercardPrivateLabelB   - MasterCard Private Label B
+  PVC   - MastercardPrivateLabelC   - MasterCard Private Label C
+  PVD   - MastercardPrivateLabelD   - MasterCard Private Label D
+  PVE   - MastercardPrivateLabelE   - MasterCard Private Label E
+  PVF   - MastercardPrivateLabelF   - MasterCard Private Label F
+  PVG   - MastercardPrivateLabelG   - MasterCard Private Label G
+  PVH   - MastercardPrivateLabelH   - MasterCard Private Label H
+  PVI   - MastercardPrivateLabelI   - MasterCard Private Label I
+  PVJ   - MastercardPrivateLabelJ   - MasterCard Private Label J
+  PVL   - MastercardPrivateLabelL   - MasterCard Private Label L
+  SAG   - MastercardGoldSalaryImmediateDebit   - MasterCard Gold Salary Immediate Debit
+  SAL   - MastercardStandardMaestroSalary   - MasterCard Standard Maestro Salary
+  SAP   - MastercardPlatinumSalaryImmediateDebit   - MasterCard Platinum Salary Immediate Debit
+  SAS   - MastercardStandardSalaryImmediateDebit   - MasterCard Standard Salary Immediate Debit
+  SOS   - MastercardStandardSocialImmediateDebit   - MasterCard Standard Social Immediate Debit
+  SUR   - MastercardPrepaidUnembossedCardNonUs   - MasterCard Prepaid Unembossed Card (Non-US)
+  TBE   - MastercardElectronicBusinessImmediateDebit   - MasterCard Electronic Business Immediate Debit
+  TCB   - MastercardCorporateExecutiveBusinessCardImmediateDebit   - MasterCard Corporate Executive Business Card Immediate Debit
+  TCC   - MastercardMixedBinImmediateDebit   - MasterCard (mixed BIN) Immediate Debit
+  TCE   - MastercardElectronicImmediateDebit   - MasterCard Electronic Immediate Debit
+  TCF   - MastercardFleetCardImmediateDebit   - MasterCard Fleet Card Immediate Debit
+  TCG   - MastercardGoldCardImmediateDebit   - MasterCard Gold Card Immediate Debit
+  TCO   - MastercardCorporateImmediateDebit   - MasterCard Corporate Immediate Debit
+  TCP   - MastercardPurchasingCardImmediateDebit   - MasterCard Purchasing Card Immediate Debit
+  TCS   - MastercardStandardCardImmediateDebit   - MasterCard Standard Card Immediate Debit
+  TCW   - MastercardWorldSigniaCardImmediateDebit   - MasterCard World Signia Card Immediate Debit
+  TEB   - MastercardExecutiveBusinesscardCard   - MasterCard Executive BusinessCard Card
+  TEC   - MastercardElectronicCommercialImmediateDebit   - MasterCard Electronic Commercial Immediate Debit
+  TEO   - MastercardCorporateExecutiveCardImmediateDebit   - MasterCard Corporate Executive Card Immediate Debit
+  TNF   - MastercardPublicSectorCommercialCardImmediateDebit   - MasterCard Public Sector Commercial Card Immediate Debit
+  TNW   - MastercardNewWorldImmediateDebit   - MasterCard New World Immediate Debit
+  TPB   - MastercardPreferredBusinessCardImmediateDebit   - MasterCard Preferred Business Card Immediate Debit
+  TPL   - MastercardPlatinumImmediateDebit   - MasterCard Platinum Immediate Debit
+  TWB   - MastercardWorldBlackEditionImmediateDebit   - MasterCard World Black Edition Immediate Debit
+  WBE   - MastercardWorldBlackEdition   - MasterCard World Black Edition
+
+Regulated
+  B   - IssRegulatedIssuer   - ISS Regulated Issuer
+  N   - IssNonRegulatedIssuerOrNonUsIssuedCard   - ISS Non-Regulated Issuer or Non-US issued card
+  1   - IssRegulatedIssuerWithFraud   - ISS Regulated Issuer with fraud
+
+Subtype
+  AC   - BrazilAgricultureMaintenanceAccountCusteio   - Brazil Agriculture Maintenance Account/Custeio
+  AE   - BrazilAgricultureDebitAccountElectron   - Brazil Agriculture Debit Account/Electron
+  AG   - BrazilAgriculture   - Brazil Agriculture
+  AI   - BrazilAgricultureInvestmentLoanInvestimento   - Brazil Agriculture Investment Loan/Investimento
+  CG   - BrazilCargo   - Brazil Cargo
+  CS   - Construction   - Construction
+  DS   - Distribution   - Distribution
+  HC   - Healthcare   - Healthcare
+  LP   - VisaLargePurchaseAdvantage   - Visa large-Purchase Advantage
+  MA   - VisaMobileAgent   - Visa Mobile Agent
+  MB   - InteroperableMobileBranchlessBanking   - Interoperable Mobile Branchless Banking
+  MG   - VisaMobileGeneral   - Visa Mobile General
+  VA   - BrazilFoodOrSupermarket   - Brazil Food or Supermarket
+  VF   - BrazilFuelFlexVisaVale   - Brazil Fuel / Flex Visa Vale
+  VR   - BrazilFoodOrRestaurant   - Brazil Food or Restaurant
+
+LargeTicket
+  L   - VisaLargeTicket   - Visa Large Ticket
+      - NotVisaLargeTicket   - Not Visa Large Ticket
+
+AccountLevelProcessing
+  Y   - Yes   - Account Level Processing
+      - No   - No Account Level Processing
+  N   - NotApplicableForBin   - Not applicable for BIN
+
+AccountFundSource
+  C   - Credit   - Credit
+  D   - Debit   - Debit
+  P   - Prepaid   - Prepaid
+  H   - Charge   - Charge
+  R   - DeferredDebitVisaOnly   - Deferred Debit (Visa Only)
+      - NetworkOnly   - Network Only
