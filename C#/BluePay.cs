@@ -981,10 +981,8 @@ namespace BluePayLibrary
                 if (this.swipeData != "") {
                     Match matchTrack1And2 = track1And2.Match(this.swipeData);
                     Match matchTrack2 = track2Only.Match(this.swipeData);
-                    if (matchTrack1And2.Success)
+                    if (matchTrack1And2.Success || matchTrack2.Success)
                         postData = postData + "&SWIPE=" + HttpUtility.UrlEncode(this.swipeData);
-                    else if (matchTrack2.Success)
-                        postData = postData + "&TRACK2=" + HttpUtility.UrlEncode(this.swipeData);
                 } 
                 else if (this.paymentType == "CREDIT") 
                 {
