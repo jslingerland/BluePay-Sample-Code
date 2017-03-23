@@ -101,7 +101,7 @@ class BluePay {
     // $accID : Merchant's Account ID
     // $secretKey : Merchant's Secret Key
     // $mode : Transaction mode of either LIVE or TEST (default)
-    public function BluePay($accID, $secretKey, $mode) {
+    public function __construct($accID, $secretKey, $mode) {
         $this->accountID = $accID;
         $this->secretKey = $secretKey;
         $this->mode = $mode;
