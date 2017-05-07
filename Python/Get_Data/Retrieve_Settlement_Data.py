@@ -7,7 +7,7 @@
 # on the details of the report.
 # If using TEST mode, only TEST transactions will be returned.
 ##
-
+from __future__ import print_function
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
@@ -34,4 +34,4 @@ report.get_settled_transaction_report(
 report.process()
 
 # Reads the response from BluePay
-print report.response
+print(report.response)

@@ -7,7 +7,7 @@
 # See comments below on the details of the initial setup of the
 # rebilling cycle.
 ##
-
+from __future__ import print_function
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
@@ -69,12 +69,12 @@ if payment.is_successful_response():
     rebill_cancel.process()
 
     # Read response from BluePay
-    print 'Rebill Status: ' + rebill_cancel.rebill_status_response
-    print 'Rebill ID: ' + rebill_cancel.rebill_id_response
-    print 'Rebill Creation Date: ' + rebill_cancel.creation_date_response
-    print 'Rebill Next Date: ' + rebill_cancel.next_date_response
-    print 'Rebill Schedule Expression: ' + rebill_cancel.sched_expression_response
-    print 'Rebill Cycles Remaining: ' + rebill_cancel.cycles_remaining_response
-    print 'Rebill Amount: ' + rebill_cancel.rebill_amount_response
+    print('Rebill Status: ' + rebill_cancel.rebill_status_response)
+    print('Rebill ID: ' + rebill_cancel.rebill_id_response)
+    print('Rebill Creation Date: ' + rebill_cancel.creation_date_response)
+    print('Rebill Next Date: ' + rebill_cancel.next_date_response)
+    print('Rebill Schedule Expression: ' + rebill_cancel.sched_expression_response)
+    print('Rebill Cycles Remaining: ' + rebill_cancel.cycles_remaining_response)
+    print('Rebill Amount: ' + rebill_cancel.rebill_amount_response)
 else:
-    print rebill_cancel.message_response
+    print(rebill_cancel.message_response)

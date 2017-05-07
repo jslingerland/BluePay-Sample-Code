@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-import urllib
-from urllib2 import Request, urlopen, URLError, HTTPError
-import urlparse
+import six
+from six.moves import urllib
+from six.moves.urllib.request import Request, urlopen
+from six.moves.urllib.error import URLError, HTTPError
+from six.moves.urllib.parse import urlparse, urlencode, parse_qs
 import hashlib
 import cgi
 import os
@@ -317,7 +319,7 @@ class BluePay:
                       self.do_rebill + self.reb_first_date + self.reb_expr + self.reb_cycles + 
                       self.reb_amount + self.rrno + self.mode)
         m = hashlib.sha512()
-        m.update(tps_string)
+        m.update(tps_string.encode())
         return m.hexdigest()
 
     def calc_rebill_TPS(self):
@@ -664,13 +666,13 @@ class BluePay:
                 'STATUS': self.reb_status,
                 'TAMPER_PROOF_SEAL': self.calc_rebill_TPS()
             })
-        response = self.request(self.url, self.create_post_string(fields))
+        response = self.request(self.url, self.create_post_string(fields).encode())
         parsed_response = self.parse_response(response)
         return parsed_response
 
     def create_post_string(self, fields):
-        fields = dict([k,str(v).replace(',', '')] for (k,v) in fields.iteritems())       
-        return urllib.urlencode(fields)
+        fields = dict([k,str(v).replace(',', '')] for (k,v) in six.iteritems(fields))
+        return urlencode(fields)
     
     def request(self, url, data):
         """
@@ -686,9 +688,9 @@ class BluePay:
         try:
             r = urlopen(self.url, data)
             #response = r.read()
-	    response = r.geturl()
+            response = r.geturl()
             return response
-        except HTTPError, e:
+        except HTTPError as e:
             if re.match("https://secure.bluepay.com/interfaces/wlcatch", e.geturl()):
                 response = e.geturl()
                 return response
@@ -699,12 +701,12 @@ class BluePay:
         if self.api == 'bpdailyreport2':
             self.response = response
         elif self.api == 'bp10emu':        
-            query_string = urlparse.urlparse(response)
-            response = urlparse.parse_qs(query_string.query)
+            query_string = urlparse(response)
+            response = parse_qs(query_string.query)
             self.response = response
             self.assign_response_values()
         elif self.api == 'stq' or self.api == 'bp20rebadmin':
-            response = cgi.parse_qs(response)
+            response = parse_qs(response)
             self.response = response
             self.assign_response_values()
 
