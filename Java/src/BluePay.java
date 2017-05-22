@@ -441,10 +441,24 @@ public class BluePay
    *
    */ 
   public void cancelRebill(String rebillID){
-	  TRANSACTION_TYPE = "SET";
-	  REBILL_STATUS = "stopped";
-    REBILL_ID = rebillID;
-    API = "bp20rebadmin";
+	TRANSACTION_TYPE = "SET";
+	REBILL_STATUS = "stopped";
+    	REBILL_ID = rebillID;
+    	API = "bp20rebadmin";
+  }
+	
+  /**
+   * Restarts an existing rebilling cycle.  
+   *
+   * @param rebillID A 12 digit string containing the rebill ID.
+   *
+   */ 
+  public void restartRebill(HashMap<String, String> params) {
+  	TRANSACTION_TYPE = "SET";
+	REBILL_ID = params.get("rebillID");
+	NEXT_DATE = params.get("nextDate");
+	REBILL_STATUS = "active";
+	API = "bp20rebadmin";
   }
   
   /**
