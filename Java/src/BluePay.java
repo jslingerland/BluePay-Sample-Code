@@ -638,8 +638,15 @@ public class BluePay
    *
    */
   private String calcTPS() throws java.security.NoSuchAlgorithmException {
-    // System.out.println("RRNO:");
-    // System.out.println(RRNO);
+    TRANSACTION_TYPE = TRANSACTION_TYPE != null ? TRANSACTION_TYPE : "";
+    AMOUNT = AMOUNT != null ? AMOUNT : "";
+    REBILLING = REBILLING != null ? REBILLING : "";
+    REB_FIRST_DATE = REB_FIRST_DATE != null ? REB_FIRST_DATE : "";
+    REB_EXPR = REB_EXPR != null ? REB_EXPR : "";
+    REB_CYCLES = REB_CYCLES != null ? REB_CYCLES : "";
+    REB_AMOUNT = REB_AMOUNT != null ? REB_AMOUNT : "";
+    RRNO = RRNO != null ? RRNO : "";
+    BP_MODE = BP_MODE != null ? BP_MODE : "";
     String tps = BP_SECRET_KEY + BP_MERCHANT + TRANSACTION_TYPE + AMOUNT + REBILLING 
                  + REB_FIRST_DATE + REB_EXPR + REB_CYCLES + REB_AMOUNT + RRNO + BP_MODE;
     return sha512(tps);
