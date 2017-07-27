@@ -91,9 +91,15 @@ class BluePay {
 
     // Response fields
     private $transID;
+    private $status;
+    private $message;
     private $maskedAccount;
     private $cardType;
     private $customerBank;
+    private $response;
+    private $avsResp;
+    private $cvv2Resp;
+    private $rebid;
 
     private $postURL;
  
