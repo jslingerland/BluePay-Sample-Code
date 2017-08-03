@@ -3,7 +3,7 @@
 #
 # This code sample creates a recurring payment charging $15.00 per month for one year.
 ##
-
+from __future__ import print_function
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
@@ -52,11 +52,11 @@ payment.process()
 
 # Read response from BluePay
 if payment.is_successful_response():
-    print 'Transaction ID: ' + payment.trans_id_response
-    print 'Rebill ID: ' + payment.reb_id_response
-    print 'Transaction Status: ' + payment.status_response
-    print 'Transaction Message: ' + payment.message_response
-    print 'Masked Payment Account: ' + payment.trans_id_response
-    print 'Customer Bank: ' + payment.bank_name_response
+    print('Transaction ID: ' + payment.trans_id_response)
+    print('Rebill ID: ' + payment.reb_id_response)
+    print('Transaction Status: ' + payment.status_response)
+    print('Transaction Message: ' + payment.message_response)
+    print('Masked Payment Account: ' + payment.trans_id_response)
+    print('Customer Bank: ' + payment.bank_name_response)
 else:
-    print payment.message_response
+    print(payment.message_response)

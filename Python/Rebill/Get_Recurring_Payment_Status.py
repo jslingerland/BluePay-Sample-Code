@@ -8,7 +8,7 @@
 # See comments below on the details of the initial setup of the
 # rebilling cycle.
 ##
-
+from __future__ import print_function
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
@@ -70,14 +70,14 @@ if rebill.is_successful_response():
     rebill_status.process()
 
     # Reads response from BluePay
-    print 'Rebill Status: ' + rebill_status.rebill_status_response
-    print 'Rebill ID: ' + rebill_status.rebill_id_response
-    print 'Rebill Creation Date: ' + rebill_status.creation_date_response
-    print 'Rebill Next Date: ' + rebill_status.next_date_response
-    print 'Rebill Last Date: ' + rebill.last_date_response
-    print 'Rebill Schedule Expression: ' + rebill_status.sched_expression_response
-    print 'Rebill Cycles Remaining: ' + rebill_status.cycles_remaining_response
-    print 'Rebill Amount: ' + rebill_status.rebill_amount_response
-    print 'Rebill Next Amount: ' + rebill_status.next_amount_response
+    print('Rebill Status: ' + rebill_status.rebill_status_response)
+    print('Rebill ID: ' + rebill_status.rebill_id_response)
+    print('Rebill Creation Date: ' + rebill_status.creation_date_response)
+    print('Rebill Next Date: ' + rebill_status.next_date_response)
+    print('Rebill Last Date: ' + rebill.last_date_response)
+    print('Rebill Schedule Expression: ' + rebill_status.sched_expression_response)
+    print('Rebill Cycles Remaining: ' + rebill_status.cycles_remaining_response)
+    print('Rebill Amount: ' + rebill_status.rebill_amount_response)
+    print('Rebill Next Amount: ' + rebill_status.next_amount_response)
 else:
-    print payment.message_response
+    print(payment.message_response)

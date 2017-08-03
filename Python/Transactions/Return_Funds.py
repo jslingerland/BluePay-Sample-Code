@@ -8,7 +8,7 @@
 # If using TEST mode, odd dollar amounts will return
 # an approval and even dollar amounts will return a decline.
 ##
-
+from __future__ import print_function
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
@@ -64,13 +64,13 @@ if payment.is_successful_response():
     payment_return.process()
 
     # Read response from BluePay
-    print 'Transaction Status: ' + payment_return.status_response
-    print 'Transaction Message: ' + payment_return.message_response
-    print 'Transaction ID: ' + payment_return.trans_id_response
-    print 'AVS Response: ' + payment_return.avs_code_response
-    print 'CVV2 Response: ' + payment_return.cvv2_code_response
-    print 'Masked Payment Account: ' + payment_return.masked_account_response
-    print 'Card Type: ' + payment_return.card_type_response
-    print 'Auth Code: ' + payment_return.auth_code_response
+    print('Transaction Status: ' + payment_return.status_response)
+    print('Transaction Message: ' + payment_return.message_response)
+    print('Transaction ID: ' + payment_return.trans_id_response)
+    print('AVS Response: ' + payment_return.avs_code_response)
+    print('CVV2 Response: ' + payment_return.cvv2_code_response)
+    print('Masked Payment Account: ' + payment_return.masked_account_response)
+    print('Card Type: ' + payment_return.card_type_response)
+    print('Auth Code: ' + payment_return.auth_code_response)
 else:
-    print payment_return.message_response
+    print(payment_return.message_response)

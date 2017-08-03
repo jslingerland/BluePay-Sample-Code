@@ -8,7 +8,7 @@
 # Note: THIS DOES NOT ENSURE THAT THE CREDIT CARD OR ACH
 # ACCOUNT IS VALID.
 ##
-    
+from __future__ import print_function
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
@@ -47,13 +47,13 @@ store_payment.process()
 
 # Read response from BluePay
 if store_payment.is_successful_response():
-    print 'Transaction Status: ' + store_payment.status_response
-    print 'Transaction Message: ' + store_payment.message_response
-    print 'Transaction ID: ' + store_payment.trans_id_response
-    print 'AVS Response: ' + store_payment.avs_code_response
-    print 'CVV2 Response: ' + store_payment.cvv2_code_response
-    print 'Masked Payment Account: ' + store_payment.masked_account_response
-    print 'Card Type: ' + store_payment.card_type_response
-    print 'Auth Code: ' + store_payment.auth_code_response
+    print('Transaction Status: ' + store_payment.status_response)
+    print('Transaction Message: ' + store_payment.message_response)
+    print('Transaction ID: ' + store_payment.trans_id_response)
+    print('AVS Response: ' + store_payment.avs_code_response)
+    print('CVV2 Response: ' + store_payment.cvv2_code_response)
+    print('Masked Payment Account: ' + store_payment.masked_account_response)
+    print('Card Type: ' + store_payment.card_type_response)
+    print('Auth Code: ' + store_payment.auth_code_response)
 else:
-    print store_payment.message_response
+    print(store_payment.message_response)

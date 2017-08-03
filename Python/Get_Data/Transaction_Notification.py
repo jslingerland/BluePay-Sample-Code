@@ -6,7 +6,7 @@
      # a merchant's server after a transaction is processed
      # through their BluePay gateway account.
     ##
-
+from __future__ import print_function
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from BluePay import BluePay
@@ -49,14 +49,14 @@ try:
     if bp_stamp == vars["bp_stamp"]:
 
         # Get response from BluePay
-        print 'Transaction ID: ' + trans_id
-        print 'Transaction Status: ' + trans_status
-        print  'Transaction Type: ' + trans_type
-        print  'Transaction Amount: ' + amount
-        print  'Rebill ID: ' + rebill_id
-        print  'Rebill Amount: ' + rebill_amount
-        print  'Rebill Status: ' + rebill_status
+        print('Transaction ID: ' + trans_id)
+        print('Transaction Status: ' + trans_status)
+        print('Transaction Type: ' + trans_type)
+        print('Transaction Amount: ' + amount)
+        print('Rebill ID: ' + rebill_id)
+        print('Rebill Amount: ' + rebill_amount)
+        print('Rebill Status: ' + rebill_status)
     else:
-        print 'ERROR IN RECEIVING DATA FROM BLUEPAY'
+        print('ERROR IN RECEIVING DATA FROM BLUEPAY')
 except KeyError:
-    print "ERROR"
+    print("ERROR")
