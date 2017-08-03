@@ -37,8 +37,8 @@ namespace BluePayLibrary
         public string paymentAccount = "";
         public string cvv2 = "";
         public string cardExpire = "";
-        public Regex track1And2 = new Regex(@"(%B)\d{0,19}\^([\w\s]*)\/([\w\s]*)([\s]*)\^\d{7}\w*\?;\d{0,19}=\d{7}\w*\?");
-        public Regex track2Only = new Regex(@";\d{0,19}=\d{7}\w*\?");
+        public Regex track1And2 = new Regex(@"(%B)[\d\*]{0,19}\^([\w\s]*)\/([\w\s]*)([\s]*)\^[\d\*]{7}[\w*]*\?;[\d\*]{0,19}=[\d\*]{7}[\w*]*\?");
+        public Regex track2Only = new Regex(@";[\d\*]{0,19}=[\d\*]{7}[\w*]*\?");
         public string swipeData = "";
         public string routingNum = "";
         public string accountNum = "";
