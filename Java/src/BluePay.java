@@ -1067,9 +1067,9 @@ public class BluePay
     return map;  
   } 
 
-  /** Returns a single character indicating the result.
+  /** Returns a one word description indicating the result.
    *
-   * @return '1' = Approved, '0' = Declined, 'E' = Error
+   * @return 'APPROVED', 'DECLINED', 'ERROR' or 'MISSING'
    *
    */
   public String getStatus() {
