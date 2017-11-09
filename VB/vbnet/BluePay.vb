@@ -608,24 +608,11 @@ Namespace BPVB
         ''' Calculates BP_STAMP for trans notify post API
         ''' </summary>
         '''
-        Public Function calcTransNotifyTPS(ByVal secret_key As String, ByVal trans_id As String, ByVal trans_status As String, ByVal trans_type As String, ByVal amount As String, ByVal batch_id As String, ByVal batch_status As String, ByVal total_count As String, ByVal total_amount As String, ByVal batch_upload_id As String, ByVal rebill_id As String, ByVal rebill_amount As String, ByVal rebill_status As String)
-            Dim tps As String = secret_key _
-                        + trans_id _
-                        + trans_status _
-                        + trans_type _
-                        + amount _
-                        + batch_id _
-                        + batch_status _
-                        + total_count _
-                        + total_amount _
-                        + batch_upload_id _
-                        + rebill_id _
-                        + rebill_amount _
-                        + rebill_status
+        Public Shared Function calcTransNotifyTPS(ByVal bp_stamp As String)
             Dim md5 As MD5 = New MD5CryptoServiceProvider
             Dim hash() As Byte
             Dim encode As ASCIIEncoding = New ASCIIEncoding
-            Dim buffer() As Byte = encode.GetBytes(tps)
+            Dim buffer() As Byte = encode.GetBytes(bp_stamp)
             hash = md5.ComputeHash(buffer)
             Return ByteArrayToString(hash)
         End Function
