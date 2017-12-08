@@ -36,7 +36,7 @@ rebill.set_customer_information(
 
 rebill.set_cc_information(
     card_number = "4111111111111111",
-    card_expire = "1215",
+    card_expire = "1225",
     cvv2 = "123"
 )
 
@@ -65,7 +65,7 @@ if rebill.is_successful_response():
 
     # Sets an updated credit card expiration date
     payment_information_update.set_cc_information(
-        cc_expiration = '0121'
+        cc_expiration = '1229'
     )
     
     # Stores new card expiration date

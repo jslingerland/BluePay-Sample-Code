@@ -39,7 +39,7 @@ void getRecurringPaymentStatus(){
 
     rebill.setCCInformation(
 	    "4111111111111111", // Card Number
-	    "1215", // Card Expire
+	    "1225", // Card Expire
 	    "123" // Card CVV2
     );
 

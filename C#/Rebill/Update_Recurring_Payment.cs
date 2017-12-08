@@ -46,7 +46,7 @@ namespace Rebill
             rebill.SetCCInformation
             (
                 ccNumber: "4111111111111111",
-                ccExpiration: "1215",
+                ccExpiration: "1225",
                 cvv2: "123"
             );
 
@@ -80,7 +80,7 @@ namespace Rebill
                 // Sets an updated credit card expiration date
                 paymentInformationUpdate.SetCCInformation
                 (
-                	ccExpiration: "1219"
+                	ccExpiration: "1229"
                 );
 
                 // Stores new card expiration date

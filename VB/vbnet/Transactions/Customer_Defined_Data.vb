@@ -43,7 +43,7 @@ Namespace Transactions
             ' Sets credit card information
             payment.setCCInformation(
                 ccNumber:="4111111111111111", 
-                ccExpiration:="1215", 
+                ccExpiration:="1225", 
                 cvv2:="123" 
             )
 

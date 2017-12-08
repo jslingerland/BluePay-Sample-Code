@@ -32,7 +32,7 @@ payment.set_customer_information(
 
 payment.set_cc_information(
     card_number = "4111111111111111",
-    card_expire = "1220",
+    card_expire = "1225",
     cvv2 = "123"    
 )
 

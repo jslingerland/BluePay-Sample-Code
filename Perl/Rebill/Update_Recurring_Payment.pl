@@ -38,7 +38,7 @@ $rebill->set_customer_information({
 
 $rebill->set_cc_information({
 	cc_number =>'4111111111111111', # Customer Credit Card Number
-	cc_expiration => '0815', # Card Expiration Date: MMYY
+	cc_expiration => '1225', # Card Expiration Date: MMYY
 	cvv2 =>'123' # Card CVV2
 });
 
@@ -63,7 +63,7 @@ my $payment_information_update = BluePay->new(
 
 # Sets an updated credit card expiration date
 $payment_information_update->set_cc_information({
-	cc_expiration => '0819' # Card Expiration Date: MMYY
+	cc_expiration => '1229' # Card Expiration Date: MMYY
 });
 
 # Stores new card expiration date

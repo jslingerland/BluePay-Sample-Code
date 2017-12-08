@@ -37,8 +37,8 @@ $payment->set_customer_information({
 
 $payment->set_cc_information({
 	cc_number =>'4111111111111111', # Customer Credit Card Number
-	cc_expiration => '0815', # Card Expiration Date: MMYY
-	cvv2 =>'123' # Card CVV2
+	cc_expiration => '1225', # Card Expiration Date: MMYY
+	cvv2 =>'123' # Card cvv2
 });
        
 $payment->sale({amount => '3.00'}); # Sale Amount: $3.00

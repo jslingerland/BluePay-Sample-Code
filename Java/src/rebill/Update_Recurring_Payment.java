@@ -44,7 +44,7 @@ public class Update_Recurring_Payment {
     // Set Credit Card Information
     HashMap<String, String> ccParams = new HashMap<>();
     ccParams.put("cardNumber", "4111111111111111");
-    ccParams.put("expirationDate", "1215");
+    ccParams.put("expirationDate", "1225");
     ccParams.put("cvv2", "123");
     rebill.setCCInformation(ccParams);
 
@@ -78,7 +78,7 @@ public class Update_Recurring_Payment {
 
       // Sets an updated credit card expiration date
       HashMap<String, String> ccParams2 = new HashMap<>();
-      ccParams2.put("expirationDate", "1219");
+      ccParams2.put("expirationDate", "1229");
       paymentInformationUpdate.setCCInformation(ccParams2);
 
       // Stores new card expiration date
