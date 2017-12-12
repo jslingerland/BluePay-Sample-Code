@@ -462,32 +462,33 @@ class BluePay
   # Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
   def add_line_item(params)
     raise ArgumentError.new(":unit_cost and :quantity parameters are required.") if !params[:unit_cost] || !params[:quantity]
-    @LINE_ITEMS = 0 if !@LINE_ITEMS                                                              #  VALUE REQUIRED IN: 
-    @LINE_ITEMS += 1                                                                             #  USA | CANADA
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_UNIT_COST"] = params[:unit_cost]                        #   *      *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_QUANTITY"] = params[:quantity]                          #   *      *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_ITEM_SKU"] = params[:item_sku] || ''                    #          *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_ITEM_DESCRIPTOR"] = params[:descriptor] || ''           #   *      *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_COMMODITY_CODE"] = params[:commodity_code] || ''        #   *      *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_PRODUCT_CODE"] = params[:product_code] || ''            #   *    
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_MEASURE_UNITS"] = params[:measure_units] || ''          #   *      *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_ITEM_DISCOUNT"] = params[:item_discount] || ''          #          *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_TAX_RATE"] = params[:tax_rate] || ''                    #   *    
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_GOODS_TAX_RATE"] = params[:goods_tax_rate] || ''        #          *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_TAX_AMOUNT"] = params[:tax_amount] || ''                #   *    
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_GOODS_TAX_AMOUNT"] = params[:goods_tax_amount] || ''    #          *
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_CITY_TAX_RATE"] = params[:city_tax_rate] || ''          #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_CITY_TAX_AMOUNT"] = params[:city_tax_amount] || ''      #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_COUNTY_TAX_RATE"] = params[:county_tax_rate] || ''      #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_COUNTY_TAX_AMOUNT"] = params[:county_tax_amount] || ''  #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_STATE_TAX_RATE"] = params[:state_tax_rate] || ''        #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_STATE_TAX_AMOUNT"] = params[:state_tax_amount] || ''    #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_CUST_SKU"] = params[:cust_sku] || ''                    #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_CUST_PO"] = params[:cust_po] || ''                      #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_SUPPLEMENTAL_DATA"] = params[:supplemental_data] || ''  #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_GL_ACCOUNT_NUMBER"] = params[:gl_account_number] || ''  #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_DIVISION_NUMBER"] = params[:division_number] || ''      #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_PO_LINE_NUMBER"] = params[:po_line_number] || ''        #
-    @PARAM_HASH["LV3_ITEM#{@LINE_ITEMS}_LINE_ITEM_TOTAL"] = params[:line_item_total] || ''       #   *     
+    @LINE_ITEMS = 0 if !@LINE_ITEMS                                                              
+    @LINE_ITEMS += 1                                                              #  VALUE REQUIRED IN:
+    prefix = "LV3_ITEM#{@LINE_ITEMS}_"                                            #  USA | CANADA
+    @PARAM_HASH[prefix + 'UNIT_COST'] = params[:unit_cost]                        #   *      *
+    @PARAM_HASH[prefix + 'QUANTITY'] = params[:quantity]                          #   *      *
+    @PARAM_HASH[prefix + 'ITEM_SKU'] = params[:item_sku] || ''                    #          *
+    @PARAM_HASH[prefix + 'ITEM_DESCRIPTOR'] = params[:descriptor] || ''           #   *      *
+    @PARAM_HASH[prefix + 'COMMODITY_CODE'] = params[:commodity_code] || ''        #   *      *
+    @PARAM_HASH[prefix + 'PRODUCT_CODE'] = params[:product_code] || ''            #   *    
+    @PARAM_HASH[prefix + 'MEASURE_UNITS'] = params[:measure_units] || ''          #   *      *
+    @PARAM_HASH[prefix + 'ITEM_DISCOUNT'] = params[:item_discount] || ''          #          *
+    @PARAM_HASH[prefix + 'TAX_RATE'] = params[:tax_rate] || ''                    #   *    
+    @PARAM_HASH[prefix + 'GOODS_TAX_RATE'] = params[:goods_tax_rate] || ''        #          *
+    @PARAM_HASH[prefix + 'TAX_AMOUNT'] = params[:tax_amount] || ''                #   *    
+    @PARAM_HASH[prefix + 'GOODS_TAX_AMOUNT'] = params[:goods_tax_amount] || ''    #          *
+    @PARAM_HASH[prefix + 'CITY_TAX_RATE'] = params[:city_tax_rate] || ''          #
+    @PARAM_HASH[prefix + 'CITY_TAX_AMOUNT'] = params[:city_tax_amount] || ''      #
+    @PARAM_HASH[prefix + 'COUNTY_TAX_RATE'] = params[:county_tax_rate] || ''      #
+    @PARAM_HASH[prefix + 'COUNTY_TAX_AMOUNT'] = params[:county_tax_amount] || ''  #
+    @PARAM_HASH[prefix + 'STATE_TAX_RATE'] = params[:state_tax_rate] || ''        #
+    @PARAM_HASH[prefix + 'STATE_TAX_AMOUNT'] = params[:state_tax_amount] || ''    #
+    @PARAM_HASH[prefix + 'CUST_SKU'] = params[:cust_sku] || ''                    #
+    @PARAM_HASH[prefix + 'CUST_PO'] = params[:cust_po] || ''                      #
+    @PARAM_HASH[prefix + 'SUPPLEMENTAL_DATA'] = params[:supplemental_data] || ''  #
+    @PARAM_HASH[prefix + 'GL_ACCOUNT_NUMBER'] = params[:gl_account_number] || ''  #
+    @PARAM_HASH[prefix + 'DIVISION_NUMBER'] = params[:division_number] || ''      #
+    @PARAM_HASH[prefix + 'PO_LINE_NUMBER'] = params[:po_line_number] || ''        #
+    @PARAM_HASH[prefix + 'LINE_ITEM_TOTAL'] = params[:line_item_total] || ''      #   *     
   end
 end

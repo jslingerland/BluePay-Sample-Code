@@ -566,36 +566,37 @@ class BluePay:
             '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def)+
             '&CARD_TYPES='        + self.url_encode(self.card_types))
 
-    # Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum.
+    # Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum per transaction.
     def add_line_item(self, **params):
         i = len(self.line_items) + 1
-        self.line_items.append(
-            {
-                'LV3_ITEM' + str(i) + '_' + 'UNIT_COST' : params.get('unit_cost'),
-                'LV3_ITEM' + str(i) + '_' + 'QUANTITY' : params.get('quantity'),
-                'LV3_ITEM' + str(i) + '_' + 'ITEM_SKU' : params.get('item_sku', ''),
-                'LV3_ITEM' + str(i) + '_' + 'ITEM_DESCRIPTOR' : params.get('descriptor', ''),
-                'LV3_ITEM' + str(i) + '_' + 'COMMODITY_CODE' : params.get('commodity_code', ''),
-                'LV3_ITEM' + str(i) + '_' + 'PRODUCT_CODE' : params.get('product_code', ''),
-                'LV3_ITEM' + str(i) + '_' + 'MEASURE_UNITS' : params.get('measure_units', ''),
-                'LV3_ITEM' + str(i) + '_' + 'ITEM_DISCOUNT' : params.get('item_discount', ''),
-                'LV3_ITEM' + str(i) + '_' + 'TAX_RATE' : params.get('tax_rate', ''),
-                'LV3_ITEM' + str(i) + '_' + 'GOODS_TAX_RATE' : params.get('goods_tax_rate', ''),
-                'LV3_ITEM' + str(i) + '_' + 'TAX_AMOUNT' : params.get('tax_amount', ''),
-                'LV3_ITEM' + str(i) + '_' + 'GOODS_TAX_AMOUNT' : params.get('goods_tax_amount', ''),
-                'LV3_ITEM' + str(i) + '_' + 'CITY_TAX_RATE' : params.get('city_tax_rate', ''),
-                'LV3_ITEM' + str(i) + '_' + 'CITY_TAX_AMOUNT' : params.get('city_tax_amount', ''),
-                'LV3_ITEM' + str(i) + '_' + 'COUNTY_TAX_RATE' : params.get('county_tax_rate', ''),
-                'LV3_ITEM' + str(i) + '_' + 'COUNTY_TAX_AMOUNT' : params.get('county_tax_amount', ''),
-                'LV3_ITEM' + str(i) + '_' + 'STATE_TAX_RATE' : params.get('state_tax_rate', ''),
-                'LV3_ITEM' + str(i) + '_' + 'STATE_TAX_AMOUNT' : params.get('state_tax_amount', ''),
-                'LV3_ITEM' + str(i) + '_' + 'CUST_SKU' : params.get('cust_sku', ''),
-                'LV3_ITEM' + str(i) + '_' + 'CUST_PO' : params.get('cust_po', ''),
-                'LV3_ITEM' + str(i) + '_' + 'SUPPLEMENTAL_DATA' : params.get('supplemental_data', ''),
-                'LV3_ITEM' + str(i) + '_' + 'GL_ACCOUNT_NUMBER' : params.get('gl_account_number', ''),
-                'LV3_ITEM' + str(i) + '_' + 'DIVISION_NUMBER' : params.get('division_number', ''),
-                'LV3_ITEM' + str(i) + '_' + 'PO_LINE_NUMBER' : params.get('po_line_number', ''),
-                'LV3_ITEM' + str(i) + '_' + 'LINE_ITEM_TOTAL' : params.get('line_item_total', '')
+        prefix = 'LV3_ITEM' + str(i) + '_'
+        self.line_items.append(                                                         #  VALUE REQUIRED IN:
+            {                                                                           #  USA | CANADA
+                prefix + 'UNIT_COST' : params.get('unit_cost'),                         #   *      *
+                prefix + 'QUANTITY' : params.get('quantity'),                           #   *      *
+                prefix + 'ITEM_SKU' : params.get('item_sku', ''),                       #          *
+                prefix + 'ITEM_DESCRIPTOR' : params.get('descriptor', ''),              #   *      *       
+                prefix + 'COMMODITY_CODE' : params.get('commodity_code', ''),           #   *      *    
+                prefix + 'PRODUCT_CODE' : params.get('product_code', ''),               #   * 
+                prefix + 'MEASURE_UNITS' : params.get('measure_units', ''),             #   *      *
+                prefix + 'ITEM_DISCOUNT' : params.get('item_discount', ''),             #          *
+                prefix + 'TAX_RATE' : params.get('tax_rate', ''),                       #   * 
+                prefix + 'GOODS_TAX_RATE' : params.get('goods_tax_rate', ''),           #          *
+                prefix + 'TAX_AMOUNT' : params.get('tax_amount', ''),                   #   *
+                prefix + 'GOODS_TAX_AMOUNT' : params.get('goods_tax_amount', ''),       #   *     
+                prefix + 'CITY_TAX_RATE' : params.get('city_tax_rate', ''),             #
+                prefix + 'CITY_TAX_AMOUNT' : params.get('city_tax_amount', ''),         #    
+                prefix + 'COUNTY_TAX_RATE' : params.get('county_tax_rate', ''),         #
+                prefix + 'COUNTY_TAX_AMOUNT' : params.get('county_tax_amount', ''),     #    
+                prefix + 'STATE_TAX_RATE' : params.get('state_tax_rate', ''),           #
+                prefix + 'STATE_TAX_AMOUNT' : params.get('state_tax_amount', ''),       #    
+                prefix + 'CUST_SKU' : params.get('cust_sku', ''),                       #
+                prefix + 'CUST_PO' : params.get('cust_po', ''),                         #
+                prefix + 'SUPPLEMENTAL_DATA' : params.get('supplemental_data', ''),     #    
+                prefix + 'GL_ACCOUNT_NUMBER' : params.get('gl_account_number', ''),     #    
+                prefix + 'DIVISION_NUMBER' : params.get('division_number', ''),         #
+                prefix + 'PO_LINE_NUMBER' : params.get('po_line_number', ''),           #
+                prefix + 'LINE_ITEM_TOTAL' : params.get('line_item_total', '')          #   * 
             }
         )
 
