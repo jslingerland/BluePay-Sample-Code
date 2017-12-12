@@ -97,6 +97,9 @@ class BluePay:
     url = ''
     api = ''
 
+    # Level 3 Processing field
+    line_items = []
+
     # Class constructor. Accepts:
     # accID : Merchant's Account ID
     # secret_key : Merchant's Secret Key
@@ -563,6 +566,38 @@ class BluePay:
             '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def)+
             '&CARD_TYPES='        + self.url_encode(self.card_types))
 
+    def add_line_item(self, **params):
+        i = len(self.line_items) + 1
+        self.line_items.append(
+            {
+                'LV3_ITEM' + str(i) + '_' + 'UNIT_COST' : params.get('unit_cost'),
+                'LV3_ITEM' + str(i) + '_' + 'QUANTITY' : params.get('quantity'),
+                'LV3_ITEM' + str(i) + '_' + 'ITEM_SKU' : params.get('item_sku', ''),
+                'LV3_ITEM' + str(i) + '_' + 'ITEM_DESCRIPTOR' : params.get('descriptor', ''),
+                'LV3_ITEM' + str(i) + '_' + 'COMMODITY_CODE' : params.get('commodity_code', ''),
+                'LV3_ITEM' + str(i) + '_' + 'PRODUCT_CODE' : params.get('product_code', ''),
+                'LV3_ITEM' + str(i) + '_' + 'MEASURE_UNITS' : params.get('measure_units', ''),
+                'LV3_ITEM' + str(i) + '_' + 'ITEM_DISCOUNT' : params.get('item_discount', ''),
+                'LV3_ITEM' + str(i) + '_' + 'TAX_RATE' : params.get('tax_rate', ''),
+                'LV3_ITEM' + str(i) + '_' + 'GOODS_TAX_RATE' : params.get('goods_tax_rate', ''),
+                'LV3_ITEM' + str(i) + '_' + 'TAX_AMOUNT' : params.get('tax_amount', ''),
+                'LV3_ITEM' + str(i) + '_' + 'GOODS_TAX_AMOUNT' : params.get('goods_tax_amount', ''),
+                'LV3_ITEM' + str(i) + '_' + 'CITY_TAX_RATE' : params.get('city_tax_rate', ''),
+                'LV3_ITEM' + str(i) + '_' + 'CITY_TAX_AMOUNT' : params.get('city_tax_amount', ''),
+                'LV3_ITEM' + str(i) + '_' + 'COUNTY_TAX_RATE' : params.get('county_tax_rate', ''),
+                'LV3_ITEM' + str(i) + '_' + 'COUNTY_TAX_AMOUNT' : params.get('county_tax_amount', ''),
+                'LV3_ITEM' + str(i) + '_' + 'STATE_TAX_RATE' : params.get('state_tax_rate', ''),
+                'LV3_ITEM' + str(i) + '_' + 'STATE_TAX_AMOUNT' : params.get('state_tax_amount', ''),
+                'LV3_ITEM' + str(i) + '_' + 'CUST_SKU' : params.get('cust_sku', ''),
+                'LV3_ITEM' + str(i) + '_' + 'CUST_PO' : params.get('cust_po', ''),
+                'LV3_ITEM' + str(i) + '_' + 'SUPPLEMENTAL_DATA' : params.get('supplemental_data', ''),
+                'LV3_ITEM' + str(i) + '_' + 'GL_ACCOUNT_NUMBER' : params.get('gl_account_number', ''),
+                'LV3_ITEM' + str(i) + '_' + 'DIVISION_NUMBER' : params.get('division_number', ''),
+                'LV3_ITEM' + str(i) + '_' + 'PO_LINE_NUMBER' : params.get('po_line_number', ''),
+                'LV3_ITEM' + str(i) + '_' + 'LINE_ITEM_TOTAL' : params.get('line_item_total', '')
+            }
+        )
+
     ### PROCESSES THE API REQUEST ####
     def process(self, card=None, customer=None, order=None):
         fields = {
@@ -666,6 +701,8 @@ class BluePay:
                 'STATUS': self.reb_status,
                 'TAMPER_PROOF_SEAL': self.calc_rebill_TPS()
             })
+        for item in self.line_items:
+            fields.update(item)
         response = self.request(self.url, self.create_post_string(fields).encode())
         parsed_response = self.parse_response(response)
         return parsed_response
