@@ -566,6 +566,7 @@ class BluePay:
             '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def)+
             '&CARD_TYPES='        + self.url_encode(self.card_types))
 
+    # Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum.
     def add_line_item(self, **params):
         i = len(self.line_items) + 1
         self.line_items.append(
@@ -701,7 +702,7 @@ class BluePay:
                 'STATUS': self.reb_status,
                 'TAMPER_PROOF_SEAL': self.calc_rebill_TPS()
             })
-        for item in self.line_items:
+        for item in self.line_items: # Update fields dictionary with line item information, if available.
             fields.update(item)
         response = self.request(self.url, self.create_post_string(fields).encode())
         parsed_response = self.parse_response(response)
