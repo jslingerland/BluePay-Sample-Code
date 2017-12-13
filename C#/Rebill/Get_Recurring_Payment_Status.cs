@@ -46,7 +46,7 @@ namespace Rebill
             rebill.SetCCInformation
             (
                 ccNumber: "4111111111111111",
-                ccExpiration: "1215",
+                ccExpiration: "1225",
                 cvv2: "123"
             );
 

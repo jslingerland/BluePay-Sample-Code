@@ -42,7 +42,7 @@ public class Store_Payment_Information {
     // Set Credit Card Information
     HashMap<String, String> ccParams = new HashMap<>();
     ccParams.put("cardNumber", "4111111111111111");
-    ccParams.put("expirationDate", "1215");
+    ccParams.put("expirationDate", "1225");
     ccParams.put("cvv2", "123");
     payment.setCCInformation(ccParams);
 

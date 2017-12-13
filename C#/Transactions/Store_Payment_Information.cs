@@ -18,8 +18,8 @@ namespace Transactions
     {
         public static void Main()
         {
-            string accountID = "100221257489";
-            string secretKey = "YCBJNEUEKNINP5PWEH1HRQDSQHYANPM/";
+            string accountID = "Merchant's Account ID Here";
+            string secretKey = "Merchant's Secret Key Here";
             string mode = "TEST";
 
             BluePay payment = new BluePay
@@ -46,7 +46,7 @@ namespace Transactions
             payment.SetCCInformation
             (
                 ccNumber: "4111111111111111",
-                ccExpiration: "1215",
+                ccExpiration: "1225",
                 cvv2: "123"
             );
 
