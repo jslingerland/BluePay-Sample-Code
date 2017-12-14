@@ -38,7 +38,7 @@ $payment->set_customer_information({
 
 $payment->set_cc_information({
 	cc_number =>'4111111111111111', # Customer Credit Card Number
-	cc_expiration => '0815', # Card Expiration Date: MMYY
+	cc_expiration => '1225', # Card Expiration Date: MMYY
 	cvv2 =>'123' # Card CVV2
 });
 
@@ -64,7 +64,7 @@ if ($payment->is_successful_response()){
 	print "TRANSACTION STATUS: " . $payment->{Result} . "\n";
 	print "TRANSACTION MESSAGE: " . $payment->{MESSAGE} . "\n";
 	print "TRANSACTION ID: " . $payment->{RRNO} . "\n";
-	print "AVS RESULT: " .$payment->{AVS} . "\n";
+	print "AVS RESULT: " . $payment->{AVS} . "\n";
 	print "CVV2 RESULT: " . $payment->{CVV2} . "\n";
 	print "MASKED PAYMENT ACCOUNT: " . $payment->{PAYMENT_ACCOUNT} . "\n";
 	print "CARD TYPE: " . $payment->{CARD_TYPE} . "\n";

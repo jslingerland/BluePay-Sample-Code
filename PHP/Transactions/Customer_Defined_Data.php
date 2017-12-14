@@ -37,7 +37,7 @@ $payment->setCustomerInformation(array(
 
 $payment->setCCInformation(array(
     'cardNumber' => '4111111111111111', // Card Number: 4111111111111111
-    'cardExpire' => '1215', // Card Expire: 12/15
+    'cardExpire' => '1225', // Card Expire: 12/25
     'cvv2' => '123' // Card CVV2: 123
 ));
 

@@ -41,7 +41,7 @@ namespace Transactions
             );
             
             // Set payment information for a swiped credit card transaction
-            payment.Swipe("%B4111111111111111^TEST/BLUEPAY^1911101100001100000000667000000?;4111111111111111=191110110000667?");
+            payment.Swipe("%B4111111111111111^TEST/BLUEPAY^2511101100001100000000667000000?;4111111111111111=251110110000667?");
 
             // Sale Amount: $3.00
             payment.Sale(amount: "3.00");

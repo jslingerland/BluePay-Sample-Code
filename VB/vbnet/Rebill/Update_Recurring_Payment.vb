@@ -43,7 +43,7 @@ Namespace Rebill
 
             rebill.setCCInformation(
                 ccNumber:="4111111111111111", 
-                ccExpiration:="1215", 
+                ccExpiration:="1225", 
                 cvv2:="123" 
             )
 
@@ -71,7 +71,7 @@ Namespace Rebill
                 )
 
                 'Sets an updated credit card expiration date               
-                updatePaymentInformation.setCCInformation(ccExpiration:="0121")
+                updatePaymentInformation.setCCInformation(ccExpiration:="1229")
 
                 ' Stores new card expiration date
                 updatePaymentInformation.auth(
