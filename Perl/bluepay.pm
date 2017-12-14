@@ -357,7 +357,7 @@ sub add_line_item{
         $self->{LINE_ITEMS} = 0;
     }
     $self->{LINE_ITEMS}++;
-    my $prefix = "LV3_ITEM$self->{LINE_ITEMS}_";                                                   #  VALUE REQUIRED IN:
+    my $prefix = "LV3_ITEM$self->{LINE_ITEMS}_";                                    #  VALUE REQUIRED IN:
                                                                                     #  USA | CANADA
     $self->{$prefix . 'UNIT_COST'} = $params->{unit_cost};                          #   *      *
     $self->{$prefix . 'QUANTITY'} = $params->{quantity};                            #   *      *

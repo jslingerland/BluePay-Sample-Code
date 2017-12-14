@@ -102,7 +102,10 @@ class BluePay {
     private $rebid;
 
     private $postURL;
- 
+    
+    // Level 3 processing field
+    private $lineItems;
+
     // Class constructor. Accepts:
     // $accID : Merchant's Account ID
     // $secretKey : Merchant's Secret Key
@@ -418,6 +421,39 @@ class BluePay {
         $this->name2 = $name2;
     }
 
+    // Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum per transaction.
+    public function addLineItem($params) {
+        $i = count($this->lineItems) + 1;
+        $prefix = "LV3_ITEM${i}_";                                                 //  VALUE REQUIRED IN:
+        $this->lineItems[] = array(                                                //  USA | CANADA
+            "${prefix}UNIT_COST" => $params['unit_cost'],                          //   *      *
+            "${prefix}QUANTITY" => $params['quantity'],                            //   *      *
+            "${prefix}ITEM_SKU" => $params['item_sku'] ?? '',                      //          *
+            "${prefix}ITEM_DESCRIPTOR" => $params['descriptor'] ?? '',             //   *      *
+            "${prefix}COMMODITY_CODE" => $params['commodity_code'] ?? '',          //   *      *
+            "${prefix}PRODUCT_CODE" => $params['product_code'] ?? '',              //   *
+            "${prefix}MEASURE_UNITS" => $params['measure_units'] ?? '',            //   *      *
+            "${prefix}ITEM_DISCOUNT" => $params['item_discount'] ?? '',            //          *
+            "${prefix}TAX_RATE" => $params['tax_rate'] ?? '',                      //   *
+            "${prefix}GOODS_TAX_RATE" => $params['goods_tax_rate'] ?? '',          //          *
+            "${prefix}TAX_AMOUNT" => $params['tax_amount'] ?? '',                  //   *
+            "${prefix}GOODS_TAX_AMOUNT" => $params['goods_tax_amount'] ?? '',      //   *
+            "${prefix}CITY_TAX_RATE" => $params['city_tax_rate'] ?? '',            //
+            "${prefix}CITY_TAX_AMOUNT" => $params['city_tax_amount'] ?? '',        //
+            "${prefix}COUNTY_TAX_RATE" => $params['county_tax_rate'] ?? '',        //
+            "${prefix}COUNTY_TAX_AMOUNT" => $params['county_tax_amount'] ?? '',    //
+            "${prefix}STATE_TAX_RATE" => $params['state_tax_rate'] ?? '',          //
+            "${prefix}STATE_TAX_AMOUNT" => $params['state_tax_amount'] ?? '',      //
+            "${prefix}CUST_SKU" => $params['cust_sku'] ?? '',                      //
+            "${prefix}CUST_PO" => $params['cust_po'] ?? '',                        //
+            "${prefix}SUPPLEMENTAL_DATA" => $params['supplemental_data'] ?? '',    //
+            "${prefix}GL_ACCOUNT_NUMBER" => $params['gl_account_number'] ?? '',    //
+            "${prefix}DIVISION_NUMBER" => $params['division_number'] ?? '',        //
+            "${prefix}PO_LINE_NUMBER" => $params['po_line_number'] ?? '',          //
+            "${prefix}LINE_ITEM_TOTAL" => $params['line_item_total'] ?? ''         //   *
+        );
+    }
+
     // Functions for calculating the TAMPER_PROOF_SEAL
     public final function calcTPS() {
         $tpsString = $this->secretKey . $this->accountID . $this->transType . $this->amount . $this->doRebill . $this->rebillFirstDate .
@@ -712,12 +748,20 @@ class BluePay {
             default:
         }
 
+        // Add Level 3 item data if available
+        if(!empty($this->lineItems)){
+            foreach($this->lineItems as $item){
+                $post = $post + $item;
+                unset($item);
+            }
+        }
             /* perform the transaction */
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $this->postURL); // Set the URL
             curl_setopt($ch, CURLOPT_USERAGENT, "Bluepay Payment");
             curl_setopt($ch, CURLOPT_POST, 1); // Perform a POST
             curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Required for query strings greater than 1024 characters.
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // Turns off verification of the SSL certificate.
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // If not set, curl prints output to the browser
