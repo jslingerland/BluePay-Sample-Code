@@ -106,9 +106,9 @@ sub process {
     while ( my ( $key, $value ) = each(%$self) ) {
         if ( $key eq 'SECRET_KEY' ) { next; }
         if ( $key eq 'URL' )        { next; }
+        if ( $key eq 'LINE_ITEMS' ) { next; }
         $request .= "&$key=" . uri_escape( $value || '' );
     }
-
     # prints the full api request url 
     # print "\n" . "request: "  . "\n" . $request . "\n \n";
 
@@ -341,11 +341,49 @@ sub get_settled_transaction_report{
 sub get_single_transaction_query{
     my $self = shift;
     my $params =  shift;
-    $self->{API} = "stq";    
+    $self->{API} = "stq";
     $self->{REPORT_START_DATE} = $params->{report_start_date};
     $self->{REPORT_END_DATE} = $params->{report_end_date};
     $self->{id} = $params->{transaction_id};
     $self->{EXCLUDE_ERRORS} = $params->{exclude_errors}; # optional
+}
+
+# Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum per transaction.
+sub add_line_item{
+    my $self = shift;
+    my $params = shift;
+    # Creates line items counter necessary for prefix.
+    if (!defined $self->{LINE_ITEMS}) {
+        $self->{LINE_ITEMS} = 0;
+    }
+    $self->{LINE_ITEMS}++;
+    my $prefix = "LV3_ITEM$self->{LINE_ITEMS}_";                                                   #  VALUE REQUIRED IN:
+                                                                                    #  USA | CANADA
+    $self->{$prefix . 'UNIT_COST'} = $params->{unit_cost};                          #   *      *
+    $self->{$prefix . 'QUANTITY'} = $params->{quantity};                            #   *      *
+    $self->{$prefix . 'ITEM_SKU'} = $params->{item_sku} || '';                      #          *
+    $self->{$prefix . 'ITEM_DESCRIPTOR'} = $params->{descriptor} || '';             #   *      *
+    $self->{$prefix . 'COMMODITY_CODE'} = $params->{commodity_code} || '';          #   *      *
+    $self->{$prefix . 'PRODUCT_CODE'} = $params->{product_code} || '';              #   *
+    $self->{$prefix . 'MEASURE_UNITS'} = $params->{measure_units} || '';            #   *      *
+    $self->{$prefix . 'ITEM_DISCOUNT'} = $params->{item_discount} || '';            #          *
+    $self->{$prefix . 'TAX_RATE'} = $params->{tax_rate} || '';                      #   *
+    $self->{$prefix . 'GOODS_TAX_RATE'} = $params->{goods_tax_rate} || '';          #          *
+    $self->{$prefix . 'TAX_AMOUNT'} = $params->{tax_amount} || '';                  #   *
+    $self->{$prefix . 'GOODS_TAX_AMOUNT'} = $params->{goods_tax_amount} || '';      #   *
+    $self->{$prefix . 'CITY_TAX_RATE'} = $params->{city_tax_rate} || '';            #
+    $self->{$prefix . 'CITY_TAX_AMOUNT'} = $params->{city_tax_amount} || '';        #
+    $self->{$prefix . 'COUNTY_TAX_RATE'} = $params->{county_tax_rate} || '';        #
+    $self->{$prefix . 'COUNTY_TAX_AMOUNT'} = $params->{county_tax_amount} || '';    #
+    $self->{$prefix . 'STATE_TAX_RATE'} = $params->{state_tax_rate} || '';          #
+    $self->{$prefix . 'STATE_TAX_AMOUNT'} = $params->{state_tax_amount} || '';      #
+    $self->{$prefix . 'CUST_SKU'} = $params->{cust_sku} || '';                      #
+    $self->{$prefix . 'CUST_PO'} = $params->{cust_po} || '';                        #
+    $self->{$prefix . 'SUPPLEMENTAL_DATA'} = $params->{supplemental_data} || '';    #
+    $self->{$prefix . 'GL_ACCOUNT_NUMBER'} = $params->{gl_account_number} || '';    #
+    $self->{$prefix . 'DIVISION_NUMBER'} = $params->{division_number} || '';        #
+    $self->{$prefix . 'PO_LINE_NUMBER'} = $params->{po_line_number} || '';          #
+    $self->{$prefix . 'LINE_ITEM_TOTAL'} = $params->{line_item_total} || '';        #   *
 }
 
 # Required arguments for generate_url:

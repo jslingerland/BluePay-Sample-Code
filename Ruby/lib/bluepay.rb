@@ -461,7 +461,7 @@ class BluePay
 
   # Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
   def add_line_item(params)
-    raise ArgumentError.new(":unit_cost and :quantity parameters are required.") if !params[:unit_cost] || !params[:quantity]
+    # Creates line items counter necessary for prefix.
     @LINE_ITEMS = 0 if !@LINE_ITEMS                                                              
     @LINE_ITEMS += 1                                                              #  VALUE REQUIRED IN:
     prefix = "LV3_ITEM#{@LINE_ITEMS}_"                                            #  USA | CANADA
