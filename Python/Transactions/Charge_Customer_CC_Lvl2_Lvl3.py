@@ -53,7 +53,7 @@ payment.add_line_item(
   product_code = "432143214321", # Merchant-defined code for the product or service being purchased. Max: 12 characters 
   measure_units = "EA", # The unit of measure of the item purchase. Normally EA. Max: 3 characters
   tax_rate = "7%", # Tax rate for the item. Max: 4 digits
-  tax_amount = "0.21", # Tax amount for the item. Max: 9 digits
+  tax_amount = "0.21", # Tax amount for the item. unit_cost * quantity * tax_rate = tax_amount. Max: 9 digits.
   item_discount = "0.00", # The amount of any discounts on the item. Max: 12 digits.
   line_item_total = "3.21" # The total amount for the item including taxes and discounts.
 )
@@ -71,7 +71,7 @@ payment.add_line_item(
   line_item_total = "10.70"
 )
 
-payment.sale(amount = '13.91') # Sale Amount: $3.00
+payment.sale(amount = '13.91') # Sale Amount: $13.91
 
 # Makes the API Request
 payment.process()
