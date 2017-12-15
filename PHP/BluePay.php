@@ -102,6 +102,9 @@ class BluePay {
     private $rebid;
 
     private $postURL;
+
+    // Level 2 processing field
+    private $level2Info;
     
     // Level 3 processing field
     private $lineItems;
@@ -235,7 +238,7 @@ class BluePay {
     }
 
     // Passes value into INVOICE_ID field
-    public function setinvoiceID($invoiceID) {
+    public function setInvoiceID($invoiceID) {
         $this->invoiceID = $invoiceID;
     }
 
@@ -421,7 +424,41 @@ class BluePay {
         $this->name2 = $name2;
     }
 
-    // Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum per transaction.
+    // Adds information required for level 2 processing.
+    public function addLevel2Information($params) {
+        $this->level2Info = array(
+            'LV2_ITEM_TAX_RATE' => $params['tax_rate'] ?? '',
+            'LV2_ITEM_GOODS_TAX_RATE' => $params['goods_tax_rate'] ?? '',
+            'LV2_ITEM_GOODS_TAX_AMOUNT' => $params['goods_tax_amount'] ?? '',
+            'LV2_ITEM_SHIPPING_AMOUNT' => $params['shipping_amount'] ?? '',
+            'LV2_ITEM_DISCOUNT_AMOUNT' => $params['discount_amount'] ?? '',
+            'LV2_ITEM_CUST_PO' => $params['cust_po'] ?? '',
+            'LV2_ITEM_GOODS_TAX_ID' => $params['goods_tax_id'] ?? '',
+            'LV2_ITEM_TAX_ID' => $params['tax_id'] ?? '',
+            'LV2_ITEM_CUSTOMER_TAX_ID' => $params['customer_tax_id'] ?? '',
+            'LV2_ITEM_DUTY_AMOUNT' => $params['duty_amount'] ?? '',
+            'LV2_ITEM_SUPPLEMENTAL_DATA' => $params['supplemental_data'] ?? '',
+            'LV2_ITEM_CITY_TAX_RATE' => $params['city_tax_rate'] ?? '',
+            'LV2_ITEM_CITY_TAX_AMOUNT' => $params['city_tax_amount'] ?? '',
+            'LV2_ITEM_COUNTY_TAX_RATE' => $params['county_tax_rate'] ?? '',
+            'LV2_ITEM_COUNTY_TAX_AMOUNT' => $params['county_tax_amount'] ?? '',
+            'LV2_ITEM_STATE_TAX_RATE' => $params['state_tax_rate'] ?? '',
+            'LV2_ITEM_STATE_TAX_AMOUNT' => $params['state_tax_amount'] ?? '',
+            'LV2_ITEM_BUYER_NAME' => $params['buyer_name'] ?? '',
+            'LV2_ITEM_CUSTOMER_REFERENCE' => $params['customer_reference'] ?? '',
+            'LV2_ITEM_CUSTOMER_NUMBER' => $params['customer_number'] ?? '',
+            'LV2_ITEM_SHIP_NAME' => $params['ship_name'] ?? '',
+            'LV2_ITEM_SHIP_ADDR1' => $params['ship_addr1'] ?? '',
+            'LV2_ITEM_SHIP_ADDR2' => $params['ship_addr2'] ?? '',
+            'LV2_ITEM_SHIP_CITY' => $params['ship_city'] ?? '',
+            'LV2_ITEM_SHIP_STATE' => $params['ship_state'] ?? '',
+            'LV2_ITEM_SHIP_ZIP' => $params['ship_zip'] ?? '',
+            'LV2_ITEM_SHIP_COUNTRY' => $params['ship_country'] ?? ''
+        );
+    }
+
+    // Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+    // For Canadian and AMEX processors, ensure required Level 2 information is present.
     public function addLineItem($params) {
         $i = count($this->lineItems) + 1;
         $prefix = "LV3_ITEM${i}_";                                                 //  VALUE REQUIRED IN:
@@ -748,7 +785,12 @@ class BluePay {
             default:
         }
 
-        // Add Level 3 item data if available
+        // Add Level 2 item data, if available
+        if(!empty($this->level2Info)){
+            $post = $post + $this->level2Info;
+        }
+
+        // Add Level 3 item data, if available
         if(!empty($this->lineItems)){
             foreach($this->lineItems as $item){
                 $post = $post + $item;
