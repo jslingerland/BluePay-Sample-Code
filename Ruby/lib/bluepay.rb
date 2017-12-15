@@ -459,7 +459,39 @@ class BluePay
     '&CARD_TYPES='        .concat(url_encode    (@card_types)                       )
   end
 
+  # Adds information required for level 2 processing.
+  def add_level2_information(params)
+    @PARAM_HASH['LV2_ITEM_TAX_RATE'] = params[:tax_rate] || ''
+    @PARAM_HASH['LV2_ITEM_GOODS_TAX_RATE'] = params[:goods_tax_rate] || ''
+    @PARAM_HASH['LV2_ITEM_GOODS_TAX_AMOUNT'] = params[:goods_tax_amount] || ''
+    @PARAM_HASH['LV2_ITEM_SHIPPING_AMOUNT'] = params[:shipping_amount] || ''
+    @PARAM_HASH['LV2_ITEM_DISCOUNT_AMOUNT'] = params[:discount_amount] || ''
+    @PARAM_HASH['LV2_ITEM_CUST_PO'] = params[:cust_po] || ''
+    @PARAM_HASH['LV2_ITEM_GOODS_TAX_ID'] = params[:goods_tax_id] || ''
+    @PARAM_HASH['LV2_ITEM_TAX_ID'] = params[:tax_id] || ''
+    @PARAM_HASH['LV2_ITEM_CUSTOMER_TAX_ID'] = params[:customer_tax_id] || ''
+    @PARAM_HASH['LV2_ITEM_DUTY_AMOUNT'] = params[:duty_amount] || ''
+    @PARAM_HASH['LV2_ITEM_SUPPLEMENTAL_DATA'] = params[:supplemental_data] || ''
+    @PARAM_HASH['LV2_ITEM_CITY_TAX_RATE'] = params[:city_tax_rate] || ''
+    @PARAM_HASH['LV2_ITEM_CITY_TAX_AMOUNT'] = params[:city_tax_amount] || ''
+    @PARAM_HASH['LV2_ITEM_COUNTY_TAX_RATE'] = params[:county_tax_rate] || ''
+    @PARAM_HASH['LV2_ITEM_COUNTY_TAX_AMOUNT'] = params[:county_tax_amount] || ''
+    @PARAM_HASH['LV2_ITEM_STATE_TAX_RATE'] = params[:state_tax_rate] || ''
+    @PARAM_HASH['LV2_ITEM_STATE_TAX_AMOUNT'] = params[:state_tax_amount] || ''
+    @PARAM_HASH['LV2_ITEM_BUYER_NAME'] = params[:buyer_name] || ''
+    @PARAM_HASH['LV2_ITEM_CUSTOMER_REFERENCE'] = params[:customer_reference] || ''
+    @PARAM_HASH['LV2_ITEM_CUSTOMER_NUMBER'] = params[:customer_number] || ''
+    @PARAM_HASH['LV2_ITEM_SHIP_NAME'] = params[:ship_name] || ''
+    @PARAM_HASH['LV2_ITEM_SHIP_ADDR1'] = params[:ship_addr1] || ''
+    @PARAM_HASH['LV2_ITEM_SHIP_ADDR2'] = params[:ship_addr2] || ''
+    @PARAM_HASH['LV2_ITEM_SHIP_CITY'] = params[:ship_city] || ''
+    @PARAM_HASH['LV2_ITEM_SHIP_STATE'] = params[:ship_state] || ''
+    @PARAM_HASH['LV2_ITEM_SHIP_ZIP'] = params[:ship_zip] || ''
+    @PARAM_HASH['LV2_ITEM_SHIP_COUNTRY'] = params[:ship_country] || ''
+  end
+
   # Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+  # For Canadian and AMEX processors, ensure required Level 2 information is present.
   def add_line_item(params)
     # Creates line items counter necessary for prefix.
     @LINE_ITEMS = 0 if !@LINE_ITEMS                                                              
