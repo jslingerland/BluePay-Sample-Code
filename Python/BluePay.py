@@ -97,6 +97,9 @@ class BluePay:
     url = ''
     api = ''
 
+    # Level 2 Processing field
+    level2_info = []
+
     # Level 3 Processing field
     line_items = []
 
@@ -566,7 +569,42 @@ class BluePay:
             '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def)+
             '&CARD_TYPES='        + self.url_encode(self.card_types))
 
-    # Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum per transaction.
+    # Adds information required for level 2 processing.
+    def add_level2_information(self, **params):
+        self.level2_info.append(
+            {
+                'LV2_ITEM_TAX_RATE' : params.get('tax_rate', ''),
+                'LV2_ITEM_GOODS_TAX_RATE' : params.get('goods_tax_rate', ''),
+                'LV2_ITEM_GOODS_TAX_AMOUNT' : params.get('goods_tax_amount', ''),
+                'LV2_ITEM_SHIPPING_AMOUNT' : params.get('shipping_amount', ''),
+                'LV2_ITEM_DISCOUNT_AMOUNT' : params.get('discount_amount', ''),
+                'LV2_ITEM_CUST_PO' : params.get('cust_po', ''),
+                'LV2_ITEM_GOODS_TAX_ID' : params.get('goods_tax_id', ''),
+                'LV2_ITEM_TAX_ID' : params.get('tax_id', ''),
+                'LV2_ITEM_CUSTOMER_TAX_ID' : params.get('customer_tax_id', ''),
+                'LV2_ITEM_DUTY_AMOUNT' : params.get('duty_amount', ''),
+                'LV2_ITEM_SUPPLEMENTAL_DATA' : params.get('supplemental_data', ''),
+                'LV2_ITEM_CITY_TAX_RATE' : params.get('city_tax_rate', ''),
+                'LV2_ITEM_CITY_TAX_AMOUNT' : params.get('city_tax_amount', ''),
+                'LV2_ITEM_COUNTY_TAX_RATE' : params.get('county_tax_rate', ''),
+                'LV2_ITEM_COUNTY_TAX_AMOUNT' : params.get('county_tax_amount', ''),
+                'LV2_ITEM_STATE_TAX_RATE' : params.get('state_tax_rate', ''),
+                'LV2_ITEM_STATE_TAX_AMOUNT' : params.get('state_tax_amount', ''),
+                'LV2_ITEM_BUYER_NAME' : params.get('buyer_name', ''),
+                'LV2_ITEM_CUSTOMER_REFERENCE' : params.get('customer_reference', ''),
+                'LV2_ITEM_CUSTOMER_NUMBER' : params.get('customer_number', ''),
+                'LV2_ITEM_SHIP_NAME' : params.get('ship_name', ''),
+                'LV2_ITEM_SHIP_ADDR1' : params.get('ship_addr1', ''),
+                'LV2_ITEM_SHIP_ADDR2' : params.get('ship_addr2', ''),
+                'LV2_ITEM_SHIP_CITY' : params.get('ship_city', ''),
+                'LV2_ITEM_SHIP_STATE' : params.get('ship_state', ''),
+                'LV2_ITEM_SHIP_ZIP' : params.get('ship_zip', ''),
+                'LV2_ITEM_SHIP_COUNTRY' : params.get('ship_country', '')
+            }
+        )
+
+    # Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+    # For Canadian and AMEX processors, ensure required Level 2 information is present.
     def add_line_item(self, **params):
         i = len(self.line_items) + 1
         prefix = 'LV3_ITEM' + str(i) + '_'
@@ -703,6 +741,8 @@ class BluePay:
                 'STATUS': self.reb_status,
                 'TAMPER_PROOF_SEAL': self.calc_rebill_TPS()
             })
+        for level2 in self.level2_info: # Update fields dictionary with Level 2 processing information, if available.
+            fields.update(level2)
         for item in self.line_items: # Update fields dictionary with line item information, if available.
             fields.update(item)
         response = self.request(self.url, self.create_post_string(fields).encode())
