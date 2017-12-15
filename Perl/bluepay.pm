@@ -221,6 +221,20 @@ sub set_ach_information{
     $self->{DOC_TYPE} = $params->{doc_type}; #optional
 }
 
+# Set Invoice ID. Required for Level 2 Processing.
+sub set_invoice_id{
+    my $self = shift;
+    my $invoice_id = shift;
+    $self->{INVOICE_ID} = $invoice_id;
+}
+
+# Set Tax Amount. Required for Level 2 Processing.
+sub set_amount_tax{
+    my $self = shift;
+    my $amount_tax = shift;
+    $self->{AMOUNT_TAX} = $amount_tax;
+}
+
 # Set Sale Transaction
 sub sale {
     my $self = shift;
@@ -348,8 +362,43 @@ sub get_single_transaction_query{
     $self->{EXCLUDE_ERRORS} = $params->{exclude_errors}; # optional
 }
 
-# Adds a line item. Required for Level 3 processing. Repeat for each item up to 99 item maximum per transaction.
-sub add_line_item{
+# Adds information required for level 2 processing.
+sub add_level2_information{
+    my $self = shift;
+    my $params = shift;
+
+    $self->{LV2_ITEM_TAX_RATE} = $params->{tax_rate} || '';
+    $self->{LV2_ITEM_GOODS_TAX_RATE} = $params->{goods_tax_rate} || '';
+    $self->{LV2_ITEM_GOODS_TAX_AMOUNT} = $params->{goods_tax_amount} || '';
+    $self->{LV2_ITEM_SHIPPING_AMOUNT} = $params->{shipping_amount} || '';
+    $self->{LV2_ITEM_DISCOUNT_AMOUNT} = $params->{discount_amount} || '';
+    $self->{LV2_ITEM_CUST_PO} = $params->{cust_po} || '';
+    $self->{LV2_ITEM_GOODS_TAX_ID} = $params->{goods_tax_id} || '';
+    $self->{LV2_ITEM_TAX_ID} = $params->{tax_id} || '';
+    $self->{LV2_ITEM_CUSTOMER_TAX_ID} = $params->{customer_tax_id} || '';
+    $self->{LV2_ITEM_DUTY_AMOUNT} = $params->{duty_amount} || '';
+    $self->{LV2_ITEM_SUPPLEMENTAL_DATA} = $params->{supplemental_data} || '';
+    $self->{LV2_ITEM_CITY_TAX_RATE} = $params->{city_tax_rate} || '';
+    $self->{LV2_ITEM_CITY_TAX_AMOUNT} = $params->{city_tax_amount} || '';
+    $self->{LV2_ITEM_COUNTY_TAX_RATE} = $params->{county_tax_rate} || '';
+    $self->{LV2_ITEM_COUNTY_TAX_AMOUNT} = $params->{county_tax_amount} || '';
+    $self->{LV2_ITEM_STATE_TAX_RATE} = $params->{state_tax_rate} || '';
+    $self->{LV2_ITEM_STATE_TAX_AMOUNT} = $params->{state_tax_amount} || '';
+    $self->{LV2_ITEM_BUYER_NAME} = $params->{buyer_name} || '';
+    $self->{LV2_ITEM_CUSTOMER_REFERENCE} = $params->{customer_reference} || '';
+    $self->{LV2_ITEM_CUSTOMER_NUMBER} = $params->{customer_number} || '';
+    $self->{LV2_ITEM_SHIP_NAME} = $params->{ship_name} || '';
+    $self->{LV2_ITEM_SHIP_ADDR1} = $params->{ship_addr1} || '';
+    $self->{LV2_ITEM_SHIP_ADDR2} = $params->{ship_addr2} || '';
+    $self->{LV2_ITEM_SHIP_CITY} = $params->{ship_city} || '';
+    $self->{LV2_ITEM_SHIP_STATE} = $params->{ship_state} || '';
+    $self->{LV2_ITEM_SHIP_ZIP} = $params->{ship_zip} || '';
+    $self->{LV2_ITEM_SHIP_COUNTRY} = $params->{ship_country} || '';
+}
+
+    # Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+    # For Canadian and AMEX processors, ensure required Level 2 information is present.
+    sub add_line_item{
     my $self = shift;
     my $params = shift;
     # Creates line items counter necessary for prefix.
