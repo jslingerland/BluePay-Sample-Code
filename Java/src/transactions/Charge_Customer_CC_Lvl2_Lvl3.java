@@ -16,8 +16,8 @@ public class Charge_Customer_CC_Lvl2_Lvl3 {
   
   public static void main(String[] args) {
     
-    String ACCOUNT_ID = "100505452398";
-    String SECRET_KEY = "3D4SMZZJOZXKXRTPLOBFLEY1Y6QHJBIL";
+    String ACCOUNT_ID = "Merchant's Account ID Here";
+    String SECRET_KEY = "Merchant's Secret Key Here";
     String MODE = "TEST";
 
     BluePay payment = new BluePay(
