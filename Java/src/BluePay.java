@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.io.*;
 
@@ -119,6 +120,12 @@ public class BluePay
   
   private HashMap<String, String> response = new HashMap<String, String>();
 
+  // Level 2 processing field
+  private List<NameValuePair> level2Info = new ArrayList<>();
+  
+  // Level 3 processing field
+  private List<List<NameValuePair>> lineItems = new ArrayList<>();
+  
   /**
    * Sole constructor.  Requires merchant credentials.
    *
@@ -836,11 +843,84 @@ public class BluePay
     }
     return output;
   }
+  
+  /**
+   * Adds information required for level 2 processing.
+   */
+   public void addLevel2Information(HashMap<String, String> params)
+   {
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_TAX_RATE", Optional.ofNullable(params.get("tax_rate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_RATE", Optional.ofNullable(params.get("goods_tax_rate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_AMOUNT", Optional.ofNullable(params.get("goods_tax_amount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIPPING_AMOUNT", Optional.ofNullable(params.get("shipping_amount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_DISCOUNT_AMOUNT", Optional.ofNullable(params.get("discount_amount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUST_PO", Optional.ofNullable(params.get("cust_po")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_ID", Optional.ofNullable(params.get("goods_tax_id")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_TAX_ID", Optional.ofNullable(params.get("tax_id")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_TAX_ID", Optional.ofNullable(params.get("customer_tax_id")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_DUTY_AMOUNT", Optional.ofNullable(params.get("duty_amount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SUPPLEMENTAL_DATA", Optional.ofNullable(params.get("supplemental_data")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CITY_TAX_RATE", Optional.ofNullable(params.get("city_tax_rate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CITY_TAX_AMOUNT", Optional.ofNullable(params.get("city_tax_amount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_COUNTY_TAX_RATE", Optional.ofNullable(params.get("county_tax_rate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_COUNTY_TAX_AMOUNT", Optional.ofNullable(params.get("county_tax_amount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_STATE_TAX_RATE", Optional.ofNullable(params.get("state_tax_rate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_STATE_TAX_AMOUNT", Optional.ofNullable(params.get("state_tax_amount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_BUYER_NAME", Optional.ofNullable(params.get("buyer_name")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_REFERENCE", Optional.ofNullable(params.get("customer_reference")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_NUMBER", Optional.ofNullable(params.get("customer_number")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_NAME", Optional.ofNullable(params.get("ship_name")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ADDR1", Optional.ofNullable(params.get("ship_addr1")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ADDR2", Optional.ofNullable(params.get("ship_addr2")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_CITY", Optional.ofNullable(params.get("ship_city")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_STATE", Optional.ofNullable(params.get("ship_state")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ZIP", Optional.ofNullable(params.get("ship_zip")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_COUNTRY", Optional.ofNullable(params.get("ship_country")).orElse("")));
+   }
+   
+  /**
+  * Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+  * For Canadian and AMEX processors, ensure required Level 2 information is present.
+  */
+  public void addLineItem(HashMap<String, String> params)
+  {
+	  String i = Integer.toString(lineItems.size() + 1);
+	  String prefix = "LV3_ITEM" + i + "_";
+	  
+	  List<NameValuePair> lineItem = new ArrayList<>();
+	  lineItem.add(new BasicNameValuePair(prefix + "UNIT_COST", params.get("unit_cost")));
+	  lineItem.add(new BasicNameValuePair(prefix + "QUANTITY", params.get("quantity")));
+	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_SKU", Optional.ofNullable(params.get("item_sku")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_DESCRIPTOR", Optional.ofNullable(params.get("descriptor")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "COMMODITY_CODE", Optional.ofNullable(params.get("commodity_code")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "PRODUCT_CODE", Optional.ofNullable(params.get("product_code")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "MEASURE_UNITS", Optional.ofNullable(params.get("measure_units")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_DISCOUNT", Optional.ofNullable(params.get("item_discount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "TAX_RATE", Optional.ofNullable(params.get("tax_rate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "GOODS_TAX_RATE", Optional.ofNullable(params.get("goods_tax_rate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "TAX_AMOUNT", Optional.ofNullable(params.get("tax_amount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "GOODS_TAX_AMOUNT", Optional.ofNullable(params.get("goods_tax_amount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CITY_TAX_RATE", Optional.ofNullable(params.get("city_tax_rate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CITY_TAX_AMOUNT", Optional.ofNullable(params.get("city_tax_amount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "COUNTY_TAX_RATE", Optional.ofNullable(params.get("county_tax_rate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "COUNTY_TAX_AMOUNT", Optional.ofNullable(params.get("county_tax_amount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "STATE_TAX_RATE", Optional.ofNullable(params.get("state_tax_rate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "STATE_TAX_AMOUNT", Optional.ofNullable(params.get("state_tax_amount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CUST_SKU", Optional.ofNullable(params.get("cust_sku")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CUST_PO", Optional.ofNullable(params.get("cust_po")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "SUPPLEMENTAL_DATA", Optional.ofNullable(params.get("supplemental_data")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "GL_ACCOUNT_NUMBER", Optional.ofNullable(params.get("gl_account_number")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "DIVISION_NUMBER", Optional.ofNullable(params.get("division_number")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "PO_LINE_NUMBER", Optional.ofNullable(params.get("po_line_number")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "LINE_ITEM_TOTAL", Optional.ofNullable(params.get("line_item_total")).orElse("")));
+  
+	  lineItems.add(lineItem);
+  }
 
   /**
   * Adds optional protected keys to a string. Must be used with GenerateURL.
   *
-  * @return additonal string of keys to be used when calculating the Tamperproof Seal
+  * @return additional string of keys to be used when calculating the Tamperproof Seal
   */
   public String addDefProtectedStatus(String input)
   {
@@ -1017,6 +1097,19 @@ public class BluePay
     	  nameValuePairs.add(new BasicNameValuePair("NEXT_AMOUNT", NEXT_AMOUNT));
     	  nameValuePairs.add(new BasicNameValuePair("STATUS", REBILL_STATUS));
     }
+	
+	// Add Level 2 data, if available.
+	if (level2Info.size() > 0) {
+		nameValuePairs.addAll(level2Info);
+	}
+	
+	// Add Level 3 item data, if available.
+	if (lineItems.size() > 0) {
+		for (List<NameValuePair> item: lineItems) {
+			nameValuePairs.addAll(item);
+		}
+	}
+		
     HttpClient httpclient = HttpClientBuilder.create().build();
     HttpPost httpost = new HttpPost(BP_URL);
     httpost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
