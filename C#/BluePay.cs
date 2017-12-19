@@ -18,6 +18,7 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace BluePayLibrary
 {
@@ -124,6 +125,12 @@ namespace BluePayLibrary
 
         public int numRetries = 0;
 
+        // level 2 processing field
+        public Dictionary<string, string> level2Info = new Dictionary<string, string>();
+
+        // level 3 processing field
+        public List<Dictionary<string, string>> lineItems = new List<Dictionary<string, string>>();
+       
         public BluePay(string accountID, string secretKey, string mode)
         {
             this.accountID = accountID;
@@ -196,6 +203,78 @@ namespace BluePayLibrary
             this.accountNum = accountNum;
             this.accountType = accountType;
             this.docType = docType;
+        }
+
+        /// <summary>
+        /// Adds information required for level 2 processing.
+        /// </summary>
+        public void AddLevel2Information(string taxRate = null, string goodsTaxRate = null, string goodsTaxAmount = null, string shippingAmount = null, string discountAmount = null, string custPO = null, string goodsTaxID = null, string taxID = null, string customerTaxID = null, string dutyAmount = null, string supplementalData = null, string cityTaxRate = null, string cityTaxAmount = null, string countyTaxRate = null, string countyTaxAmount = null, string stateTaxRate = null, string stateTaxAmount = null, string buyerName = null, string customerReference = null, string customerNumber = null, string shipName = null, string shipAddr1 = null, string shipAddr2 = null, string shipCity = null, string shipState = null, string shipZip = null, string shipCountry = null){
+            this.level2Info.Add("LV2_ITEM_TAX_RATE", taxRate);
+            this.level2Info.Add("LV2_ITEM_GOODS_TAX_RATE", goodsTaxRate);
+            this.level2Info.Add("LV2_ITEM_GOODS_TAX_AMOUNT", goodsTaxAmount);
+            this.level2Info.Add("LV2_ITEM_SHIPPING_AMOUNT", shippingAmount);
+            this.level2Info.Add("LV2_ITEM_DISCOUNT_AMOUNT", discountAmount);
+            this.level2Info.Add("LV2_ITEM_CUST_PO", custPO);
+            this.level2Info.Add("LV2_ITEM_GOODS_TAX_ID", goodsTaxID);
+            this.level2Info.Add("LV2_ITEM_TAX_ID", taxID);
+            this.level2Info.Add("LV2_ITEM_CUSTOMER_TAX_ID", customerTaxID);
+            this.level2Info.Add("LV2_ITEM_DUTY_AMOUNT", dutyAmount);
+            this.level2Info.Add("LV2_ITEM_SUPPLEMENTAL_DATA", supplementalData);
+            this.level2Info.Add("LV2_ITEM_CITY_TAX_RATE", cityTaxRate);
+            this.level2Info.Add("LV2_ITEM_CITY_TAX_AMOUNT", cityTaxAmount);
+            this.level2Info.Add("LV2_ITEM_COUNTY_TAX_RATE", countyTaxRate);
+            this.level2Info.Add("LV2_ITEM_COUNTY_TAX_AMOUNT", countyTaxAmount);
+            this.level2Info.Add("LV2_ITEM_STATE_TAX_RATE", stateTaxRate);
+            this.level2Info.Add("LV2_ITEM_STATE_TAX_AMOUNT", stateTaxAmount);
+            this.level2Info.Add("LV2_ITEM_BUYER_NAME", buyerName);
+            this.level2Info.Add("LV2_ITEM_CUSTOMER_REFERENCE", customerReference);
+            this.level2Info.Add("LV2_ITEM_CUSTOMER_NUMBER", customerNumber);
+            this.level2Info.Add("LV2_ITEM_SHIP_NAME", shipName);
+            this.level2Info.Add("LV2_ITEM_SHIP_ADDR1", shipAddr1);
+            this.level2Info.Add("LV2_ITEM_SHIP_ADDR2", shipAddr2);
+            this.level2Info.Add("LV2_ITEM_SHIP_CITY", shipCity);
+            this.level2Info.Add("LV2_ITEM_SHIP_STATE", shipState);
+            this.level2Info.Add("LV2_ITEM_SHIP_ZIP", shipZip);
+            this.level2Info.Add("LV2_ITEM_SHIP_COUNTRY", shipCountry);
+        } 
+
+        /// <summary>
+        /// Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+        /// For Canadian and AMEX processors, ensure required Level 2 information is present.
+        /// </summary>
+        public void AddLineItem(string unitCost, string quantity, string itemSKU = null, string descriptor = null, string commodityCode = null, string productCode = null, string measureUnits = null, string itemDiscount = null, string taxRate = null, string goodsTaxRate = null, string taxAmount = null, string goodsTaxAmount = null, string cityTaxRate = null, string cityTaxAmount = null, string countyTaxRate = null, string countyTaxAmount = null, string stateTaxRate = null, string stateTaxAmount = null, string custSKU = null, string custPO = null, string supplementalData = null, string glAccountNumber = null, string divisionNumber = null, string poLineNumber = null, string lineItemTotal = null)
+        {
+            int i = this.lineItems.Count + 1;
+            string prefix = $"LV3_ITEM{i}_";
+            Dictionary<string, string> item = new Dictionary<string, string>
+            {
+                { prefix + "UNIT_COST", unitCost },
+                { prefix + "QUANTITY", quantity },
+                { prefix + "ITEM_SKU", itemSKU },
+                { prefix + "ITEM_DESCRIPTOR", descriptor },
+                { prefix + "COMMODITY_CODE", commodityCode },
+                { prefix + "PRODUCT_CODE", productCode },
+                { prefix + "MEASURE_UNITS", measureUnits },
+                { prefix + "ITEM_DISCOUNT", itemDiscount },
+                { prefix + "TAX_RATE", taxRate },
+                { prefix + "GOODS_TAX_RATE", goodsTaxRate },
+                { prefix + "TAX_AMOUNT", taxAmount },
+                { prefix + "GOODS_TAX_AMOUNT", goodsTaxAmount },
+                { prefix + "CITY_TAX_RATE", cityTaxRate },
+                { prefix + "CITY_TAX_AMOUNT", cityTaxAmount },
+                { prefix + "COUNTY_TAX_RATE", countyTaxRate },
+                { prefix + "COUNTY_TAX_AMOUNT", countyTaxAmount },
+                { prefix + "STATE_TAX_RATE", stateTaxRate },
+                { prefix + "STATE_TAX_AMOUNT", stateTaxAmount },
+                { prefix + "CUST_SKU", custSKU },
+                { prefix + "CUST_PO", custPO },
+                { prefix + "SUPPLEMENTAL_DATA", supplementalData },
+                { prefix + "GL_ACCOUNT_NUMBER", glAccountNumber },
+                { prefix + "DIVISION_NUMBER", divisionNumber },
+                { prefix + "PO_LINE_NUMBER", poLineNumber },
+                { prefix + "LINE_ITEM_TOTAL", lineItemTotal }
+            };
+            this.lineItems.Add(item);
         }
 
         /// <summary>
@@ -567,7 +646,7 @@ namespace BluePayLibrary
             SHA512 sha512 = new SHA512CryptoServiceProvider();
             byte[] hash;
             ASCIIEncoding encode = new ASCIIEncoding();
-            
+
             byte[] buffer = encode.GetBytes(tamper_proof_seal);
             hash = sha512.ComputeHash(buffer);
             this.TPS = ByteArrayToString(hash);
@@ -645,7 +724,7 @@ namespace BluePayLibrary
         {
             int i;
             StringBuilder sOutput = new StringBuilder(arrInput.Length);
-            for (i=0;i < arrInput.Length; i++)
+            for (i = 0; i < arrInput.Length; i++)
             {
                 sOutput.Append(arrInput[i].ToString("X2"));
             }
@@ -664,22 +743,22 @@ namespace BluePayLibrary
         /// protectAmount: Yes/No -- Should the amount be protected from changes by the tamperproof seal?
         /// rebilling: Yes/No -- Should a recurring transaction be set up?
         /// paymentTemplate: Select one of our payment form template IDs or your own customized template ID. If the customer should not be allowed to change the amount, add a 'D' to the end of the template ID. Example: 'mobileform01D'
-            /// mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
-            /// default1v5 -- Credit Card Only - Gray Horizontal 
-            /// default7v5 -- Credit Card Only - Gray Horizontal Donation
-            /// default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
-            /// default3v4 -- Credit Card Only - Blue Vertical with card swipe
-            /// mobileform02 -- Credit Card & ACH - White Vertical (mobile capable)
-            /// default8v5 -- Credit Card & ACH - Gray Horizontal Donation
-            /// default8v5R -- Credit Card & ACH - Gray Horizontal Donation with Recurring
-            /// mobileform03 -- ACH Only - White Vertical (mobile capable)
+        /// mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
+        /// default1v5 -- Credit Card Only - Gray Horizontal 
+        /// default7v5 -- Credit Card Only - Gray Horizontal Donation
+        /// default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
+        /// default3v4 -- Credit Card Only - Blue Vertical with card swipe
+        /// mobileform02 -- Credit Card & ACH - White Vertical (mobile capable)
+        /// default8v5 -- Credit Card & ACH - Gray Horizontal Donation
+        /// default8v5R -- Credit Card & ACH - Gray Horizontal Donation with Recurring
+        /// mobileform03 -- ACH Only - White Vertical (mobile capable)
         /// receiptTemplate: Select one of our receipt form template IDs, your own customized template ID, or "remote_url" if you have one.
-            /// mobileresult01 -- Default without signature line - White Responsive (mobile)
-            /// defaultres1 -- Default without signature line – Blue
-            /// V5results -- Default without signature line – Gray
-            /// V5Iresults -- Default without signature line – White
-            /// defaultres2 -- Default with signature line – Blue
-            /// remote_url - Use a remote URL
+        /// mobileresult01 -- Default without signature line - White Responsive (mobile)
+        /// defaultres1 -- Default without signature line – Blue
+        /// V5results -- Default without signature line – Gray
+        /// V5Iresults -- Default without signature line – White
+        /// defaultres2 -- Default with signature line – Blue
+        /// remote_url - Use a remote URL
         /// receiptTempRemoteURL: Your remote URL ** Only required if receipt_template = "remote_url".
 
         /// Optional arguments for generate_url:
@@ -714,11 +793,11 @@ namespace BluePayLibrary
         /// <param name="receiptTemplate"></param>
         /// <param name="receiptTempRemoteURL"></param>
 
-        public string GenerateURL(string merchantName, string returnURL, string transactionType,  string acceptDiscover, string acceptAmex, string amount = null, string protectAmount = "No", string rebilling = "No", string rebProtect = "Yes", string rebAmount = null, string rebCycles = null, string rebStartDate = null, string rebFrequency = null, string customID1 = null, string protectCustomID1 = "No", string customID2 = null, string protectCustomID2 = "No", string paymentTemplate = "mobileform01", string receiptTemplate = "mobileresult01", string receiptTempRemoteURL = null) 
+        public string GenerateURL(string merchantName, string returnURL, string transactionType, string acceptDiscover, string acceptAmex, string amount = null, string protectAmount = "No", string rebilling = "No", string rebProtect = "Yes", string rebAmount = null, string rebCycles = null, string rebStartDate = null, string rebFrequency = null, string customID1 = null, string protectCustomID1 = "No", string customID2 = null, string protectCustomID2 = "No", string paymentTemplate = "mobileform01", string receiptTemplate = "mobileresult01", string receiptTempRemoteURL = null)
         {
             this.dba = merchantName;
             this.returnURL = returnURL;
-            this.transType = transactionType; 
+            this.transType = transactionType;
             this.discoverImage = acceptDiscover.ToUpper()[0] == 'Y' ? "discvr.gif" : "spacer.gif";
             this.amexImage = acceptAmex.ToUpper()[0] == 'Y' ? "amex.gif" : "spacer.gif";
             this.amount = amount;
@@ -1017,6 +1096,23 @@ namespace BluePayLibrary
                 Console.WriteLine("Error: Must call a valid api");
                 break;
             }
+
+            // Add Level 2 data, if available.
+            foreach (KeyValuePair<string, string> field in level2Info)
+            {
+                postData += "&" + field.Key + "=" + HttpUtility.UrlEncode(field.Value);   
+            }
+
+            // Add Level 3 item data, if available.
+            foreach (Dictionary<string, string> item in lineItems)
+            {
+                foreach (KeyValuePair<string,string> field in item)
+                {   
+                    postData += "&" + field.Key + "=" + HttpUtility.UrlEncode(field.Value);   
+
+                }
+            }
+
             PerformPost(postData);
             return GetStatus();
         }
