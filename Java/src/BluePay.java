@@ -849,33 +849,33 @@ public class BluePay
    */
    public void addLevel2Information(HashMap<String, String> params)
    {
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_TAX_RATE", Optional.ofNullable(params.get("tax_rate")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_RATE", Optional.ofNullable(params.get("goods_tax_rate")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_AMOUNT", Optional.ofNullable(params.get("goods_tax_amount")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIPPING_AMOUNT", Optional.ofNullable(params.get("shipping_amount")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_DISCOUNT_AMOUNT", Optional.ofNullable(params.get("discount_amount")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUST_PO", Optional.ofNullable(params.get("cust_po")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_ID", Optional.ofNullable(params.get("goods_tax_id")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_TAX_ID", Optional.ofNullable(params.get("tax_id")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_TAX_ID", Optional.ofNullable(params.get("customer_tax_id")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_DUTY_AMOUNT", Optional.ofNullable(params.get("duty_amount")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SUPPLEMENTAL_DATA", Optional.ofNullable(params.get("supplemental_data")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CITY_TAX_RATE", Optional.ofNullable(params.get("city_tax_rate")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CITY_TAX_AMOUNT", Optional.ofNullable(params.get("city_tax_amount")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_COUNTY_TAX_RATE", Optional.ofNullable(params.get("county_tax_rate")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_COUNTY_TAX_AMOUNT", Optional.ofNullable(params.get("county_tax_amount")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_STATE_TAX_RATE", Optional.ofNullable(params.get("state_tax_rate")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_STATE_TAX_AMOUNT", Optional.ofNullable(params.get("state_tax_amount")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_BUYER_NAME", Optional.ofNullable(params.get("buyer_name")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_REFERENCE", Optional.ofNullable(params.get("customer_reference")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_NUMBER", Optional.ofNullable(params.get("customer_number")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_NAME", Optional.ofNullable(params.get("ship_name")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ADDR1", Optional.ofNullable(params.get("ship_addr1")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ADDR2", Optional.ofNullable(params.get("ship_addr2")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_CITY", Optional.ofNullable(params.get("ship_city")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_STATE", Optional.ofNullable(params.get("ship_state")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ZIP", Optional.ofNullable(params.get("ship_zip")).orElse("")));
-	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_COUNTRY", Optional.ofNullable(params.get("ship_country")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_TAX_RATE", Optional.ofNullable(params.get("taxRate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_RATE", Optional.ofNullable(params.get("goodsTaxRate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_AMOUNT", Optional.ofNullable(params.get("goodsTaxAmount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIPPING_AMOUNT", Optional.ofNullable(params.get("shippingAmount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_DISCOUNT_AMOUNT", Optional.ofNullable(params.get("discountAmount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUST_PO", Optional.ofNullable(params.get("custPO")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_GOODS_TAX_ID", Optional.ofNullable(params.get("goodsTaxID")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_TAX_ID", Optional.ofNullable(params.get("taxID")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_TAX_ID", Optional.ofNullable(params.get("customerTaxID")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_DUTY_AMOUNT", Optional.ofNullable(params.get("dutyAmount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SUPPLEMENTAL_DATA", Optional.ofNullable(params.get("supplementalData")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CITY_TAX_RATE", Optional.ofNullable(params.get("cityTaxRate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CITY_TAX_AMOUNT", Optional.ofNullable(params.get("cityTaxAmount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_COUNTY_TAX_RATE", Optional.ofNullable(params.get("countyTaxRate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_COUNTY_TAX_AMOUNT", Optional.ofNullable(params.get("countyTaxAmount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_STATE_TAX_RATE", Optional.ofNullable(params.get("stateTaxRate")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_STATE_TAX_AMOUNT", Optional.ofNullable(params.get("stateTaxAmount")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_BUYER_NAME", Optional.ofNullable(params.get("buyerName")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_REFERENCE", Optional.ofNullable(params.get("customerReference")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_CUSTOMER_NUMBER", Optional.ofNullable(params.get("customerNumber")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_NAME", Optional.ofNullable(params.get("shipName")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ADDR1", Optional.ofNullable(params.get("shipAddr1")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ADDR2", Optional.ofNullable(params.get("shipAddr2")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_CITY", Optional.ofNullable(params.get("shipCity")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_STATE", Optional.ofNullable(params.get("shipState")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_ZIP", Optional.ofNullable(params.get("shipZip")).orElse("")));
+	   level2Info.add(new BasicNameValuePair("LV2_ITEM_SHIP_COUNTRY", Optional.ofNullable(params.get("shipCountry")).orElse("")));
    }
    
   /**
@@ -888,31 +888,31 @@ public class BluePay
 	  String prefix = "LV3_ITEM" + i + "_";
 	  
 	  List<NameValuePair> lineItem = new ArrayList<>();
-	  lineItem.add(new BasicNameValuePair(prefix + "UNIT_COST", params.get("unit_cost")));
+	  lineItem.add(new BasicNameValuePair(prefix + "UNIT_COST", params.get("unitCost")));
 	  lineItem.add(new BasicNameValuePair(prefix + "QUANTITY", params.get("quantity")));
-	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_SKU", Optional.ofNullable(params.get("item_sku")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_SKU", Optional.ofNullable(params.get("itemSKU")).orElse("")));
 	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_DESCRIPTOR", Optional.ofNullable(params.get("descriptor")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "COMMODITY_CODE", Optional.ofNullable(params.get("commodity_code")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "PRODUCT_CODE", Optional.ofNullable(params.get("product_code")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "MEASURE_UNITS", Optional.ofNullable(params.get("measure_units")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_DISCOUNT", Optional.ofNullable(params.get("item_discount")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "TAX_RATE", Optional.ofNullable(params.get("tax_rate")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "GOODS_TAX_RATE", Optional.ofNullable(params.get("goods_tax_rate")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "TAX_AMOUNT", Optional.ofNullable(params.get("tax_amount")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "GOODS_TAX_AMOUNT", Optional.ofNullable(params.get("goods_tax_amount")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "CITY_TAX_RATE", Optional.ofNullable(params.get("city_tax_rate")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "CITY_TAX_AMOUNT", Optional.ofNullable(params.get("city_tax_amount")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "COUNTY_TAX_RATE", Optional.ofNullable(params.get("county_tax_rate")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "COUNTY_TAX_AMOUNT", Optional.ofNullable(params.get("county_tax_amount")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "STATE_TAX_RATE", Optional.ofNullable(params.get("state_tax_rate")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "STATE_TAX_AMOUNT", Optional.ofNullable(params.get("state_tax_amount")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "CUST_SKU", Optional.ofNullable(params.get("cust_sku")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "CUST_PO", Optional.ofNullable(params.get("cust_po")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "SUPPLEMENTAL_DATA", Optional.ofNullable(params.get("supplemental_data")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "GL_ACCOUNT_NUMBER", Optional.ofNullable(params.get("gl_account_number")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "DIVISION_NUMBER", Optional.ofNullable(params.get("division_number")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "PO_LINE_NUMBER", Optional.ofNullable(params.get("po_line_number")).orElse("")));
-	  lineItem.add(new BasicNameValuePair(prefix + "LINE_ITEM_TOTAL", Optional.ofNullable(params.get("line_item_total")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "COMMODITY_CODE", Optional.ofNullable(params.get("commodityCode")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "PRODUCT_CODE", Optional.ofNullable(params.get("productCode")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "MEASURE_UNITS", Optional.ofNullable(params.get("measureUnits")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "ITEM_DISCOUNT", Optional.ofNullable(params.get("itemDiscount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "TAX_RATE", Optional.ofNullable(params.get("taxRate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "GOODS_TAX_RATE", Optional.ofNullable(params.get("goodsTaxRate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "TAX_AMOUNT", Optional.ofNullable(params.get("taxAmount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "GOODS_TAX_AMOUNT", Optional.ofNullable(params.get("goodsTaxAmount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CITY_TAX_RATE", Optional.ofNullable(params.get("cityTaxRate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CITY_TAX_AMOUNT", Optional.ofNullable(params.get("cityTaxAmount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "COUNTY_TAX_RATE", Optional.ofNullable(params.get("countyTaxRate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "COUNTY_TAX_AMOUNT", Optional.ofNullable(params.get("countyTaxAmount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "STATE_TAX_RATE", Optional.ofNullable(params.get("stateTaxRate")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "STATE_TAX_AMOUNT", Optional.ofNullable(params.get("stateTaxAmount")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CUST_SKU", Optional.ofNullable(params.get("custSKU")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "CUST_PO", Optional.ofNullable(params.get("custPO")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "SUPPLEMENTAL_DATA", Optional.ofNullable(params.get("supplementalData")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "GL_ACCOUNT_NUMBER", Optional.ofNullable(params.get("glAccountNumber")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "DIVISION_NUMBER", Optional.ofNullable(params.get("divisionNumber")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "PO_LINE_NUMBER", Optional.ofNullable(params.get("poLineNumber")).orElse("")));
+	  lineItem.add(new BasicNameValuePair(prefix + "LINE_ITEM_TOTAL", Optional.ofNullable(params.get("lineItemTotal")).orElse("")));
   
 	  lineItems.add(lineItem);
   }

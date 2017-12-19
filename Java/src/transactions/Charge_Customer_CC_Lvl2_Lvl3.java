@@ -54,28 +54,28 @@ public class Charge_Customer_CC_Lvl2_Lvl3 {
     	// Add Line Item for Level3 Processing
     HashMap<String, String> item1Params = new HashMap<>();
     item1Params.put("quantity", "1"); // The number of units of item. Max: 5 digits.
-    item1Params.put("unit_cost", "3.00"); // The cost per unit of item. Max: 9 digits decimal.
+    item1Params.put("unitCost", "3.00"); // The cost per unit of item. Max: 9 digits decimal.
     item1Params.put("descriptor", "test1"); // Description of the item purchased. Max: 26 character.
-    item1Params.put("commodity_code", "123412341234"); // Commodity Codes can be found at http://www.census.gov/svsd/www/cfsdat/2002data/cfs021200.pdf. Max: 12 characters.
-    item1Params.put("product_code", "432143214321"); // Merchant-defined code for the product or service being purchased. Max: 12 characters.
-    item1Params.put("measure_units", "EA"); // The unit of measure of the item purchase. Normally EA. Max: 3 characters.
-    item1Params.put("tax_rate", "7%"); // Tax rate for the item. Max: 4 digits.
-    item1Params.put("tax_amount", "0.21"); // Tax amount for the item. unit_cost * quantity * tax_rate = tax_amount. Max: 9 digits.
-    item1Params.put("item_discount", "0.00"); // The amount of any discounts on the item. Max: 12 digits.
-    item1Params.put("line_item_total", "3.21"); // The total amount for the item including taxes and discounts.
+    item1Params.put("commodityCode", "123412341234"); // Commodity Codes can be found at http://www.census.gov/svsd/www/cfsdat/2002data/cfs021200.pdf. Max: 12 characters.
+    item1Params.put("productCode", "432143214321"); // Merchant-defined code for the product or service being purchased. Max: 12 characters.
+    item1Params.put("measureUnits", "EA"); // The unit of measure of the item purchase. Normally EA. Max: 3 characters.
+    item1Params.put("taxRate", "7%"); // Tax rate for the item. Max: 4 digits.
+    item1Params.put("taxAmount", "0.21"); // Tax amount for the item. unit_cost * quantity * tax_rate = tax_amount. Max: 9 digits.
+    item1Params.put("itemDiscount", "0.00"); // The amount of any discounts on the item. Max: 12 digits.
+    item1Params.put("lineItemTotal", "3.21"); // The total amount for the item including taxes and discounts.
     payment.addLineItem(item1Params);
     
     HashMap<String, String> item2Params = new HashMap<>();
     item2Params.put("quantity", "2");
-    item2Params.put("unit_cost", "5.00");
+    item2Params.put("unitCost", "5.00");
     item2Params.put("descriptor", "test2");
-    item2Params.put("commodity_code", "123412341234");
-    item2Params.put("product_code", "098709870987");
-    item2Params.put("measure_units", "EA");
-    item2Params.put("tax_rate", "7%");
-    item2Params.put("tax_amount", "0.70");
-    item2Params.put("item_discount", "0.00");
-    item2Params.put("line_item_total", "10.70");
+    item2Params.put("commodityCode", "123412341234");
+    item2Params.put("productCode", "098709870987");
+    item2Params.put("measureUnits", "EA");
+    item2Params.put("taxRate", "7%");
+    item2Params.put("taxAmount", "0.70");
+    item2Params.put("itemDiscount", "0.00");
+    item2Params.put("lineItemTotal", "10.70");
     payment.addLineItem(item2Params);
     
     // Set sale amount: $13.91
