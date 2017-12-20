@@ -28,7 +28,7 @@ public class Charge_Customer_CC_Lvl2_Lvl3 {
 
     // Set Customer Information  
     HashMap<String, String> customerParams = new HashMap<>();
-    customerParams.put("firstName", "Barron");
+    customerParams.put("firstName", "Bob");
     customerParams.put("lastName", "Tester");
     customerParams.put("address1", "123 Test St.");
     customerParams.put("address2", "Apt #500");

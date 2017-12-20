@@ -9,7 +9,7 @@
 
 Imports System
 Imports System.Collections.Generic
-Imports Level3.BPVB
+Imports vbnet.BPVB
 
 Namespace Transactions
 

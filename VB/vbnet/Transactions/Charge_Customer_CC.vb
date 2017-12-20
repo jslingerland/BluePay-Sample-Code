@@ -8,6 +8,7 @@
 ' *
 
 Imports System
+Imports vbnet.BPVB
 
 Namespace Transactions
 
