@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <iterator>
 //#include <Windows.h> 
@@ -76,7 +77,11 @@ private:
   std::string amountFood;
   std::string amountMisc;
   std::string memo;
-
+  std::map<std::string, std::string> level2Info;
+    
+  // level3 fields
+  std::vector<std::map<std::string, std::string>> lineItems;
+    
   // rebill fields
   std::string reportStartDate;
   std::string reportEndDate;
@@ -153,6 +158,8 @@ public:
   void setCCInformation(std::string cardNum, std::string cardExpire, std::string cvv2);
   void setACHInformation(std::string routingNum, std::string accountNum, std::string accountType);
   void setACHInformation(std::string routingNum, std::string accountNum, std::string accountType, std::string docType);
+  void addLevel2Information(std::map<std::string, std::string> params);
+  void addLineItem(std::map<std::string, std::string> params);
   void setRebillingInformation(std::string rebAmount, std::string rebFirstDate, std::string rebExpr, std::string rebCycles);
   void updateRebillingInformation(std::string rebillID, std::string rebNextDate, std::string rebExpr, std::string rebCycles,
     std::string rebAmount, std::string rebNextAmount);

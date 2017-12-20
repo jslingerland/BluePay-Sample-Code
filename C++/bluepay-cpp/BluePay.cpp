@@ -183,6 +183,77 @@ void BluePay::setACHInformation(std::string routingNum, std::string accountNum, 
 }
 
 /// <summary>
+/// Adds information required for level 2 processing.
+/// </summary>
+void BluePay::addLevel2Information(std::map<std::string, std::string> params)
+{
+    this->level2Info.insert( { "LV2_ITEM_TAX_RATE", params["taxRate"] } );
+    this->level2Info.insert( { "LV2_ITEM_GOODS_TAX_RATE", params["goodsTaxRate"] } );
+    this->level2Info.insert( { "LV2_ITEM_GOODS_TAX_AMOUNT", params["goodsTaxAmount"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIPPING_AMOUNT", params["shippingAmount"] } );
+    this->level2Info.insert( { "LV2_ITEM_DISCOUNT_AMOUNT", params["discountAmount"] } );
+    this->level2Info.insert( { "LV2_ITEM_CUST_PO", params["custPO"] } );
+    this->level2Info.insert( { "LV2_ITEM_GOODS_TAX_ID", params["goodsTaxID"] } );
+    this->level2Info.insert( { "LV2_ITEM_TAX_ID", params["taxID"] } );
+    this->level2Info.insert( { "LV2_ITEM_CUSTOMER_TAX_ID", params["customerTaxID"] } );
+    this->level2Info.insert( { "LV2_ITEM_DUTY_AMOUNT", params["dutyAmount"] } );
+    this->level2Info.insert( { "LV2_ITEM_SUPPLEMENTAL_DATA", params["supplementalData"] } );
+    this->level2Info.insert( { "LV2_ITEM_CITY_TAX_RATE", params["cityTaxRate"] } );
+    this->level2Info.insert( { "LV2_ITEM_CITY_TAX_AMOUNT", params["cityTaxAmount"] } );
+    this->level2Info.insert( { "LV2_ITEM_COUNTY_TAX_RATE", params["countyTaxRate"] } );
+    this->level2Info.insert( { "LV2_ITEM_COUNTY_TAX_AMOUNT", params["countyTaxAmount"] } );
+    this->level2Info.insert( { "LV2_ITEM_STATE_TAX_RATE", params["stateTaxRate"] } );
+    this->level2Info.insert( { "LV2_ITEM_STATE_TAX_AMOUNT", params["stateTaxAmount"] } );
+    this->level2Info.insert( { "LV2_ITEM_BUYER_NAME", params["buyerName"] } );
+    this->level2Info.insert( { "LV2_ITEM_CUSTOMER_REFERENCE", params["customerReference"] } );
+    this->level2Info.insert( { "LV2_ITEM_CUSTOMER_NUMBER", params["customerNumber"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIP_NAME", params["shipName"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIP_ADDR1", params["shipAddr1"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIP_ADDR2", params["shipAddr2"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIP_CITY", params["shipCity"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIP_STATE", params["shipState"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIP_ZIP", params["shipZip"] } );
+    this->level2Info.insert( { "LV2_ITEM_SHIP_COUNTRY", params["shipCountry"] } );
+}
+
+/// <summary>
+/// Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+/// For Canadian and AMEX processors, ensure required Level 2 information is present.
+/// </summary>
+void BluePay::addLineItem(std::map<std::string, std::string> params)
+{
+    std::string i = std::to_string(this->lineItems.size() + 1);
+    std::string prefix = "LV3_ITEM" + i + "_";
+    std::map<std::string, std::string> item = {
+        { prefix + "UNIT_COST", params["unitCost"] },
+        { prefix + "QUANTITY", params["quantity"] },
+        { prefix + "ITEM_SKU", params["itemSKU"] },
+        { prefix + "ITEM_DESCRIPTOR", params["descriptor"] },
+        { prefix + "COMMODITY_CODE", params["commodityCode"] },
+        { prefix + "PRODUCT_CODE", params["productCode"] },
+        { prefix + "MEASURE_UNITS", params["measureUnits"] },
+        { prefix + "ITEM_DISCOUNT", params["itemDiscount"] },
+        { prefix + "TAX_RATE", params["taxRate"] },
+        { prefix + "GOODS_TAX_RATE", params["goodsTaxRate"] },
+        { prefix + "TAX_AMOUNT", params["taxAmount"] },
+        { prefix + "GOODS_TAX_AMOUNT", params["goodsTaxAmount"] },
+        { prefix + "CITY_TAX_RATE", params["cityTaxRate"] },
+        { prefix + "CITY_TAX_AMOUNT", params["cityTaxAmount"] },
+        { prefix + "COUNTY_TAX_RATE", params["countyTaxRate"] },
+        { prefix + "COUNTY_TAX_AMOUNT", params["countyTaxAmount"] },
+        { prefix + "STATE_TAX_RATE", params["stateTaxRate"] },
+        { prefix + "STATE_TAX_AMOUNT", params["stateTaxAmount"] },
+        { prefix + "CUST_SKU", params["custSKU"] },
+        { prefix + "CUST_PO", params["custPO"] },
+        { prefix + "SUPPLEMENTAL_DATA", params["supplementalData"] },
+        { prefix + "GL_ACCOUNT_NUMBER", params["glAccountNumber"] },
+        { prefix + "DIVISION_NUMBER", params["divisionNumber"] },
+        { prefix + "PO_LINE_NUMBER", params["poLineNumber"] },
+        { prefix + "LINE_ITEM_TOTAL", params["lineItemTotal"] }
+    };
+    this->lineItems.push_back(item);
+}
+/// <summary>
 /// Sets Rebilling Cycle Information. To be used with other functions to create a transaction.
 /// </summary>
 /// <param name="rebAmount"></param>
@@ -1101,7 +1172,22 @@ char* BluePay::process()
       "&REB_AMOUNT=" + (this->rebillAmount) +
       "&NEXT_AMOUNT=" + (this->rebillNextAmount) +
       "&STATUS=" + (this->rebillStatus);
-  } 
+  }
+  // Add Level 2 data, if available.
+  for( auto field : level2Info )
+  {
+    postData += "&" + field.first + "=" + field.second;
+  }
+
+  // Add Level 3 item data, if available.
+  for( auto item : lineItems )
+  {
+    for( auto field : item )
+    {
+        postData += "&" + field.first + "=" + field.second;
+    }
+  }
+    
   //Create HTTPS POST object and send to BluePay
   CURL *curl;
   CURLcode res;
