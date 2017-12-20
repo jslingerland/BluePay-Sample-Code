@@ -11,6 +11,7 @@ Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Collections
+Imports System.Collections.Generic
 
 Namespace BPVB
 
@@ -77,6 +78,10 @@ Namespace BPVB
         Private amountFood As String = ""
         Private amountMisc As String = ""
         Private memo As String = ""
+        Private level2Info As Dictionary(Of String, String) = New Dictionary(Of String, String)
+
+        ' Level3 Field
+        Private lineItems As ArrayList = New ArrayList()
 
         ' Generating Simple Hosted Payment Form URL fields
         Private dba As String = ""
@@ -120,7 +125,6 @@ Namespace BPVB
             Me.secretKey = secretKey
             Me.mode = mode
         End Sub
-
 
         ''' <summary>
         ''' Sets Customer Information
@@ -187,6 +191,79 @@ Namespace BPVB
             Me.accountNum = accNum
             Me.accountType = accType
             Me.docType = docType 'optional'
+        End Sub
+
+        ''' <summary>
+        ''' Adds information required for level 2 processing.
+        ''' </summary>
+        Public sub addLevel2Information(Optional ByVal taxRate As String = "", Optional ByVal goodsTaxRate As String = "", Optional ByVal goodsTaxAmount As String = "", Optional ByVal shippingAmount As String = "", Optional ByVal discountAmount As String = "", Optional ByVal custPO As String = "", Optional ByVal goodsTaxID As String = "", Optional ByVal taxID As String = "", Optional ByVal customerTaxID As String = "", Optional ByVal dutyAmount As String = "", Optional ByVal supplementalData As String = "", Optional ByVal cityTaxRate As String = "", Optional ByVal cityTaxAmount As String = "", Optional ByVal countyTaxRate As String = "", Optional ByVal countyTaxAmount As String = "", Optional ByVal stateTaxRate As String = "", Optional ByVal stateTaxAmount As String = "", Optional ByVal buyerName As String = "", Optional ByVal customerReference As String = "", Optional ByVal customerNumber As String = "", Optional ByVal shipName As String = "", Optional ByVal shipAddr1 As String = "", Optional ByVal shipAddr2 As String = "", Optional ByVal shipCity As String = "", Optional ByVal shipState As String = "", Optional ByVal shipZip As String = "", Optional ByVal shipCountry As String = "")
+            me.level2Info.Add( "LV2_ITEM_TAX_RATE", taxRate )
+            me.level2Info.Add( "LV2_ITEM_GOODS_TAX_RATE", goodsTaxRate )
+            me.level2Info.Add( "LV2_ITEM_GOODS_TAX_AMOUNT", goodsTaxAmount )
+            me.level2Info.Add( "LV2_ITEM_SHIPPING_AMOUNT", shippingAmount )
+            me.level2Info.Add( "LV2_ITEM_DISCOUNT_AMOUNT", discountAmount )
+            me.level2Info.Add( "LV2_ITEM_CUST_PO", custPO )
+            me.level2Info.Add( "LV2_ITEM_GOODS_TAX_ID", goodsTaxID )
+            me.level2Info.Add( "LV2_ITEM_TAX_ID", taxID )
+            me.level2Info.Add( "LV2_ITEM_CUSTOMER_TAX_ID", customerTaxID )
+            me.level2Info.Add( "LV2_ITEM_DUTY_AMOUNT", dutyAmount )
+            me.level2Info.Add( "LV2_ITEM_SUPPLEMENTAL_DATA", supplementalData )
+            me.level2Info.Add( "LV2_ITEM_CITY_TAX_RATE", cityTaxRate )
+            me.level2Info.Add( "LV2_ITEM_CITY_TAX_AMOUNT", cityTaxAmount )
+            me.level2Info.Add( "LV2_ITEM_COUNTY_TAX_RATE", countyTaxRate )
+            me.level2Info.Add( "LV2_ITEM_COUNTY_TAX_AMOUNT", countyTaxAmount )
+            me.level2Info.Add( "LV2_ITEM_STATE_TAX_RATE", stateTaxRate )
+            me.level2Info.Add( "LV2_ITEM_STATE_TAX_AMOUNT", stateTaxAmount )
+            me.level2Info.Add( "LV2_ITEM_BUYER_NAME", buyerName )
+            me.level2Info.Add( "LV2_ITEM_CUSTOMER_REFERENCE", customerReference )
+            me.level2Info.Add( "LV2_ITEM_CUSTOMER_NUMBER", customerNumber )
+            me.level2Info.Add( "LV2_ITEM_SHIP_NAME", shipName )
+            me.level2Info.Add( "LV2_ITEM_SHIP_ADDR1", shipAddr1 )
+            me.level2Info.Add( "LV2_ITEM_SHIP_ADDR2", shipAddr2 )
+            me.level2Info.Add( "LV2_ITEM_SHIP_CITY", shipCity )
+            me.level2Info.Add( "LV2_ITEM_SHIP_STATE", shipState )
+            me.level2Info.Add( "LV2_ITEM_SHIP_ZIP", shipZip )
+            me.level2Info.Add( "LV2_ITEM_SHIP_COUNTRY", shipCountry )
+        End Sub
+
+        ''' <summary>
+        ''' Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+        ''' For Canadian and AMEX processors, ensure required Level 2 information is present.
+        ''' </summary>
+        Public sub addLineItem(ByVal unitCost As String, ByVal quantity As String, Optional ByVal itemSKU As String = "", Optional ByVal descriptor As String = "", Optional ByVal commodityCode As String = "", Optional ByVal productCode As String = "", Optional ByVal measureUnits As String = "", Optional ByVal itemDiscount As String = "", Optional ByVal taxRate As String = "", Optional ByVal goodsTaxRate As String = "", Optional ByVal taxAmount As String = "", Optional ByVal goodsTaxAmount As String = "", Optional ByVal cityTaxRate As String = "", Optional ByVal cityTaxAmount As String = "", Optional ByVal countyTaxRate As String = "", Optional ByVal countyTaxAmount As String = "", Optional ByVal stateTaxRate As String = "", Optional ByVal stateTaxAmount As String = "", Optional ByVal custSKU As String = "", Optional ByVal custPO As String = "", Optional ByVal supplementalData As String = "", Optional ByVal glAccountNumber As String = "", Optional ByVal divisionNumber As String = "", Optional ByVal poLineNumber As String = "", Optional ByVal lineItemTotal As String = "")
+            dim i As String = (me.lineItems.Count + 1 ).ToString
+            dim prefix As String = "LV3_ITEM" & i & "_"
+
+            dim item As Dictionary(Of String, String) = new Dictionary(Of String, String)
+
+            item.Add( prefix + "UNIT_COST", unitCost )
+            item.Add( prefix + "QUANTITY", quantity )
+            item.Add( prefix + "ITEM_SKU", itemSKU )
+            item.Add( prefix + "ITEM_DESCRIPTOR", descriptor )
+            item.Add( prefix + "COMMODITY_CODE", commodityCode )
+            item.Add( prefix + "PRODUCT_CODE", productCode )
+            item.Add( prefix + "MEASURE_UNITS", measureUnits )
+            item.Add( prefix + "ITEM_DISCOUNT", itemDiscount )
+            item.Add( prefix + "TAX_RATE", taxRate )
+            item.Add( prefix + "GOODS_TAX_RATE", goodsTaxRate )
+            item.Add( prefix + "TAX_AMOUNT", taxAmount )
+            item.Add( prefix + "GOODS_TAX_AMOUNT", goodsTaxAmount )
+            item.Add( prefix + "CITY_TAX_RATE", cityTaxRate )
+            item.Add( prefix + "CITY_TAX_AMOUNT", cityTaxAmount )
+            item.Add( prefix + "COUNTY_TAX_RATE", countyTaxRate )
+            item.Add( prefix + "COUNTY_TAX_AMOUNT", countyTaxAmount )
+            item.Add( prefix + "STATE_TAX_RATE", stateTaxRate )
+            item.Add( prefix + "STATE_TAX_AMOUNT", stateTaxAmount )
+            item.Add( prefix + "CUST_SKU", custSKU )
+            item.Add( prefix + "CUST_PO", custPO )
+            item.Add( prefix + "SUPPLEMENTAL_DATA", supplementalData )
+            item.Add( prefix + "GL_ACCOUNT_NUMBER", glAccountNumber )
+            item.Add( prefix + "DIVISION_NUMBER", divisionNumber )
+            item.Add( prefix + "PO_LINE_NUMBER", poLineNumber )
+            item.Add( prefix + "LINE_ITEM_TOTAL", lineItemTotal )
+
+            me.lineItems.Add(item)
+
         End Sub
 
         ''' <summary>
@@ -561,7 +638,7 @@ Namespace BPVB
                         + Me.rebillAmount _
                         + Me.masterID _
                         + Me.mode
-            Dim sha512 As SHA512 = New SHA512CryptoServiceProvider
+            Dim sha512 As SHA512 = New SHA512Managed()
             Dim hash() As Byte
             Dim encode As ASCIIEncoding = New ASCIIEncoding
             Dim buffer() As Byte = encode.GetBytes(tps)
@@ -949,7 +1026,22 @@ Namespace BPVB
                 "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(Me.doNotEscape) + _
                 "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(Me.excludeErrors)
             End If
-                ' Create HTTPS POST object and send to BluePay
+
+            ' Add Level 2 data, if available
+            For Each field As KeyValuePair(Of String, String) in me.level2Info
+                postData = postData & "&" & field.Key & "=" & field.Value
+            Next
+
+            ' Add Level 3 item data, if available
+            For Each item As Dictionary (Of String, String) in me.lineItems
+                For Each field As KeyValuePair(Of String, String) in item
+                    postData = postData & "&" & field.Key & "=" & field.Value
+                Next
+            Next
+
+            Console.Write(postData)
+
+            ' Create HTTPS POST object and send to BluePay
                 Dim httpRequest As HttpWebRequest = HttpWebRequest.Create(Me.URL)
                 httpRequest.Method = "POST"
                 httpRequest.AllowAutoRedirect = False
