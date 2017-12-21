@@ -1039,8 +1039,6 @@ Namespace BPVB
                 Next
             Next
 
-            Console.Write(postData)
-
             ' Create HTTPS POST object and send to BluePay
                 Dim httpRequest As HttpWebRequest = HttpWebRequest.Create(Me.URL)
                 httpRequest.Method = "POST"

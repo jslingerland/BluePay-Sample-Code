@@ -13,7 +13,7 @@ using BluePayLibrary;
 
 namespace Transactions
 {
-    class ChargeCustomerCC_Lv2_Lv3
+    class ChargeCustomerCCLv2Lv3
     {
         public static void Main()
         {
