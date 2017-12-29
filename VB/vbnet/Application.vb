@@ -2,8 +2,13 @@
 
 Public Class Application
 	Public Shared Sub Main()
+    
+        ''''''''''''''''''''''''''''''''''''''''''''''''
+        ''' Uncomment the sample file you'd like to run
+        '''''''''''''''''''''''''''''''''''''''''''''''' 
 
-		 Transactions.ChargeCustomerCC.run()
+        ' Transactions.ChargeCustomerCC.run()
+        ' Transactions.ChargeCustomerCCLv2Lv3.run()
 		' Transactions.ChargeCustomerACH.run()
 		' Transactions.CancelTransaction.run()
 		' Transactions.CheckCustomerCredit.run()

@@ -102,7 +102,13 @@ class BluePay {
     private $rebid;
 
     private $postURL;
- 
+
+    // Level 2 processing field
+    private $level2Info;
+    
+    // Level 3 processing field
+    private $lineItems;
+
     // Class constructor. Accepts:
     // $accID : Merchant's Account ID
     // $secretKey : Merchant's Secret Key
@@ -210,6 +216,72 @@ class BluePay {
         }
     }
 
+    // Adds information required for level 2 processing.
+    public function addLevel2Information($params) {
+        $this->level2Info = array(
+            'LV2_ITEM_TAX_RATE' => $params['taxRate'] ?? '',
+            'LV2_ITEM_GOODS_TAX_RATE' => $params['goodsTaxRate'] ?? '',
+            'LV2_ITEM_GOODS_TAX_AMOUNT' => $params['goodsTaxAmount'] ?? '',
+            'LV2_ITEM_SHIPPING_AMOUNT' => $params['shippingAmount'] ?? '',
+            'LV2_ITEM_DISCOUNT_AMOUNT' => $params['discountAmount'] ?? '',
+            'LV2_ITEM_CUST_PO' => $params['custPO'] ?? '',
+            'LV2_ITEM_GOODS_TAX_ID' => $params['goodsTaxID'] ?? '',
+            'LV2_ITEM_TAX_ID' => $params['taxID'] ?? '',
+            'LV2_ITEM_CUSTOMER_TAX_ID' => $params['customerTaxID'] ?? '',
+            'LV2_ITEM_DUTY_AMOUNT' => $params['dutyAmount'] ?? '',
+            'LV2_ITEM_SUPPLEMENTAL_DATA' => $params['supplementalData'] ?? '',
+            'LV2_ITEM_CITY_TAX_RATE' => $params['cityTaxRate'] ?? '',
+            'LV2_ITEM_CITY_TAX_AMOUNT' => $params['cityTaxAmount'] ?? '',
+            'LV2_ITEM_COUNTY_TAX_RATE' => $params['countyTaxRate'] ?? '',
+            'LV2_ITEM_COUNTY_TAX_AMOUNT' => $params['countyTaxAmount'] ?? '',
+            'LV2_ITEM_STATE_TAX_RATE' => $params['stateTaxRate'] ?? '',
+            'LV2_ITEM_STATE_TAX_AMOUNT' => $params['stateTaxAmount'] ?? '',
+            'LV2_ITEM_BUYER_NAME' => $params['buyerName'] ?? '',
+            'LV2_ITEM_CUSTOMER_REFERENCE' => $params['customerReference'] ?? '',
+            'LV2_ITEM_CUSTOMER_NUMBER' => $params['customerNumber'] ?? '',
+            'LV2_ITEM_SHIP_NAME' => $params['shipName'] ?? '',
+            'LV2_ITEM_SHIP_ADDR1' => $params['shipAddr1'] ?? '',
+            'LV2_ITEM_SHIP_ADDR2' => $params['shipAddr2'] ?? '',
+            'LV2_ITEM_SHIP_CITY' => $params['shipCity'] ?? '',
+            'LV2_ITEM_SHIP_STATE' => $params['shipState'] ?? '',
+            'LV2_ITEM_SHIP_ZIP' => $params['shipZip'] ?? '',
+            'LV2_ITEM_SHIP_COUNTRY' => $params['shipCountry'] ?? ''
+        );
+    }
+
+    // Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+    // For Canadian and AMEX processors, ensure required Level 2 information is present.
+    public function addLineItem($params) {
+        $i = count($this->lineItems) + 1;
+        $prefix = "LV3_ITEM${i}_";                                                 //  VALUE REQUIRED IN:
+        $this->lineItems[] = array(                                                //  USA | CANADA
+            "${prefix}UNIT_COST" => $params['unitCost'],                          //   *      *
+            "${prefix}QUANTITY" => $params['quantity'],                            //   *      *
+            "${prefix}ITEM_SKU" => $params['itemSKU'] ?? '',                      //          *
+            "${prefix}ITEM_DESCRIPTOR" => $params['descriptor'] ?? '',             //   *      *
+            "${prefix}COMMODITY_CODE" => $params['commodityCode'] ?? '',          //   *      *
+            "${prefix}PRODUCT_CODE" => $params['productCode'] ?? '',              //   *
+            "${prefix}MEASURE_UNITS" => $params['measureUnits'] ?? '',            //   *      *
+            "${prefix}ITEM_DISCOUNT" => $params['itemDiscount'] ?? '',            //          *
+            "${prefix}TAX_RATE" => $params['taxRate'] ?? '',                      //   *
+            "${prefix}GOODS_TAX_RATE" => $params['goodsTaxRate'] ?? '',          //          *
+            "${prefix}TAX_AMOUNT" => $params['taxAmount'] ?? '',                  //   *
+            "${prefix}GOODS_TAX_AMOUNT" => $params['goodsTaxAmount'] ?? '',      //   *
+            "${prefix}CITY_TAX_RATE" => $params['cityTaxRate'] ?? '',            //
+            "${prefix}CITY_TAX_AMOUNT" => $params['cityTaxAmount'] ?? '',        //
+            "${prefix}COUNTY_TAX_RATE" => $params['countyTaxRate'] ?? '',        //
+            "${prefix}COUNTY_TAX_AMOUNT" => $params['countyTaxAmount'] ?? '',    //
+            "${prefix}STATE_TAX_RATE" => $params['stateTaxRate'] ?? '',          //
+            "${prefix}STATE_TAX_AMOUNT" => $params['stateTaxAmount'] ?? '',      //
+            "${prefix}CUST_SKU" => $params['custSKU'] ?? '',                      //
+            "${prefix}CUST_PO" => $params['custPO'] ?? '',                        //
+            "${prefix}SUPPLEMENTAL_DATA" => $params['supplementalData'] ?? '',    //
+            "${prefix}GL_ACCOUNT_NUMBER" => $params['glAccountNumber'] ?? '',    //
+            "${prefix}DIVISION_NUMBER" => $params['divisionNumber'] ?? '',        //
+            "${prefix}PO_LINE_NUMBER" => $params['poLineNumber'] ?? '',          //
+            "${prefix}LINE_ITEM_TOTAL" => $params['lineItemTotal'] ?? ''         //   *
+        );
+    }
 
     // Passes rebilling information into the transaction
     public function setRebillingInformation($params) {
@@ -232,7 +304,7 @@ class BluePay {
     }
 
     // Passes value into INVOICE_ID field
-    public function setinvoiceID($invoiceID) {
+    public function setInvoiceID($invoiceID) {
         $this->invoiceID = $invoiceID;
     }
 
@@ -712,12 +784,25 @@ class BluePay {
             default:
         }
 
+        // Add Level 2 item data, if available
+        if(!empty($this->level2Info)){
+            $post = $post + $this->level2Info;
+        }
+
+        // Add Level 3 item data, if available
+        if(!empty($this->lineItems)){
+            foreach($this->lineItems as $item){
+                $post = $post + $item;
+                unset($item);
+            }
+        }
             /* perform the transaction */
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $this->postURL); // Set the URL
             curl_setopt($ch, CURLOPT_USERAGENT, "Bluepay Payment");
             curl_setopt($ch, CURLOPT_POST, 1); // Perform a POST
             curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Required for query strings greater than 1024 characters.
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // Turns off verification of the SSL certificate.
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // If not set, curl prints output to the browser
