@@ -106,9 +106,9 @@ sub process {
     while ( my ( $key, $value ) = each(%$self) ) {
         if ( $key eq 'SECRET_KEY' ) { next; }
         if ( $key eq 'URL' )        { next; }
+        if ( $key eq 'LINE_ITEMS' ) { next; }
         $request .= "&$key=" . uri_escape( $value || '' );
     }
-
     # prints the full api request url 
     # print "\n" . "request: "  . "\n" . $request . "\n \n";
 
@@ -219,6 +219,93 @@ sub set_ach_information{
     $self->{ACH_ACCOUNT} = $params->{ach_account};
     $self->{ACH_ACCOUNT_TYPE} = $params->{ach_account_type};
     $self->{DOC_TYPE} = $params->{doc_type}; #optional
+}
+
+# Set Invoice ID. Required for Level 2 Processing.
+sub set_invoice_id{
+    my $self = shift;
+    my $invoice_id = shift;
+    $self->{INVOICE_ID} = $invoice_id;
+}
+
+# Set Tax Amount. Required for Level 2 Processing.
+sub set_amount_tax{
+    my $self = shift;
+    my $amount_tax = shift;
+    $self->{AMOUNT_TAX} = $amount_tax;
+}
+
+# Adds information required for level 2 processing.
+sub add_level2_information{
+    my $self = shift;
+    my $params = shift;
+
+    $self->{LV2_ITEM_TAX_RATE} = $params->{tax_rate} || '';
+    $self->{LV2_ITEM_GOODS_TAX_RATE} = $params->{goods_tax_rate} || '';
+    $self->{LV2_ITEM_GOODS_TAX_AMOUNT} = $params->{goods_tax_amount} || '';
+    $self->{LV2_ITEM_SHIPPING_AMOUNT} = $params->{shipping_amount} || '';
+    $self->{LV2_ITEM_DISCOUNT_AMOUNT} = $params->{discount_amount} || '';
+    $self->{LV2_ITEM_CUST_PO} = $params->{cust_po} || '';
+    $self->{LV2_ITEM_GOODS_TAX_ID} = $params->{goods_tax_id} || '';
+    $self->{LV2_ITEM_TAX_ID} = $params->{tax_id} || '';
+    $self->{LV2_ITEM_CUSTOMER_TAX_ID} = $params->{customer_tax_id} || '';
+    $self->{LV2_ITEM_DUTY_AMOUNT} = $params->{duty_amount} || '';
+    $self->{LV2_ITEM_SUPPLEMENTAL_DATA} = $params->{supplemental_data} || '';
+    $self->{LV2_ITEM_CITY_TAX_RATE} = $params->{city_tax_rate} || '';
+    $self->{LV2_ITEM_CITY_TAX_AMOUNT} = $params->{city_tax_amount} || '';
+    $self->{LV2_ITEM_COUNTY_TAX_RATE} = $params->{county_tax_rate} || '';
+    $self->{LV2_ITEM_COUNTY_TAX_AMOUNT} = $params->{county_tax_amount} || '';
+    $self->{LV2_ITEM_STATE_TAX_RATE} = $params->{state_tax_rate} || '';
+    $self->{LV2_ITEM_STATE_TAX_AMOUNT} = $params->{state_tax_amount} || '';
+    $self->{LV2_ITEM_BUYER_NAME} = $params->{buyer_name} || '';
+    $self->{LV2_ITEM_CUSTOMER_REFERENCE} = $params->{customer_reference} || '';
+    $self->{LV2_ITEM_CUSTOMER_NUMBER} = $params->{customer_number} || '';
+    $self->{LV2_ITEM_SHIP_NAME} = $params->{ship_name} || '';
+    $self->{LV2_ITEM_SHIP_ADDR1} = $params->{ship_addr1} || '';
+    $self->{LV2_ITEM_SHIP_ADDR2} = $params->{ship_addr2} || '';
+    $self->{LV2_ITEM_SHIP_CITY} = $params->{ship_city} || '';
+    $self->{LV2_ITEM_SHIP_STATE} = $params->{ship_state} || '';
+    $self->{LV2_ITEM_SHIP_ZIP} = $params->{ship_zip} || '';
+    $self->{LV2_ITEM_SHIP_COUNTRY} = $params->{ship_country} || '';
+}
+
+# Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
+# For Canadian and AMEX processors, ensure required Level 2 information is present.
+sub add_line_item{
+    my $self = shift;
+    my $params = shift;
+    # Creates line items counter necessary for prefix.
+    if (!defined $self->{LINE_ITEMS}) {
+        $self->{LINE_ITEMS} = 0;
+    }
+    $self->{LINE_ITEMS}++;
+    my $prefix = "LV3_ITEM$self->{LINE_ITEMS}_";                                    #  VALUE REQUIRED IN:
+                                                                                    #  USA | CANADA
+    $self->{$prefix . 'UNIT_COST'} = $params->{unit_cost};                          #   *      *
+    $self->{$prefix . 'QUANTITY'} = $params->{quantity};                            #   *      *
+    $self->{$prefix . 'ITEM_SKU'} = $params->{item_sku} || '';                      #          *
+    $self->{$prefix . 'ITEM_DESCRIPTOR'} = $params->{descriptor} || '';             #   *      *
+    $self->{$prefix . 'COMMODITY_CODE'} = $params->{commodity_code} || '';          #   *      *
+    $self->{$prefix . 'PRODUCT_CODE'} = $params->{product_code} || '';              #   *
+    $self->{$prefix . 'MEASURE_UNITS'} = $params->{measure_units} || '';            #   *      *
+    $self->{$prefix . 'ITEM_DISCOUNT'} = $params->{item_discount} || '';            #          *
+    $self->{$prefix . 'TAX_RATE'} = $params->{tax_rate} || '';                      #   *
+    $self->{$prefix . 'GOODS_TAX_RATE'} = $params->{goods_tax_rate} || '';          #          *
+    $self->{$prefix . 'TAX_AMOUNT'} = $params->{tax_amount} || '';                  #   *
+    $self->{$prefix . 'GOODS_TAX_AMOUNT'} = $params->{goods_tax_amount} || '';      #   *
+    $self->{$prefix . 'CITY_TAX_RATE'} = $params->{city_tax_rate} || '';            #
+    $self->{$prefix . 'CITY_TAX_AMOUNT'} = $params->{city_tax_amount} || '';        #
+    $self->{$prefix . 'COUNTY_TAX_RATE'} = $params->{county_tax_rate} || '';        #
+    $self->{$prefix . 'COUNTY_TAX_AMOUNT'} = $params->{county_tax_amount} || '';    #
+    $self->{$prefix . 'STATE_TAX_RATE'} = $params->{state_tax_rate} || '';          #
+    $self->{$prefix . 'STATE_TAX_AMOUNT'} = $params->{state_tax_amount} || '';      #
+    $self->{$prefix . 'CUST_SKU'} = $params->{cust_sku} || '';                      #
+    $self->{$prefix . 'CUST_PO'} = $params->{cust_po} || '';                        #
+    $self->{$prefix . 'SUPPLEMENTAL_DATA'} = $params->{supplemental_data} || '';    #
+    $self->{$prefix . 'GL_ACCOUNT_NUMBER'} = $params->{gl_account_number} || '';    #
+    $self->{$prefix . 'DIVISION_NUMBER'} = $params->{division_number} || '';        #
+    $self->{$prefix . 'PO_LINE_NUMBER'} = $params->{po_line_number} || '';          #
+    $self->{$prefix . 'LINE_ITEM_TOTAL'} = $params->{line_item_total} || '';        #   *
 }
 
 # Set Sale Transaction
@@ -341,7 +428,7 @@ sub get_settled_transaction_report{
 sub get_single_transaction_query{
     my $self = shift;
     my $params =  shift;
-    $self->{API} = "stq";    
+    $self->{API} = "stq";
     $self->{REPORT_START_DATE} = $params->{report_start_date};
     $self->{REPORT_END_DATE} = $params->{report_end_date};
     $self->{id} = $params->{transaction_id};
