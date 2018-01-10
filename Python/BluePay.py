@@ -428,7 +428,7 @@ class BluePay:
         return tps
         
     def calc_trans_notify_TPS(self):
-        tps_string = (secret_key, trans_id, trans_status, trans_type, amount, batch_id, batch_status,
+        tps_string = (trans_id, trans_status, trans_type, amount, batch_id, batch_status,
                       total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
         tps = self.create_tps_hash(tps_string)
         return tps

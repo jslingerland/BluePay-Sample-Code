@@ -111,7 +111,7 @@ sub calc_tps {
 
 sub calc_trans_notify_tps {
     my $tpsString = shift;
-    my $bp_stamp = md5_hex $tpsString;
+    my $bp_stamp = $self->generate_tps($tpsString);
     return $bp_stamp;
 }
 

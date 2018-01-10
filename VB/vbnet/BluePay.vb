@@ -625,7 +625,7 @@ Namespace BPVB
         ''' Generates the TAMPER_PROOF_SEAL to used to validate each transaction
         ''' </summary>
         '''
-        Public Function generateTPS(message As String) As String
+        Public Function generateTPS(ByVal message As String) As String
             Dim result As String
             Dim encode As ASCIIEncoding = New ASCIIEncoding
             If Me.tpsHashType = "HMAC_SHA256" Then
@@ -708,12 +708,7 @@ Namespace BPVB
         ''' </summary>
         '''
         Public Shared Function calcTransNotifyTPS(ByVal bp_stamp As String)
-            Dim md5 As MD5 = New MD5CryptoServiceProvider
-            Dim hash() As Byte
-            Dim encode As ASCIIEncoding = New ASCIIEncoding
-            Dim buffer() As Byte = encode.GetBytes(bp_stamp)
-            hash = md5.ComputeHash(buffer)
-            Return ByteArrayToString(hash)
+            Return generateTPS(bp_stamp)
         End Function
 
         'This is used to convert a byte array to a hex string

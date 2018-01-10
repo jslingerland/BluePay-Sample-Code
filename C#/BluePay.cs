@@ -682,20 +682,13 @@ namespace BluePayLibrary
         /// <param name="rebillAmount"></param>
         /// <param name="rebillStatus"></param>
         /// <returns></returns>
-        public static string CalcTransNotifyTPS(string secretKey, string transID, string transStatus, string transType,
+        public static string CalcTransNotifyTPS(string transID, string transStatus, string transType,
             string amount, string batchID, string batchStatus, string totalCount, string totalAmount,
             string batchUploadID, string rebillID, string rebillAmount, string rebillStatus)
         {
-            string tamper_proof_seal = secretKey + transID + transStatus + transType + amount + batchID + batchStatus +
+            string tamper_proof_seal = transID + transStatus + transType + amount + batchID + batchStatus +
             totalCount + totalAmount + batchUploadID + rebillID + rebillAmount + rebillStatus;
-            MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] hash;
-            ASCIIEncoding encode = new ASCIIEncoding();
-
-            byte[] buffer = encode.GetBytes(tamper_proof_seal);
-            hash = md5.ComputeHash(buffer);
-            tamper_proof_seal = ByteArrayToString(hash);
-            return tamper_proof_seal;
+            return GenerateTPS(tamper_proof_seal);
         }
 
         /// <summary>

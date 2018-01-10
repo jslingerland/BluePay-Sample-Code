@@ -798,13 +798,14 @@ void BluePay::calcReportTps()
 /// <param name="rebillAmount"></param>
 /// <param name="rebillStatus"></param>
 /// <returns></returns>
-std::string BluePay::calcTransNotifyTps(std::string secretKey, std::string transId, std::string transStatus, std::string transType,
+std::string BluePay::calcTransNotifyTps(std::string transId, std::string transStatus, std::string transType,
     std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
     std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus)
 {
-  std::string tamper_proof_seal = secretKey + transId + transStatus + transType + amount + batchId + batchStatus +
+  std::string tamper_proof_seal = transId + transStatus + transType + amount + batchId + batchStatus +
     totalCount + totalAmount + batchUploadId + rebillId + rebillAmount + rebillStatus;
-  return md5(tamper_proof_seal);
+  std::string result = generateTps(tamper_proof_seal);
+  return result;
 }
 
 /// <summary>

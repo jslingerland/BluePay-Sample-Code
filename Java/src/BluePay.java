@@ -811,13 +811,13 @@ public class BluePay
    * @return tps The Tamper Proof Seal
    *
    */
-  public String calcTransNotifyTPS(String secretKey, String transID, String transStatus, String transType, 
+  public String calcTransNotifyTPS(String transID, String transStatus, String transType, 
 		  String amount, String batchID, String batchStatus, String totalCount, String totalAmount, 
 		  String batchUploadID, String rebillID, String rebillAmount, String rebillStatus) 
   throws java.security.NoSuchAlgorithmException {
-  	String tps = secretKey + transID + transStatus + transType + amount + batchID + batchStatus + 
+  	String tps = transID + transStatus + transType + amount + batchID + batchStatus + 
   	totalCount + totalAmount + batchUploadID + rebillID + rebillAmount + rebillStatus;
-  	return md5(tps);
+    return generateTPS(tps);
   }
 
   /**

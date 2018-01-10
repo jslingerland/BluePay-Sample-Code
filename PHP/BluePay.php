@@ -531,11 +531,11 @@ class BluePay {
         return $this->createTPSHash($tpsString);
     }
 
-    public static final function calcTransNotifyTPS($secretKey, $transID, $transStatus, $transType, $amount, $batchID, $batchStatus, 
+    public static final function calcTransNotifyTPS($transID, $transStatus, $transType, $amount, $batchID, $batchStatus, 
         $totalCount, $totalAmount, $batchUploadID, $rebillID, $rebillAmount, $rebillStatus) {
-        $tpsString = $secretKey + $transID + $transStatus + $transType + $amount + $batchID + $batchStatus + $totalCount +
+        $tpsString = $transID + $transStatus + $transType + $amount + $batchID + $batchStatus + $totalCount +
         $totalAmount + $batchUploadID + $rebillID + $rebillAmount + $rebillStatus;
-        return bin2hex(md5($tpsString, true));
+        return $this->createTPSHash($tpsString);
     }
 
     // Required arguments for generate_url:

@@ -59,9 +59,8 @@ class BluePay
   end
 
   # Calculates TAMPER_PROOF_SEAL to be used with Trans Notify API 
-  def self.calc_trans_notify_tps(secret_key, trans_id, trans_status, trans_type, amount, batch_id, batch_status, total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
-    Digest::MD5.hexdigest(
-      @SECRET_KEY + 
+  def self.calc_trans_notify_tps(trans_id, trans_status, trans_type, amount, batch_id, batch_status, total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
+    create_tps_hash(
       trans_id + 
       trans_status + 
       transtype + 
