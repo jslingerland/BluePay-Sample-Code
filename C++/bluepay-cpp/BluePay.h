@@ -12,7 +12,9 @@
 #include <stdio.h>
 //#include <tchar.h>
 
-#include "Sha512.h"
+#include "hmac.h"
+#include "sha512.h"
+#include "sha256.h"
 #include "md5.h"
 #include <curl/curl.h>
 #define ToHex(Y) (Y>='0'&&Y<='9'?Y-'0':Y-'A'+10)
@@ -25,6 +27,8 @@ private:
   std::string URL;
   std::string secretKey;
   std::string mode;
+
+  std::string tpsHashType = "HMAC_SHA512";
 
   // required for auth or sale
   std::string paymentAccount;
@@ -207,6 +211,7 @@ public:
   void setPhone(std::string phone);
   void setEmail(std::string email);
 
+  std::string generateTps(std::string message);
   void calcTps();
   void calcRebillTps();
   void calcReportTps();

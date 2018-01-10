@@ -8,10 +8,25 @@ class BluePay
     return uri_query_string
   end
 
+  # Generates TPS hash based on given hash type
+  def create_tps_hash(data)
+    case @PARAM_HASH['TPS_HASH_TYPE']   
+    when 'HMAC_SHA256'
+      OpenSSL::HMAC.hexdigest('sha256', @SECRET_KEY, data)
+    when 'SHA512'
+      Digest::SHA512.hexdigest(@SECRET_KEY + data)
+    when 'SHA256'
+      Digest::SHA256.hexdigest(@SECRET_KEY + data)
+    when 'MD5'
+      Digest::MD5.hexdigest(@SECRET_KEY + data)
+    else
+      OpenSSL::HMAC.hexdigest('sha512', @SECRET_KEY, data)
+    end
+  end
+
   # Sets TAMPER_PROOF_SEAL in @PARAM_HASH
   def calc_tps
-    @PARAM_HASH["TAMPER_PROOF_SEAL"] = Digest::SHA512.hexdigest(
-        @SECRET_KEY + 
+    @PARAM_HASH["TAMPER_PROOF_SEAL"] = create_tps_hash(
         @ACCOUNT_ID + 
         (@PARAM_HASH["TRANSACTION_TYPE"] || '') + 
         @PARAM_HASH["AMOUNT"] + 
@@ -27,8 +42,7 @@ class BluePay
 
   # Sets TAMPER_PROOF_SEAL in @PARAM_HASH for rebadmin API
   def calc_rebill_tps
-    @PARAM_HASH["TAMPER_PROOF_SEAL"] = Digest::MD5.hexdigest(
-      @SECRET_KEY + 
+    @PARAM_HASH["TAMPER_PROOF_SEAL"] = create_tps_hash(
       @ACCOUNT_ID +
       @PARAM_HASH["TRANS_TYPE"] + 
       @PARAM_HASH["REBILL_ID"]
@@ -37,8 +51,7 @@ class BluePay
 
   # Sets TAMPER_PROOF_SEAL in @PARAM_HASH for bpdailyreport2 API
   def calc_report_tps
-    @PARAM_HASH["TAMPER_PROOF_SEAL"] = Digest::MD5.hexdigest(
-      @SECRET_KEY + 
+    @PARAM_HASH["TAMPER_PROOF_SEAL"] = create_tps_hash(
       @ACCOUNT_ID + 
       @PARAM_HASH["REPORT_START_DATE"] + 
       @PARAM_HASH["REPORT_END_DATE"]
@@ -70,6 +83,9 @@ class BluePay
     ua = Net::HTTP.new(SERVER, 443)
     ua.use_ssl = true
     
+    # Set default hash function to HMAC SHA-512
+    @PARAM_HASH['TPS_HASH_TYPE'] = 'SHA512'
+
     # Checks presence of CA certificate
     if File.directory?(RootCA)
       ua.ca_path = RootCA
@@ -99,7 +115,7 @@ class BluePay
     when "bp10emu"
       calc_tps
       path = "/interfaces/bp10emu"
-      query = "MERCHANT=#{@ACCOUNT_ID}&" + uri_query(@PARAM_HASH) + "&TPS_HASH_TYPE=SHA512"
+      query = "MERCHANT=#{@ACCOUNT_ID}&" + uri_query(@PARAM_HASH)
       # puts "****"; puts uri_query(@PARAM_HASH).inspect
     when "bp20rebadmin"
       calc_rebill_tps

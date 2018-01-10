@@ -66,7 +66,7 @@ namespace BluePayLibrary
         public string rebillID = "";
 
         // rebill variables
-        public string doRebill  = "";
+        public string doRebill = "";
         public string rebillAmount = "";
         public string rebillFirstDate = "";
         public string rebillExpr = "";
@@ -124,13 +124,14 @@ namespace BluePayLibrary
         public string BPheaderstring = "";
 
         public int numRetries = 0;
+        public string tpsHashType = "HMAC_SHA512";
 
         // level 2 processing field
         public Dictionary<string, string> level2Info = new Dictionary<string, string>();
 
         // level 3 processing field
         public List<Dictionary<string, string>> lineItems = new List<Dictionary<string, string>>();
-       
+
         public BluePay(string accountID, string secretKey, string mode)
         {
             this.accountID = accountID;
@@ -150,8 +151,8 @@ namespace BluePayLibrary
         /// <param name="country"></param>
         /// <param name="phone"></param>
         /// <param name="email"></param>
-        
-        public void SetCustomerInformation(string firstName, string lastName, string address1 = null, string address2 = null, string city = null, string state = null, string zip = null , string country = null, string phone = null, string email = null)
+
+        public void SetCustomerInformation(string firstName, string lastName, string address1 = null, string address2 = null, string city = null, string state = null, string zip = null, string country = null, string phone = null, string email = null)
         {
             this.name1 = firstName;
             this.name2 = lastName;
@@ -164,7 +165,7 @@ namespace BluePayLibrary
             this.phone = phone;
             this.email = email;
         }
-        
+
         /// <summary>
         /// Sets Credit Card Information
         /// </summary>
@@ -208,7 +209,8 @@ namespace BluePayLibrary
         /// <summary>
         /// Adds information required for level 2 processing.
         /// </summary>
-        public void AddLevel2Information(string taxRate = null, string goodsTaxRate = null, string goodsTaxAmount = null, string shippingAmount = null, string discountAmount = null, string custPO = null, string goodsTaxID = null, string taxID = null, string customerTaxID = null, string dutyAmount = null, string supplementalData = null, string cityTaxRate = null, string cityTaxAmount = null, string countyTaxRate = null, string countyTaxAmount = null, string stateTaxRate = null, string stateTaxAmount = null, string buyerName = null, string customerReference = null, string customerNumber = null, string shipName = null, string shipAddr1 = null, string shipAddr2 = null, string shipCity = null, string shipState = null, string shipZip = null, string shipCountry = null){
+        public void AddLevel2Information(string taxRate = null, string goodsTaxRate = null, string goodsTaxAmount = null, string shippingAmount = null, string discountAmount = null, string custPO = null, string goodsTaxID = null, string taxID = null, string customerTaxID = null, string dutyAmount = null, string supplementalData = null, string cityTaxRate = null, string cityTaxAmount = null, string countyTaxRate = null, string countyTaxAmount = null, string stateTaxRate = null, string stateTaxAmount = null, string buyerName = null, string customerReference = null, string customerNumber = null, string shipName = null, string shipAddr1 = null, string shipAddr2 = null, string shipCity = null, string shipState = null, string shipZip = null, string shipCountry = null)
+        {
             this.level2Info.Add("LV2_ITEM_TAX_RATE", taxRate);
             this.level2Info.Add("LV2_ITEM_GOODS_TAX_RATE", goodsTaxRate);
             this.level2Info.Add("LV2_ITEM_GOODS_TAX_AMOUNT", goodsTaxAmount);
@@ -236,7 +238,7 @@ namespace BluePayLibrary
             this.level2Info.Add("LV2_ITEM_SHIP_STATE", shipState);
             this.level2Info.Add("LV2_ITEM_SHIP_ZIP", shipZip);
             this.level2Info.Add("LV2_ITEM_SHIP_COUNTRY", shipCountry);
-        } 
+        }
 
         /// <summary>
         /// Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
@@ -632,8 +634,7 @@ namespace BluePayLibrary
         /// </summary>
         public void CalcTPS()
         {
-            string tamper_proof_seal = this.secretKey
-                                    + this.accountID
+            string tamper_proof_seal = this.accountID
                                     + this.transType
                                     + this.amount
                                     + this.doRebill
@@ -643,13 +644,7 @@ namespace BluePayLibrary
                                     + this.rebillAmount
                                     + this.masterID
                                     + this.mode;
-            SHA512 sha512 = new SHA512CryptoServiceProvider();
-            byte[] hash;
-            ASCIIEncoding encode = new ASCIIEncoding();
-
-            byte[] buffer = encode.GetBytes(tamper_proof_seal);
-            hash = sha512.ComputeHash(buffer);
-            this.TPS = ByteArrayToString(hash);
+            this.TPS = GenerateTPS(tamper_proof_seal);
         }
 
         /// <summary>
@@ -657,18 +652,8 @@ namespace BluePayLibrary
         /// </summary>
         public void CalcRebillTPS()
         {
-            string tamper_proof_seal = this.secretKey +
-                                 this.accountID +
-                                 this.transType +
-                                 this.rebillID;
-
-            MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] hash;
-            ASCIIEncoding encode = new ASCIIEncoding();
-
-            byte[] buffer = encode.GetBytes(tamper_proof_seal);
-            hash = md5.ComputeHash(buffer);
-            this.TPS = ByteArrayToString(hash);
+            string tamper_proof_seal = this.accountID + this.transType + this.rebillID;
+            this.TPS = GenerateTPS(tamper_proof_seal);
         }
 
         /// <summary>
@@ -676,14 +661,8 @@ namespace BluePayLibrary
         /// </summary>
         public void CalcReportTPS()
         {
-            string tamper_proof_seal = this.secretKey + this.accountID + this.reportStartDate + this.reportEndDate;
-            MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] hash;
-            ASCIIEncoding encode = new ASCIIEncoding();
-
-            byte[] buffer = encode.GetBytes(tamper_proof_seal);
-            hash = md5.ComputeHash(buffer);
-            this.TPS = ByteArrayToString(hash);
+            string tamper_proof_seal = this.accountID + this.reportStartDate + this.reportEndDate;
+            this.TPS = GenerateTPS(tamper_proof_seal);
         }
 
         /// <summary>
@@ -717,6 +696,55 @@ namespace BluePayLibrary
             hash = md5.ComputeHash(buffer);
             tamper_proof_seal = ByteArrayToString(hash);
             return tamper_proof_seal;
+        }
+
+        /// <summary>
+        /// Generates the TAMPER_PROOF_SEAL to used to validate each transaction
+        /// </summary>
+        public string GenerateTPS(string Message)
+        {
+            string tpsHash = "";
+            ASCIIEncoding encode = new ASCIIEncoding();
+
+            if (this.tpsHashType == "HMAC_SHA256")
+            {
+                byte[] SecretKeyBytes = encode.GetBytes(this.secretKey);
+                byte[] MessageBytes = encode.GetBytes(Message);
+                var Hmac = new HMACSHA256(SecretKeyBytes);
+                byte[] HashBytes = Hmac.ComputeHash(MessageBytes);
+                tpsHash = ByteArrayToString(HashBytes);
+            }
+            else if (this.tpsHashType == "SHA512")
+            {
+                SHA512 sha512 = new SHA512CryptoServiceProvider();
+                byte[] buffer = encode.GetBytes(this.secretKey + Message);
+                byte[] Hash = sha512.ComputeHash(buffer);
+                tpsHash = ByteArrayToString(Hash);
+            }
+            else if (this.tpsHashType == "SHA256")
+            {
+                SHA256 Sha256 = new SHA256CryptoServiceProvider();
+                byte[] Buffer = encode.GetBytes(this.secretKey + Message);
+                byte[] Hash = Sha256.ComputeHash(Buffer);
+                tpsHash = ByteArrayToString(Hash);
+            }
+            else if (this.tpsHashType == "MD5")
+            {
+                MD5 Md5 = new MD5CryptoServiceProvider();
+                byte[] Buffer = encode.GetBytes(this.secretKey + Message);
+                byte[] Hash = Md5.ComputeHash(Buffer);
+                tpsHash = ByteArrayToString(Hash);
+            }
+            else
+            {
+                byte[] SecretKeyBytes = encode.GetBytes(this.secretKey);
+                byte[] MessageBytes = encode.GetBytes(Message);
+                var Hmac = new HMACSHA512(SecretKeyBytes);
+                byte[] HashBytes = Hmac.ComputeHash(MessageBytes);
+                tpsHash = ByteArrayToString(HashBytes);
+            }
+            
+            return tpsHash;
         }
 
         //This is used to convert a byte array to a hex string
@@ -807,13 +835,13 @@ namespace BluePayLibrary
             this.rebillAmount = rebAmount;
             this.rebillCycles = rebCycles;
             this.rebillFirstDate = rebStartDate;
-            this.rebillExpr = rebFrequency; 
-            this.customID1 = customID1; 
-            this.protectCustomID1 = protectCustomID1; 
-            this.customID2 = customID2; 
-            this.protectCustomID2 = protectCustomID2; 
-            this.shpfFormID = paymentTemplate; 
-            this.receiptFormID = receiptTemplate; 
+            this.rebillExpr = rebFrequency;
+            this.customID1 = customID1;
+            this.protectCustomID1 = protectCustomID1;
+            this.customID2 = customID2;
+            this.protectCustomID2 = protectCustomID2;
+            this.shpfFormID = paymentTemplate;
+            this.receiptFormID = receiptTemplate;
             this.remoteURL = receiptTempRemoteURL;
             this.cardTypes = SetCardTypes();
             this.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF";
@@ -832,26 +860,26 @@ namespace BluePayLibrary
         /// <summary>
         /// Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with GenerateURL.
         /// </summary>
-        public string SetCardTypes() 
+        public string SetCardTypes()
         {
             string creditCards = "vi-mc";
             creditCards = discoverImage == "discvr.gif" ? (creditCards + "-di") : creditCards;
             creditCards = amexImage == "amex.gif" ? (creditCards + "-am") : creditCards;
-            return creditCards; 
+            return creditCards;
         }
 
         /// <summary>
         /// Sets the receipt Tamperproof Seal string. Must be used with GenerateURL.
         /// </summary>
-        public string SetReceiptTpsString() 
+        public string SetReceiptTpsString()
         {
-            return secretKey + accountID + receiptFormID + returnURL + dba + amexImage + discoverImage + receiptTpsDef; 
+            return secretKey + accountID + receiptFormID + returnURL + dba + amexImage + discoverImage + receiptTpsDef;
         }
-        
+
         /// <summary>
         /// Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with GenerateURL.
         /// </summary>
-        public string SetBp10emuTpsString() 
+        public string SetBp10emuTpsString()
         {
             string bp10emu = secretKey + accountID + receiptURL + receiptURL + receiptURL + mode + transType + bp10emuTpsDef;
             return AddStringProtectedStatus(bp10emu);
@@ -860,77 +888,78 @@ namespace BluePayLibrary
         /// <summary>
         /// Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with GenerateURL.
         /// </summary>
-        public string SetShpfTpsString() 
+        public string SetShpfTpsString()
         {
-            string shpf = secretKey + shpfFormID + accountID + dba + bp10emuTamperProofSeal + amexImage + discoverImage + bp10emuTpsDef + shpfTpsDef; 
+            string shpf = secretKey + shpfFormID + accountID + dba + bp10emuTamperProofSeal + amexImage + discoverImage + bp10emuTpsDef + shpfTpsDef;
             return AddStringProtectedStatus(shpf);
         }
-        
+
         /// <summary>
         /// Sets the receipt url or uses the remote url provided. Must be used with GenerateURL.
         /// </summary>
-        public string SetReceiptURL() 
+        public string SetReceiptURL()
         {
-            string output ="";
-            if (receiptFormID == "remote_url") 
+            string output = "";
+            if (receiptFormID == "remote_url")
                 output = remoteURL;
-            else 
+            else
             {
-                output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + receiptFormID+
-                "&SHPF_ACCOUNT_ID=" + accountID + 
-                "&SHPF_TPS_DEF="    + EncodeURL(receiptTpsDef) + 
-                "&SHPF_TPS="        + EncodeURL(receiptTamperProofSeal) + 
-                "&RETURN_URL="      + EncodeURL(returnURL) +
-                "&DBA="             + EncodeURL(dba) + 
-                "&AMEX_IMAGE="      + EncodeURL(amexImage) + 
-                "&DISCOVER_IMAGE="  + EncodeURL(discoverImage);
+                output = "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + receiptFormID +
+                "&SHPF_ACCOUNT_ID=" + accountID +
+                "&SHPF_TPS_DEF=" + EncodeURL(receiptTpsDef) +
+                "&SHPF_TPS=" + EncodeURL(receiptTamperProofSeal) +
+                "&RETURN_URL=" + EncodeURL(returnURL) +
+                "&DBA=" + EncodeURL(dba) +
+                "&AMEX_IMAGE=" + EncodeURL(amexImage) +
+                "&DISCOVER_IMAGE=" + EncodeURL(discoverImage);
             }
             return output;
         }
-        
+
         /// <summary>
         /// Adds optional protected keys to a string. Must be used with GenerateURL.
         /// </summary>
-        public string AddDefProtectedStatus(string input) {
-            if (protectAmount == "Yes") 
+        public string AddDefProtectedStatus(string input)
+        {
+            if (protectAmount == "Yes")
                 input = input + " AMOUNT";
-            if (rebillProtect == "Yes") 
+            if (rebillProtect == "Yes")
                 input = input + " REBILLING REB_CYCLES REB_AMOUNT REB_EXPR REB_FIRST_DATE";
-            if (protectCustomID1 == "Yes") 
+            if (protectCustomID1 == "Yes")
                 input = input + " CUSTOM_ID";
-            if (protectCustomID2 == "Yes") 
-                input = input + " CUSTOM_ID2";      
-        return input;
+            if (protectCustomID2 == "Yes")
+                input = input + " CUSTOM_ID2";
+            return input;
         }
-        
+
         /// <summary>
         /// Adds optional protected values to a string. Must be used with GenerateURL.
         /// </summary>
-        public string AddStringProtectedStatus(string input) 
+        public string AddStringProtectedStatus(string input)
         {
-            if (protectAmount == "Yes") 
+            if (protectAmount == "Yes")
                 input = input + amount;
-            if (rebillProtect == "Yes") 
+            if (rebillProtect == "Yes")
                 input = input + doRebill + rebillCycles + rebillAmount + rebillExpr + rebillFirstDate;
-            if (protectCustomID1 == "Yes") 
+            if (protectCustomID1 == "Yes")
                 input = input + customID1;
-            if (protectCustomID2 == "Yes") 
+            if (protectCustomID2 == "Yes")
                 input = input + customID2;
             return input;
         }
-        
+
         /// <summary>
         /// Encodes a string into a URL. Must be used with GenerateURL.
         /// </summary>
-        public string EncodeURL(string input) 
+        public string EncodeURL(string input)
         {
             StringBuilder encodedString = new StringBuilder();
             foreach (char character in input)
             {
                 bool isLetterOrDigit = char.IsLetterOrDigit(character);
-                if (isLetterOrDigit) 
+                if (isLetterOrDigit)
                     encodedString.Append(character.ToString());
-                else 
+                else
                 {
                     int value = Convert.ToInt32(character);
                     string hexOutput = String.Format("{0:X}", value);
@@ -939,11 +968,11 @@ namespace BluePayLibrary
             }
             return encodedString.ToString();
         }
-        
+
         /// <summary>
         /// Generates a Tamperproof Seal for a url. Must be used with GenerateURL.
         /// </summary>
-        public string CalcURLTps(string input) 
+        public string CalcURLTps(string input)
         {
             MD5 md5Hash = MD5.Create();
             byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
@@ -954,162 +983,165 @@ namespace BluePayLibrary
             }
             return sBuilder.ToString();
         }
-        
+
         /// <summary>
         /// Generates the final url for the Simple Hosted Payment Form. Must be used with GenerateURL.
         /// </summary>
-        public string CalcURLResponse() 
+        public string CalcURLResponse()
         {
-            return                  
-            "https://secure.bluepay.com/interfaces/shpf?"                 +
-            "SHPF_FORM_ID="         + EncodeURL(shpfFormID)               +
-            "&SHPF_ACCOUNT_ID="     + EncodeURL(accountID)                +
-            "&SHPF_TPS_DEF="        + EncodeURL(shpfTpsDef)               +
-            "&SHPF_TPS="            + EncodeURL(shpfTamperProofSeal)      +
-            "&MODE="                + EncodeURL(mode)                     +
-            "&TRANSACTION_TYPE="    + EncodeURL(transType)                +
-            "&DBA="                 + EncodeURL(dba)                      +
-            "&AMOUNT="              + EncodeURL(amount)                   +
-            "&TAMPER_PROOF_SEAL="   + EncodeURL(bp10emuTamperProofSeal)   +
-            "&CUSTOM_ID="           + EncodeURL(customID1)                +
-            "&CUSTOM_ID2="          + EncodeURL(customID2)                +
-            "&REBILLING="           + EncodeURL(doRebill)                 +
-            "&REB_CYCLES="          + EncodeURL(rebillCycles)             +
-            "&REB_AMOUNT="          + EncodeURL(rebillAmount)             +
-            "&REB_EXPR="            + EncodeURL(rebillExpr)               +
-            "&REB_FIRST_DATE="      + EncodeURL(rebillFirstDate)          +
-            "&AMEX_IMAGE="          + EncodeURL(amexImage)                +
-            "&DISCOVER_IMAGE="      + EncodeURL(discoverImage)            +
-            "&REDIRECT_URL="        + EncodeURL(receiptURL)               +
-            "&TPS_DEF="             + EncodeURL(bp10emuTpsDef)            +
-            "&CARD_TYPES="          + EncodeURL(cardTypes);                       
+            return
+            "https://secure.bluepay.com/interfaces/shpf?" +
+            "SHPF_FORM_ID=" + EncodeURL(shpfFormID) +
+            "&SHPF_ACCOUNT_ID=" + EncodeURL(accountID) +
+            "&SHPF_TPS_DEF=" + EncodeURL(shpfTpsDef) +
+            "&SHPF_TPS=" + EncodeURL(shpfTamperProofSeal) +
+            "&MODE=" + EncodeURL(mode) +
+            "&TRANSACTION_TYPE=" + EncodeURL(transType) +
+            "&DBA=" + EncodeURL(dba) +
+            "&AMOUNT=" + EncodeURL(amount) +
+            "&TAMPER_PROOF_SEAL=" + EncodeURL(bp10emuTamperProofSeal) +
+            "&CUSTOM_ID=" + EncodeURL(customID1) +
+            "&CUSTOM_ID2=" + EncodeURL(customID2) +
+            "&REBILLING=" + EncodeURL(doRebill) +
+            "&REB_CYCLES=" + EncodeURL(rebillCycles) +
+            "&REB_AMOUNT=" + EncodeURL(rebillAmount) +
+            "&REB_EXPR=" + EncodeURL(rebillExpr) +
+            "&REB_FIRST_DATE=" + EncodeURL(rebillFirstDate) +
+            "&AMEX_IMAGE=" + EncodeURL(amexImage) +
+            "&DISCOVER_IMAGE=" + EncodeURL(discoverImage) +
+            "&REDIRECT_URL=" + EncodeURL(receiptURL) +
+            "&TPS_DEF=" + EncodeURL(bp10emuTpsDef) +
+            "&CARD_TYPES=" + EncodeURL(cardTypes);
         }
 
         public string Process()
         {
             string postData = "";
-            
+
             switch (this.api)
             {
-            // A switch section can have more than one case label. 
-            case "bpdailyreport2":
-                CalcReportTPS();
-                this.URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
-                postData += "ACCOUNT_ID=" + HttpUtility.UrlEncode(this.accountID) +
-                "&MODE=" + HttpUtility.UrlEncode(this.mode) +
-                "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
-                "&REPORT_START_DATE=" + HttpUtility.UrlEncode(this.reportStartDate) +
-                "&REPORT_END_DATE=" + HttpUtility.UrlEncode(this.reportEndDate) +
-                "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(this.doNotEscape) +
-                "&QUERY_BY_SETTLEMENT=" + HttpUtility.UrlEncode(this.queryBySettlement) +
-                "&QUERY_BY_HIERARCHY=" + HttpUtility.UrlEncode(this.queryByHierarchy) +
-                "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(this.excludeErrors);
-                break;
-            case "stq":
-                CalcReportTPS();
-                this.URL = "https://secure.bluepay.com/interfaces/stq";
-                postData += "ACCOUNT_ID=" + HttpUtility.UrlEncode(this.accountID) +
-                "&MODE=" + HttpUtility.UrlEncode(this.mode) +
-                "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
-                "&REPORT_START_DATE=" + HttpUtility.UrlEncode(this.reportStartDate) +
-                "&REPORT_END_DATE=" + HttpUtility.UrlEncode(this.reportEndDate) +
-                "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(this.excludeErrors);
-                postData += (this.masterID != "") ? "&id=" + HttpUtility.UrlEncode(this.masterID) : "";
-                postData += (this.paymentType != "") ? "&payment_type=" + HttpUtility.UrlEncode(this.paymentType) : "";
-                postData += (this.transType != "") ? "&trans_type=" + HttpUtility.UrlEncode(this.transType) : "";
-                postData += (this.amount != "") ? "&amount=" + HttpUtility.UrlEncode(this.amount) : "";
-                postData += (this.name1 != "") ? "&name1=" + HttpUtility.UrlEncode(this.name1) : "";
-                postData += (this.name2 != "") ? "&name2=" + HttpUtility.UrlEncode(this.name2) : "";
-                break;
-            case "bp10emu":
-                CalcTPS();
-                this.URL = "https://secure.bluepay.com/interfaces/bp10emu";
-                postData += "MERCHANT=" + HttpUtility.UrlEncode(this.accountID) +
-                "&MODE=" + HttpUtility.UrlEncode(this.mode) +
-                "&TRANSACTION_TYPE=" + HttpUtility.UrlEncode(this.transType) +
-                "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
-                "&NAME1=" + HttpUtility.UrlEncode(this.name1) +
-                "&NAME2=" + HttpUtility.UrlEncode(this.name2) +
-                "&AMOUNT=" + HttpUtility.UrlEncode(this.amount) +
-                "&ADDR1=" + HttpUtility.UrlEncode(this.addr1) +
-                "&ADDR2=" + HttpUtility.UrlEncode(this.addr2) +
-                "&CITY=" + HttpUtility.UrlEncode(this.city) +
-                "&STATE=" + HttpUtility.UrlEncode(this.state) +
-                "&ZIPCODE=" + HttpUtility.UrlEncode(this.zip) +
-                "&COMMENT=" + HttpUtility.UrlEncode(this.memo) +
-                "&PHONE=" + HttpUtility.UrlEncode(this.phone) +
-                "&EMAIL=" + HttpUtility.UrlEncode(this.email) +
-                "&REBILLING=" + HttpUtility.UrlEncode(this.doRebill) +
-                "&REB_FIRST_DATE=" + HttpUtility.UrlEncode(this.rebillFirstDate) +
-                "&REB_EXPR=" + HttpUtility.UrlEncode(this.rebillExpr) +
-                "&REB_CYCLES=" + HttpUtility.UrlEncode(this.rebillCycles) +
-                "&REB_AMOUNT=" + HttpUtility.UrlEncode(this.rebillAmount) +
-                "&RRNO=" + HttpUtility.UrlEncode(this.masterID) +
-                "&PAYMENT_TYPE=" + HttpUtility.UrlEncode(this.paymentType) +
-                "&INVOICE_ID=" + HttpUtility.UrlEncode(this.invoiceID) +
-                "&ORDER_ID=" + HttpUtility.UrlEncode(this.orderID) +
-                "&CUSTOM_ID=" + HttpUtility.UrlEncode(this.customID1) +
-                "&CUSTOM_ID2=" + HttpUtility.UrlEncode(this.customID2) +
-                "&AMOUNT_TIP=" + HttpUtility.UrlEncode(this.amountTip) +
-                "&AMOUNT_TAX=" + HttpUtility.UrlEncode(this.amountTax) +
-                "&AMOUNT_FOOD=" + HttpUtility.UrlEncode(this.amountFood) +
-                "&AMOUNT_MISC=" + HttpUtility.UrlEncode(this.amountMisc) +
-                "&REMOTE_IP=" + System.Net.Dns.GetHostEntry("").AddressList[0].ToString() +
-                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode("SHA512") + 
-                "&RESPONSEVERSION=3";
-                if (this.swipeData != "") {
-                    Match matchTrack1And2 = track1And2.Match(this.swipeData);
-                    Match matchTrack2 = track2Only.Match(this.swipeData);
-                    if (matchTrack1And2.Success || matchTrack2.Success)
-                        postData = postData + "&SWIPE=" + HttpUtility.UrlEncode(this.swipeData);
-                } 
-                else if (this.paymentType == "CREDIT") 
-                {
-                    postData = postData + "&CC_NUM=" + HttpUtility.UrlEncode(this.paymentAccount) +
-                    "&CC_EXPIRES=" + HttpUtility.UrlEncode(this.cardExpire) +
-                    "&CVCVV2=" + HttpUtility.UrlEncode(this.cvv2);
-                } 
-                else 
-                {
-                    postData = postData + "&ACH_ROUTING=" + HttpUtility.UrlEncode(this.routingNum) +
-                    "&ACH_ACCOUNT=" + HttpUtility.UrlEncode(this.accountNum) +
-                    "&ACH_ACCOUNT_TYPE=" + HttpUtility.UrlEncode(this.accountType) +
-                    "&DOC_TYPE=" + HttpUtility.UrlEncode(this.docType);
-                }
-                break;
-            case "bp20rebadmin":
-                CalcRebillTPS();
-                this.URL = "https://secure.bluepay.com/interfaces/bp20rebadmin";
-                postData += "ACCOUNT_ID=" + HttpUtility.UrlEncode(this.accountID) +
-                "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
-                "&TRANS_TYPE=" + HttpUtility.UrlEncode(this.transType) +
-                "&REBILL_ID=" + HttpUtility.UrlEncode(this.rebillID) +
-                "&TEMPLATE_ID=" + HttpUtility.UrlEncode(this.templateID) +
-                "&REB_EXPR=" + HttpUtility.UrlEncode(this.rebillExpr) +
-                "&REB_CYCLES=" + HttpUtility.UrlEncode(this.rebillCycles) +
-                "&REB_AMOUNT=" + HttpUtility.UrlEncode(this.rebillAmount) +
-                "&NEXT_AMOUNT=" + HttpUtility.UrlEncode(this.rebillNextAmount) +
-                "&NEXT_DATE=" + HttpUtility.UrlEncode(this.rebillNextDate) +
-                "&STATUS=" + HttpUtility.UrlEncode(this.rebillStatus);
-                break;
-            default:
-                Console.WriteLine("Error: Must call a valid api");
-                break;
+                // A switch section can have more than one case label. 
+                case "bpdailyreport2":
+                    CalcReportTPS();
+                    this.URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
+                    postData += "ACCOUNT_ID=" + HttpUtility.UrlEncode(this.accountID) +
+                    "&MODE=" + HttpUtility.UrlEncode(this.mode) +
+                    "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
+                    "&REPORT_START_DATE=" + HttpUtility.UrlEncode(this.reportStartDate) +
+                    "&REPORT_END_DATE=" + HttpUtility.UrlEncode(this.reportEndDate) +
+                    "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(this.doNotEscape) +
+                    "&QUERY_BY_SETTLEMENT=" + HttpUtility.UrlEncode(this.queryBySettlement) +
+                    "&QUERY_BY_HIERARCHY=" + HttpUtility.UrlEncode(this.queryByHierarchy) +
+                    "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
+                    "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(this.excludeErrors);
+                    break;
+                case "stq":
+                    CalcReportTPS();
+                    this.URL = "https://secure.bluepay.com/interfaces/stq";
+                    postData += "ACCOUNT_ID=" + HttpUtility.UrlEncode(this.accountID) +
+                    "&MODE=" + HttpUtility.UrlEncode(this.mode) +
+                    "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
+                    "&REPORT_START_DATE=" + HttpUtility.UrlEncode(this.reportStartDate) +
+                    "&REPORT_END_DATE=" + HttpUtility.UrlEncode(this.reportEndDate) +
+                    "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
+                    "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(this.excludeErrors);
+                    postData += (this.masterID != "") ? "&id=" + HttpUtility.UrlEncode(this.masterID) : "";
+                    postData += (this.paymentType != "") ? "&payment_type=" + HttpUtility.UrlEncode(this.paymentType) : "";
+                    postData += (this.transType != "") ? "&trans_type=" + HttpUtility.UrlEncode(this.transType) : "";
+                    postData += (this.amount != "") ? "&amount=" + HttpUtility.UrlEncode(this.amount) : "";
+                    postData += (this.name1 != "") ? "&name1=" + HttpUtility.UrlEncode(this.name1) : "";
+                    postData += (this.name2 != "") ? "&name2=" + HttpUtility.UrlEncode(this.name2) : "";
+                    break;
+                case "bp10emu":
+                    CalcTPS();
+                    this.URL = "https://secure.bluepay.com/interfaces/bp10emu";
+                    postData += "MERCHANT=" + HttpUtility.UrlEncode(this.accountID) +
+                    "&MODE=" + HttpUtility.UrlEncode(this.mode) +
+                    "&TRANSACTION_TYPE=" + HttpUtility.UrlEncode(this.transType) +
+                    "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
+                    "&NAME1=" + HttpUtility.UrlEncode(this.name1) +
+                    "&NAME2=" + HttpUtility.UrlEncode(this.name2) +
+                    "&AMOUNT=" + HttpUtility.UrlEncode(this.amount) +
+                    "&ADDR1=" + HttpUtility.UrlEncode(this.addr1) +
+                    "&ADDR2=" + HttpUtility.UrlEncode(this.addr2) +
+                    "&CITY=" + HttpUtility.UrlEncode(this.city) +
+                    "&STATE=" + HttpUtility.UrlEncode(this.state) +
+                    "&ZIPCODE=" + HttpUtility.UrlEncode(this.zip) +
+                    "&COMMENT=" + HttpUtility.UrlEncode(this.memo) +
+                    "&PHONE=" + HttpUtility.UrlEncode(this.phone) +
+                    "&EMAIL=" + HttpUtility.UrlEncode(this.email) +
+                    "&REBILLING=" + HttpUtility.UrlEncode(this.doRebill) +
+                    "&REB_FIRST_DATE=" + HttpUtility.UrlEncode(this.rebillFirstDate) +
+                    "&REB_EXPR=" + HttpUtility.UrlEncode(this.rebillExpr) +
+                    "&REB_CYCLES=" + HttpUtility.UrlEncode(this.rebillCycles) +
+                    "&REB_AMOUNT=" + HttpUtility.UrlEncode(this.rebillAmount) +
+                    "&RRNO=" + HttpUtility.UrlEncode(this.masterID) +
+                    "&PAYMENT_TYPE=" + HttpUtility.UrlEncode(this.paymentType) +
+                    "&INVOICE_ID=" + HttpUtility.UrlEncode(this.invoiceID) +
+                    "&ORDER_ID=" + HttpUtility.UrlEncode(this.orderID) +
+                    "&CUSTOM_ID=" + HttpUtility.UrlEncode(this.customID1) +
+                    "&CUSTOM_ID2=" + HttpUtility.UrlEncode(this.customID2) +
+                    "&AMOUNT_TIP=" + HttpUtility.UrlEncode(this.amountTip) +
+                    "&AMOUNT_TAX=" + HttpUtility.UrlEncode(this.amountTax) +
+                    "&AMOUNT_FOOD=" + HttpUtility.UrlEncode(this.amountFood) +
+                    "&AMOUNT_MISC=" + HttpUtility.UrlEncode(this.amountMisc) +
+                    "&REMOTE_IP=" + System.Net.Dns.GetHostEntry("").AddressList[0].ToString() +
+                    "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
+                    "&RESPONSEVERSION=3";
+                    if (this.swipeData != "")
+                    {
+                        Match matchTrack1And2 = track1And2.Match(this.swipeData);
+                        Match matchTrack2 = track2Only.Match(this.swipeData);
+                        if (matchTrack1And2.Success || matchTrack2.Success)
+                            postData = postData + "&SWIPE=" + HttpUtility.UrlEncode(this.swipeData);
+                    }
+                    else if (this.paymentType == "CREDIT")
+                    {
+                        postData = postData + "&CC_NUM=" + HttpUtility.UrlEncode(this.paymentAccount) +
+                        "&CC_EXPIRES=" + HttpUtility.UrlEncode(this.cardExpire) +
+                        "&CVCVV2=" + HttpUtility.UrlEncode(this.cvv2);
+                    }
+                    else
+                    {
+                        postData = postData + "&ACH_ROUTING=" + HttpUtility.UrlEncode(this.routingNum) +
+                        "&ACH_ACCOUNT=" + HttpUtility.UrlEncode(this.accountNum) +
+                        "&ACH_ACCOUNT_TYPE=" + HttpUtility.UrlEncode(this.accountType) +
+                        "&DOC_TYPE=" + HttpUtility.UrlEncode(this.docType);
+                    }
+                    break;
+                case "bp20rebadmin":
+                    CalcRebillTPS();
+                    this.URL = "https://secure.bluepay.com/interfaces/bp20rebadmin";
+                    postData += "ACCOUNT_ID=" + HttpUtility.UrlEncode(this.accountID) +
+                    "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
+                    "&TRANS_TYPE=" + HttpUtility.UrlEncode(this.transType) +
+                    "&REBILL_ID=" + HttpUtility.UrlEncode(this.rebillID) +
+                    "&TEMPLATE_ID=" + HttpUtility.UrlEncode(this.templateID) +
+                    "&REB_EXPR=" + HttpUtility.UrlEncode(this.rebillExpr) +
+                    "&REB_CYCLES=" + HttpUtility.UrlEncode(this.rebillCycles) +
+                    "&REB_AMOUNT=" + HttpUtility.UrlEncode(this.rebillAmount) +
+                    "&NEXT_AMOUNT=" + HttpUtility.UrlEncode(this.rebillNextAmount) +
+                    "&NEXT_DATE=" + HttpUtility.UrlEncode(this.rebillNextDate) +
+                    "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
+                    "&STATUS=" + HttpUtility.UrlEncode(this.rebillStatus);
+                    break;
+                default:
+                    Console.WriteLine("Error: Must call a valid api");
+                    break;
             }
 
             // Add Level 2 data, if available.
             foreach (KeyValuePair<string, string> field in level2Info)
             {
-                postData += "&" + field.Key + "=" + HttpUtility.UrlEncode(field.Value);   
+                postData += "&" + field.Key + "=" + HttpUtility.UrlEncode(field.Value);
             }
 
             // Add Level 3 item data, if available.
             foreach (Dictionary<string, string> item in lineItems)
             {
-                foreach (KeyValuePair<string,string> field in item)
-                {   
-                    postData += "&" + field.Key + "=" + HttpUtility.UrlEncode(field.Value);   
-
+                foreach (KeyValuePair<string, string> field in item)
+                {
+                    postData += "&" + field.Key + "=" + HttpUtility.UrlEncode(field.Value);
                 }
             }
 
@@ -1169,7 +1201,7 @@ namespace BluePayLibrary
                     {
                         response = reader.ReadToEnd();
                     }
-                }           
+                }
                 httpResponse.Close();
             }
             catch (WebException ex)
@@ -1201,7 +1233,7 @@ namespace BluePayLibrary
         {
             string status = this.GetStatus();
             string message = this.GetMessage();
-            return (status == "APPROVED" && message != "DUPLICATE"); 
+            return (status == "APPROVED" && message != "DUPLICATE");
         }
 
         /// <summary>
@@ -1221,17 +1253,17 @@ namespace BluePayLibrary
             else
                 return "";
         }
-    
+
         /// <summary>
         /// Returns TRANS_ID from response
         /// </summary>
         /// <returns></returns>
         public string GetTransID()
         {
-            Regex r = new Regex(@"RRNO=([^&$]*)"); 
+            Regex r = new Regex(@"RRNO=([^&$]*)");
             Match m = r.Match(response);
-            if(m.Success)
-                return(m.Value.Substring(5));
+            if (m.Success)
+                return (m.Value.Substring(5));
             else
                 return "";
         }
@@ -1244,7 +1276,7 @@ namespace BluePayLibrary
         {
             Regex r = new Regex(@"MESSAGE=([^&$]+)");
             Match m = r.Match(response);
-            if(m.Success)
+            if (m.Success)
             {
                 string[] message = m.Value.Substring(8).Split('"');
                 return message[0];
@@ -1261,7 +1293,7 @@ namespace BluePayLibrary
         {
             Regex r = new Regex(@"CVV2=([^&$]*)");
             Match m = r.Match(response);
-            if(m.Success)
+            if (m.Success)
                 return m.Value.Substring(5);
             else
                 return "";
@@ -1275,9 +1307,9 @@ namespace BluePayLibrary
         {
             Regex r = new Regex(@"AVS=([^&$]+)");
             Match m = r.Match(response);
-            if(m.Success)
+            if (m.Success)
                 return m.Value.Substring(4);
-            else        
+            else
                 return "";
         }
 
@@ -1348,7 +1380,7 @@ namespace BluePayLibrary
                 return (m.Value.Substring(6));
             r = new Regex(@"rebill_id=([^&$]+)");
             m = r.Match(response);
-            if(m.Success)
+            if (m.Success)
                 return (m.Value.Substring(10));
             else
                 return "";
