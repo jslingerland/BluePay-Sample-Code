@@ -102,7 +102,7 @@ class BluePay {
     private $rebid;
 
     private $postURL;
-    private $tps_hash_type = "HMAC_SHA512";
+    private $tpsHashType = "HMAC_SHA512";
 
     // Level 2 processing field
     private $level2Info;
@@ -495,7 +495,7 @@ class BluePay {
     public final function createTPSHash($string) {
         $hash = "";
 
-        switch ($this->tps_hash_type) {
+        switch ($this->tpsHashType) {
             case "HMAC_SHA256":
                 $hash = hash_hmac("sha256", $string, $this->secretKey);
                 break;
@@ -507,6 +507,7 @@ class BluePay {
                 break;
             case "MD5":
                 $hash = bin2hex(md5($this->secretKey . $string, true));
+                break;
             default:
                 $hash = hash_hmac("sha512", $string, $this->secretKey);
         }
@@ -760,7 +761,7 @@ class BluePay {
                 $post["REB_AMOUNT"] = $this->rebillAmount;
                 $post["SWIPE"] = $this->trackData;  
                 $post["TAMPER_PROOF_SEAL"] = $this->calcTPS();  
-                $post["TPS_HASH_TYPE"] = $this->tps_hash_type;
+                $post["TPS_HASH_TYPE"] = $this->tpsHashType;
                 if(isset($_SERVER["REMOTE_ADDR"])){
                     $post["REMOTE_IP"] = $_SERVER["REMOTE_ADDR"];
                 }
@@ -775,7 +776,7 @@ class BluePay {
                 $post["QUERY_BY_SETTLEMENT"] = $this->queryBySettlement;
                 $post["QUERY_BY_HIERARCHY"] = $this->subaccountsSearched;
                 $post["EXCLUDE_ERRORS"] = $this->excludeErrors;
-                $post["TPS_HASH_TYPE"] = $this->tps_hash_type;
+                $post["TPS_HASH_TYPE"] = $this->tpsHashType;
                 $this->postURL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
                 break;
             case "stq":
@@ -790,7 +791,7 @@ class BluePay {
                 $post["amount"] = $this->amount;
                 $post["name1"] = $this->name1;
                 $post["name2"] = $this->name2; 
-                $post["TPS_HASH_TYPE"] = $this->tps_hash_type;
+                $post["TPS_HASH_TYPE"] = $this->tpsHashType;
                 $this->postURL = "https://secure.bluepay.com/interfaces/stq";
                 break;
             case "bp20rebadmin":
@@ -804,7 +805,7 @@ class BluePay {
                 $post["REB_AMOUNT"] = $this->rebillAmount;
                 $post["NEXT_AMOUNT"] = $this->rebillNextAmount;
                 $post["STATUS"] = $this->rebillStatus;
-                $post["TPS_HASH_TYPE"] = $this->tps_hash_type;
+                $post["TPS_HASH_TYPE"] = $this->tpsHashType;
                 $post["TAMPER_PROOF_SEAL"] = $this->calcRebillTPS();
                 $this->postURL = "https://secure.bluepay.com/interfaces/bp20rebadmin";
             default:
