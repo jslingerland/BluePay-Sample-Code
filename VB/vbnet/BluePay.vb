@@ -117,6 +117,7 @@ Namespace BPVB
         Private excludeErrors As String = ""
 
         Private TPS As String = ""
+        Private tpsHashType As String = "HMAC_SHA512"
         Private api As String = ""
         Public response As String = ""
 
@@ -620,15 +621,53 @@ Namespace BPVB
             Me.excludeErrors = excludeErrors
         End Sub
 
-
+        ''' <summary>
+        ''' Generates the TAMPER_PROOF_SEAL to used to validate each transaction
+        ''' </summary>
+        '''
+        Public Function generateTPS(ByVal message As String) As String
+            Dim result As String
+            Dim encode As ASCIIEncoding = New ASCIIEncoding
+            If Me.tpsHashType = "HMAC_SHA256" Then
+                Dim secretKeyBytes() As Byte = encode.GetBytes(Me.secretKey)
+                Dim messageBytes() As Byte = encode.GetBytes(message)
+                Dim hmac As HMACSHA256 = New HMACSHA256(secretKeyBytes)
+                Dim hashBytes() As Byte = hmac.ComputeHash(messageBytes)
+                result = ByteArrayToString(hashBytes)
+            Elseif Me.tpsHashType = "SHA512" Then
+                Dim sha512 As SHA512 = New SHA512Managed()
+                Dim hash() As Byte
+                Dim buffer() As Byte = encode.GetBytes(Me.secretKey + message)
+                hash = sha512.ComputeHash(buffer)
+                result = ByteArrayToString(hash)
+            Elseif Me.tpsHashType = "SHA256" Then
+                Dim sha256 As SHA256 = New SHA256Managed()
+                Dim hash() As Byte
+                Dim buffer() As Byte = encode.GetBytes(Me.secretKey + message)
+                hash = sha256.ComputeHash(buffer)
+                result = ByteArrayToString(hash)
+            Elseif Me.tpsHashType = "MD5" Then
+                Dim md5 As MD5 = New MD5CryptoServiceProvider
+                Dim hash() As Byte
+                Dim buffer() As Byte = encode.GetBytes(Me.secretKey + message)
+                hash = md5.ComputeHash(buffer)
+                result = ByteArrayToString(hash)
+            Else
+                Dim secretKeyBytes() As Byte = encode.GetBytes(Me.secretKey)
+                Dim messageBytes() As Byte = encode.GetBytes(message)
+                Dim hmac As HMACSHA512 = New HMACSHA512(secretKeyBytes)
+                Dim hashBytes() As Byte = hmac.ComputeHash(messageBytes)
+                result = ByteArrayToString(hashBytes)
+            End If
+            Return result 
+        End Function
 
         ''' <summary>
         ''' Calculates TAMPER_PROOF_SEAL for bp10emu API
         ''' </summary>
         '''
         Public Sub calcTPS()
-            Dim tps As String = Me.secretKey _
-                        + Me.accountID _
+            Dim tps As String = Me.accountID _
                         + Me.transType _
                         + Me.amount _
                         + Me.doRebill _
@@ -638,12 +677,7 @@ Namespace BPVB
                         + Me.rebillAmount _
                         + Me.masterID _
                         + Me.mode
-            Dim sha512 As SHA512 = New SHA512Managed()
-            Dim hash() As Byte
-            Dim encode As ASCIIEncoding = New ASCIIEncoding
-            Dim buffer() As Byte = encode.GetBytes(tps)
-            hash = sha512.ComputeHash(buffer)
-            Me.TPS = ByteArrayToString(hash)
+            Me.TPS = generateTPS(tps)
         End Sub
 
         ''' <summary>
@@ -651,16 +685,10 @@ Namespace BPVB
         ''' </summary>
         '''
         Public Sub calcReportTPS()
-            Dim tps As String = Me.secretKey _
-                        + Me.accountID _
+            Dim tps As String = Me.accountID _
                         + Me.reportStartDate _
                         + Me.reportEndDate
-            Dim md5 As MD5 = New MD5CryptoServiceProvider
-            Dim hash() As Byte
-            Dim encode As ASCIIEncoding = New ASCIIEncoding
-            Dim buffer() As Byte = encode.GetBytes(tps)
-            hash = md5.ComputeHash(buffer)
-            Me.TPS = ByteArrayToString(hash)
+            Me.TPS = generateTPS(tps)
         End Sub
 
 
@@ -669,16 +697,10 @@ Namespace BPVB
         ''' </summary>
         '''
         Public Sub calcRebillTPS()
-            Dim tps As String = Me.secretKey _
-                        + Me.accountID _
+            Dim tps As String = Me.accountID _
                         + Me.transType _
                         + Me.rebillID
-            Dim md5 As MD5 = New MD5CryptoServiceProvider
-            Dim hash() As Byte
-            Dim encode As ASCIIEncoding = New ASCIIEncoding
-            Dim buffer() As Byte = encode.GetBytes(tps)
-            hash = md5.ComputeHash(buffer)
-            Me.TPS = ByteArrayToString(hash)
+            Me.TPS = generateTPS(tps)
         End Sub
 
         ''' <summary>
@@ -686,12 +708,7 @@ Namespace BPVB
         ''' </summary>
         '''
         Public Shared Function calcTransNotifyTPS(ByVal bp_stamp As String)
-            Dim md5 As MD5 = New MD5CryptoServiceProvider
-            Dim hash() As Byte
-            Dim encode As ASCIIEncoding = New ASCIIEncoding
-            Dim buffer() As Byte = encode.GetBytes(bp_stamp)
-            hash = md5.ComputeHash(buffer)
-            Return ByteArrayToString(hash)
+            Return generateTPS(bp_stamp)
         End Function
 
         'This is used to convert a byte array to a hex string
@@ -970,7 +987,7 @@ Namespace BPVB
                 "&AMOUNT_MISC=" + HttpUtility.UrlEncode(Me.amountMisc) + _
                 "&CUSTOM_ID=" + HttpUtility.UrlEncode(Me.customID1) + _
                 "&CUSTOM_ID2=" + HttpUtility.UrlEncode(Me.customID2) + _
-                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode("SHA512")
+                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)
                 If (Me.swipeData <> "") Then
                     Dim matchTrack1And2 As Match = track1And2.Match(Me.swipeData)
                     Dim matchTrack2 As Match = track2Only.Match(Me.swipeData)
@@ -1002,7 +1019,8 @@ Namespace BPVB
                 "&REB_CYCLES=" + HttpUtility.UrlEncode(Me.rebillCycles) + _
                 "&REB_AMOUNT=" + HttpUtility.UrlEncode(Me.rebillAmount) + _
                 "&NEXT_AMOUNT=" + HttpUtility.UrlEncode(Me.rebillNextAmount) + _
-                "&STATUS=" + HttpUtility.UrlEncode(Me.rebillStatus)
+                "&STATUS=" + HttpUtility.UrlEncode(Me.rebillStatus) + _
+                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)
             ElseIf (Me.api="stq")
                 calcReportTPS()
                 Me.URL = "https://secure.bluepay.com/interfaces/stq"
@@ -1013,7 +1031,8 @@ Namespace BPVB
                 "&id=" + HttpUtility.UrlEncode(Me.id) + _
                 "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(Me.excludeErrors) + _
                 "&QUERY_BY_HIERARCHY=" + HttpUtility.UrlEncode(Me.queryByHierarchy) + _
-                "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(Me.doNotEscape)
+                "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(Me.doNotEscape) + _
+                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)
             ElseIf (Me.api="bpdailyreport2")
                 calcReportTPS()
                 Me.URL = "https://secure.bluepay.com/interfaces/bpdailyreport2"
@@ -1024,7 +1043,8 @@ Namespace BPVB
                 "&REPORT_END_DATE=" + HttpUtility.UrlEncode(Me.reportEndDate) + _
                 "&QUERY_BY_HIERARCHY=" + HttpUtility.UrlEncode(Me.queryByHierarchy) + _
                 "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(Me.doNotEscape) + _
-                "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(Me.excludeErrors)
+                "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(Me.excludeErrors) + _
+                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)
             End If
 
             ' Add Level 2 data, if available
