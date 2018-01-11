@@ -74,6 +74,14 @@ class BluePay
     @api = "bp10emu"
   end
 
+  # Update
+  def update(params = {})
+    @PARAM_HASH['TRANSACTION_TYPE'] = 'UPDATE'
+    @PARAM_HASH['RRNO'] = params[:trans_id]
+    @PARAM_HASH['AMOUNT'] = params[:amount] || ''
+    @api = "bp10emu"
+  end
+
   # Void
   def void(trans_id)
     @PARAM_HASH['TRANSACTION_TYPE'] = 'VOID'

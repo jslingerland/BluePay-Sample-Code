@@ -160,6 +160,17 @@ class BluePay:
         if 'amount' in params:
             self.amount = params['amount']
 
+    # Performs an UPDATE
+    def update(self, **params):
+        """ 
+        Send an Update request to the BluePay gateway.
+        """
+        self.api = 'bp10emu'
+        self.trans_type = 'UPDATE'
+        self.rrno = params['transaction_id']
+        if 'amount' in params:
+            self.amount = params['amount']
+
     # Performs a VOID
     def void(self, rrno):
         """ 
