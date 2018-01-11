@@ -5,7 +5,7 @@ use strict;
 use warnings;
 # Required modules
 use Digest::MD5 qw(md5_hex);
-use Crypt::Digest::SHA512 qw(sha512_hex);
+use Digest::SHA qw(sha256_hex sha512_hex hmac_sha256_hex hmac_sha512_hex);
 use LWP::UserAgent;
 use URI::Escape;
 use CGI;
@@ -25,31 +25,60 @@ sub new {
     $self->{ACCOUNT_ID} = shift;
     $self->{SECRET_KEY} = shift;
     $self->{MODE} = shift;
+    $self->{TPS_HASH_TYPE} = "HMAC_SHA512";
 
     # return object
     return $self;
 }
 
+# Calculates tamper proof seal 
+sub generate_tps {
+    my $self = shift;
+    my $str  = shift;
+    my $hash = '';
+
+    if ($self->{TPS_HASH_TYPE} eq 'HMAC_SHA256')
+    {
+        $hash = hmac_sha512_hex($str, $self->{SECRET_KEY});
+    }
+    elsif ($self->{TPS_HASH_TYPE} eq 'SHA512')
+    {
+        $hash = sha512_hex($self->{SECRET_KEY} . $str);
+    }
+    elsif ($self->{TPS_HASH_TYPE} eq 'SHA256')
+    {
+        $hash = sha256_hex($self->{SECRET_KEY} . $str);
+    }
+    elsif ($self->{TPS_HASH_TYPE} eq 'MD5')
+    {
+        $hash = md5_hex($self->{SECRET_KEY} . $str);
+    }
+    else
+    {
+        $hash = hmac_sha512_hex($str, $self->{SECRET_KEY});
+    }
+    return $hash;
+}
+
 # calculates tamper proof seal based on api declared
 sub calc_tps {
     my $self = shift;
+    $self->{TPS_HASH_TYPE} = 'HMAC_SHA512';
+    my $TAMPER_PROOF_DATA = '';
+
     if ($self->{API} eq 'bpdailyreport2' ) {
         $self->{URL} = 'https://secure.bluepay.com/interfaces/bpdailyreport2';
-        my $TAMPER_PROOF_DATA =
-            ( $self->{SECRET_KEY}        || '' )
-          . ( $self->{ACCOUNT_ID}        || '' )
+        $TAMPER_PROOF_DATA =
+            ( $self->{ACCOUNT_ID}        || '' )
           . ( $self->{REPORT_START_DATE} || '' )
           . ( $self->{REPORT_END_DATE}   || '' );
-        $TAMPER_PROOF_SEAL = md5_hex $TAMPER_PROOF_DATA;
     }
     elsif ($self->{API} eq "stq") {
         $self->{URL} = 'https://secure.bluepay.com/interfaces/stq';
-        my $TAMPER_PROOF_DATA =
-            ( $self->{SECRET_KEY}        || '' )
-          . ( $self->{ACCOUNT_ID}        || '' )
+        $TAMPER_PROOF_DATA =
+            ( $self->{ACCOUNT_ID}        || '' )
           . ( $self->{REPORT_START_DATE} || '' )
           . ( $self->{REPORT_END_DATE}   || '' );
-        $TAMPER_PROOF_SEAL = md5_hex $TAMPER_PROOF_DATA;
     }    
     elsif ($self->{API} eq 'bp10emu' ) {
         #returns the remote host IP address
@@ -57,9 +86,8 @@ sub calc_tps {
         $self->{REMOTE_IP} = $q->remote_addr(); 
         $self->{URL} = 'https://secure.bluepay.com/interfaces/bp10emu';
         $self->{MERCHANT} = $self->{ACCOUNT_ID};
-        my $TAMPER_PROOF_DATA =
-            ( $self->{SECRET_KEY}       || '' )
-          . ( $self->{MERCHANT}         || '' )
+        $TAMPER_PROOF_DATA =
+            ( $self->{MERCHANT}         || '' )
           . ( $self->{TRANSACTION_TYPE} || '' )
           . ( $self->{AMOUNT}           || '' )
           . ( $self->{REBILLING}        || '' )
@@ -69,24 +97,22 @@ sub calc_tps {
           . ( $self->{REB_AMOUNT}       || '' )
           . ( $self->{RRNO}             || '' )
           . ( $self->{MODE}             || '' );
-        $TAMPER_PROOF_SEAL = sha512_hex $TAMPER_PROOF_DATA;
-        $self->{TPS_HASH_TYPE} = "SHA512";
     }
     elsif ($self->{API} eq 'bp20rebadmin' ) {
         $self->{URL} = 'https://secure.bluepay.com/interfaces/bp20rebadmin';
-        my $TAMPER_PROOF_DATA =
-            ( $self->{SECRET_KEY} || '' )
-          . ( $self->{ACCOUNT_ID} || '' )
+        $TAMPER_PROOF_DATA =
+            ( $self->{ACCOUNT_ID} || '' )
           . ( $self->{TRANS_TYPE} || '' )
           . ( $self->{REBILL_ID}  || '' );
-        $TAMPER_PROOF_SEAL = md5_hex $TAMPER_PROOF_DATA;
     }
+    $TAMPER_PROOF_SEAL = $self->generate_tps($TAMPER_PROOF_DATA);
     return $TAMPER_PROOF_SEAL;
 }
 
 sub calc_trans_notify_tps {
+    my $self = shift;
     my $tpsString = shift;
-    my $bp_stamp = md5_hex $tpsString;
+    my $bp_stamp = $self->generate_tps($tpsString);
     return $bp_stamp;
 }
 

@@ -2,7 +2,6 @@ require "net/http"
 require "net/https"
 require "uri"
 require "digest/sha2"
-require "digest/md5"
 
 # Files
 require_relative "api_request"
