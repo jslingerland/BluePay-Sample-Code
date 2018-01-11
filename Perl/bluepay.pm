@@ -39,7 +39,7 @@ sub generate_tps {
 
     if ($self->{TPS_HASH_TYPE} eq 'HMAC_SHA256')
     {
-        $hash = hmac_sha512_hex($str, $self->{SECRET_KEY});
+        $hash = hmac_sha256_hex($str, $self->{SECRET_KEY});
     }
     elsif ($self->{TPS_HASH_TYPE} eq 'SHA512')
     {
