@@ -346,6 +346,17 @@ sub refund{
     $self->{RRNO} = $params->{trans_id}; # optional
     $self->{API} = 'bp10emu'; 
 }
+
+# Update
+sub update{
+    my $self = shift;
+    my $params =  shift;
+    $self->{TRANSACTION_TYPE} = 'UPDATE';
+    $self->{AMOUNT} = $params->{amount};
+    $self->{RRNO} = $params->{trans_id};
+    $self->{API} = 'bp10emu'; 
+}
+
 # Void
 sub void{
     my $self = shift;
