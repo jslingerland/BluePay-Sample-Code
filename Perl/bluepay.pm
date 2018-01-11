@@ -37,19 +37,19 @@ sub generate_tps {
     my $str  = shift;
     my $hash = '';
 
-    if ($self->{TPS_HASH_TYPE} == 'HMAC_SHA256')
+    if ($self->{TPS_HASH_TYPE} eq 'HMAC_SHA256')
     {
         $hash = hmac_sha512_hex($str, $self->{SECRET_KEY});
     }
-    elsif ($self->{TPS_HASH_TYPE} == 'SHA512')
+    elsif ($self->{TPS_HASH_TYPE} eq 'SHA512')
     {
         $hash = sha512_hex($self->{SECRET_KEY} . $str);
     }
-    elsif ($self->{TPS_HASH_TYPE} == 'SHA256')
+    elsif ($self->{TPS_HASH_TYPE} eq 'SHA256')
     {
         $hash = sha256_hex($self->{SECRET_KEY} . $str);
     }
-    elsif ($self->{TPS_HASH_TYPE} == 'MD5')
+    elsif ($self->{TPS_HASH_TYPE} eq 'MD5')
     {
         $hash = md5_hex($self->{SECRET_KEY} . $str);
     }
@@ -110,6 +110,7 @@ sub calc_tps {
 }
 
 sub calc_trans_notify_tps {
+    my $self = shift;
     my $tpsString = shift;
     my $bp_stamp = $self->generate_tps($tpsString);
     return $bp_stamp;
