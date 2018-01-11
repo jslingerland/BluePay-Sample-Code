@@ -624,11 +624,6 @@ namespace BluePayLibrary
             this.email = Email;
         }
 
-        public void SetParam(string Name, string Value)
-        {
-            Name = Value;
-        }
-
         /// <summary>
         /// Calculates TAMPER_PROOF_SEAL for bp20post API
         /// </summary>
