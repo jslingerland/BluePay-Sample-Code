@@ -14,7 +14,8 @@ Public Class Application
 		' Transactions.CheckCustomerCredit.run()
 		' Transactions.CustomerDefinedData.run()
 		' Transactions.HowToUseToken.run()
-		' Transactions.ReturnFunds.run()
+        ' Transactions.UpdateTransaction.run()
+        ' Transactions.ReturnFunds.run()
 		' Transactions.StorePaymentInformation.run()
 		' Transactions.Swipe.run()
 
