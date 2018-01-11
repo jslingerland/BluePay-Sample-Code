@@ -63,7 +63,6 @@ sub generate_tps {
 # calculates tamper proof seal based on api declared
 sub calc_tps {
     my $self = shift;
-    $self->{TPS_HASH_TYPE} = 'HMAC_SHA512';
     my $TAMPER_PROOF_DATA = '';
 
     if ($self->{API} eq 'bpdailyreport2' ) {
