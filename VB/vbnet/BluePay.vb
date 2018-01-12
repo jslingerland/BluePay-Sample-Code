@@ -388,6 +388,30 @@ Namespace BPVB
         End Sub
 
         ''' <summary>
+        ''' Updates a Transaction
+        ''' </summary>
+        ''' <param name="masterID"></param>
+        ''' 
+        Public Sub update(ByVal masterID As String)
+            Me.transType = "UPDATE"
+            Me.masterID = masterID
+            Me.api = "bp10emu"
+        End Sub
+
+        ''' <summary>
+        ''' Updates a Transaction
+        ''' </summary>
+        ''' <param name="masterID"></param>
+        ''' <param name="amount"></param>
+        ''' <remarks></remarks>
+        Public Sub update(ByVal transactionID As String, ByVal amount As String)
+            Me.transType = "UPDATE"
+            Me.masterID = transactionID
+            Me.amount = amount
+            Me.api = "bp10emu"
+        End Sub
+
+        ''' <summary>
         ''' Runs a Refund Transaction
         ''' </summary>
         ''' <param name="masterID"></param>

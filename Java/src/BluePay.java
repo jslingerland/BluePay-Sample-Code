@@ -196,6 +196,20 @@ public class BluePay
   }
   
   /**
+   * Sets up the object to perform an UPDATE. 
+   *
+   * @param transactionID A string containing the 12-digit transaction ID of the transaction to refund.
+   * @param amount  An optional string containing the amount to refund.
+   * 
+   */
+  public void update(HashMap<String, String> params) {  
+    TRANSACTION_TYPE = "UPDATE";
+    RRNO = params.get("transactionID");
+    AMOUNT = params.get("amount");
+    API = "bp10emu";
+  }
+
+  /**
    * Sets up the object to perform a VOID. 
    *
    * @param transactionID A string containing the 12-digit transaction ID of the transaction to refund.
