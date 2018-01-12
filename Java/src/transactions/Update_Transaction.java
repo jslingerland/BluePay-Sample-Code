@@ -77,7 +77,7 @@ public class Update_Transaction {
       updateParams.put("transactionID", payment.getTransID()); // id of previous transaction to update
       paymentUpdate.update(updateParams);
 
-      // Makes the API Request to process refund
+      // Makes the API Request to process update
       try {
         paymentUpdate.process();
       } catch (Exception ex) {

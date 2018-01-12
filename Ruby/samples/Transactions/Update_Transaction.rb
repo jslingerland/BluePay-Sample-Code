@@ -54,7 +54,7 @@ if payment.successful_transaction?
     mode: MODE
   )
 
-  # Creates a update transaction against previous sale
+  # Creates an update transaction against previous sale
   payment_update.update(
     trans_id: payment.get_trans_id, # id of previous transaction to update
     amount: "5.75" # add $2.75 to previous amount

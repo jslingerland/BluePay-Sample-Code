@@ -54,7 +54,7 @@ if payment.is_successful_response():
         mode = mode # Transaction Mode: TEST (can also be LIVE)
     )
 
-    # Creates a update transaction against previous sale
+    # Creates an update transaction against previous sale
     payment_update.update(
         transaction_id = payment.trans_id_response, # id of the transaction to update
         amount = '5.75' # add $2.75 to previous amount
