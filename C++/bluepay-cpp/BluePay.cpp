@@ -756,13 +756,35 @@ void BluePay::setEmail(std::string Email)
 }
 
 /// <summary>
+/// Generates the TAMPER_PROOF_SEAL to used to validate each transaction
+/// </summary>
+std::string BluePay::generateTps(std::string message)
+{
+    std::string result = "";
+    if (this->tpsHashType == "HMAC_SHA256") {
+        Hmac h(this->secretKey, message, "SHA256");
+        result = h.calcHmac();
+    } else if (this->tpsHashType == "SHA512") {
+        result = sha512(this->secretKey + message);
+    } else if (this->tpsHashType == "SHA256") {
+       result = sha256(this->secretKey + message);
+    } else if (this->tpsHashType == "MD5") {
+        result = md5(this->secretKey + message);
+    } else {
+        Hmac h(this->secretKey, message, "SHA512");
+        result = h.calcHmac();
+    }
+    return result;
+}
+
+/// <summary>
 /// Calculates TAMPER_PROOF_SEAL for bp20post API
 /// </summary>
 void BluePay::calcTps()
 {
-  std::string tamper_proof_seal = this->secretKey + this->accountId + this->transType + this->amount + this->doRebill + this->rebillFirstDate +
+  std::string tamper_proof_seal = this->accountId + this->transType + this->amount + this->doRebill + this->rebillFirstDate +
     this->rebillExpr + this->rebillCycles + this->rebillAmount + this->masterId + this->mode;
-  this->Tps = sha512(tamper_proof_seal);
+  this->Tps = generateTps(tamper_proof_seal);
 }
 
 /// <summary>
@@ -770,8 +792,8 @@ void BluePay::calcTps()
 /// </summary>
 void BluePay::calcRebillTps()
 {
-  std::string tamper_proof_seal = this->secretKey + this->accountId + this->transType + this->rebillId;
-  this->Tps = md5(tamper_proof_seal);
+  std::string tamper_proof_seal = this->accountId + this->transType + this->rebillId;
+  this->Tps = generateTps(tamper_proof_seal);
 }
 
 /// <summary>
@@ -779,8 +801,8 @@ void BluePay::calcRebillTps()
 /// </summary>
 void BluePay::calcReportTps()
 {
-  std::string tamper_proof_seal = this->secretKey + this->accountId + this->reportStartDate + this->reportEndDate;
-  this->Tps = md5(tamper_proof_seal);
+  std::string tamper_proof_seal = this->accountId + this->reportStartDate + this->reportEndDate;
+  this->Tps = generateTps(tamper_proof_seal);
 }
 
 /// <summary>
@@ -800,13 +822,14 @@ void BluePay::calcReportTps()
 /// <param name="rebillAmount"></param>
 /// <param name="rebillStatus"></param>
 /// <returns></returns>
-std::string BluePay::calcTransNotifyTps(std::string secretKey, std::string transId, std::string transStatus, std::string transType,
+std::string BluePay::calcTransNotifyTps(std::string transId, std::string transStatus, std::string transType,
     std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
     std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus)
 {
-  std::string tamper_proof_seal = secretKey + transId + transStatus + transType + amount + batchId + batchStatus +
+  std::string tamper_proof_seal = transId + transStatus + transType + amount + batchId + batchStatus +
     totalCount + totalAmount + batchUploadId + rebillId + rebillAmount + rebillStatus;
-  return md5(tamper_proof_seal);
+  std::string result = generateTps(tamper_proof_seal);
+  return result;
 }
 
 /// <summary>
@@ -1117,6 +1140,7 @@ char* BluePay::process()
       "&DO_NOT_ESCAPE=" + (this->doNotEscape) +
       "&QUERY_BY_SETTLEMENT=" + (this->queryBySettlement) +
       "&QUERY_BY_HIERARCHY=" + (this->queryByHierarchy) +
+      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
       "&EXCLUDE_ERRORS=" + (this->excludeErrors);
   // } else if (this->reportStartDate != "") {
   } else if (this->api == "stq") {
@@ -1127,6 +1151,7 @@ char* BluePay::process()
       "&TAMPER_PROOF_SEAL=" + (this->Tps) +
       "&REPORT_START_DATE=" + (this->reportStartDate) +
       "&REPORT_END_DATE=" + (this->reportEndDate) +
+      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
       "&EXCLUDE_ERRORS=" + (this->excludeErrors);
     postData += (this->masterId != "") ? "&id=" + (this->masterId) : "";
     postData += (this->paymentType != "") ? "&payment_type=" + (this->paymentType) : "";
@@ -1168,7 +1193,7 @@ char* BluePay::process()
       "&AMOUNT_FOOD=" + (this->amountFood) +
       "&AMOUNT_MISC=" + (this->amountMisc) +
       "&SWIPE=" + (this->trackData) +
-      "&TPS_HASH_TYPE=SHA512" +
+      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
       "&RESPONSEVERSION=1"
       ;
       // std::cout << postData;
@@ -1195,6 +1220,7 @@ char* BluePay::process()
       "&REB_CYCLES=" + (this->rebillCycles) +
       "&REB_AMOUNT=" + (this->rebillAmount) +
       "&NEXT_AMOUNT=" + (this->rebillNextAmount) +
+      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
       "&STATUS=" + (this->rebillStatus);
   }
   // Add Level 2 data, if available.

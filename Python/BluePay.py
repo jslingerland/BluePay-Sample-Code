@@ -5,6 +5,7 @@ from six.moves.urllib.request import Request, urlopen
 from six.moves.urllib.error import URLError, HTTPError
 from six.moves.urllib.parse import urlparse, urlencode, parse_qs
 import hashlib
+import hmac
 import cgi
 import os
 import re
@@ -96,6 +97,7 @@ class BluePay:
     # Processing fields
     url = ''
     api = ''
+    tps_hash_type = 'HMAC_SHA512'
 
     # Level 2 Processing field
     level2_info = {}
@@ -397,32 +399,50 @@ class BluePay:
     ### API REQUEST ###
 
     # Functions for calculating the TAMPER_PROOF_SEAL
+    def create_tps_hash(self, string):
+        tps_hash = ""
+        if self.tps_hash_type == "HMAC_SHA256":
+            tps_hash = hmac.new(self.secret_key, string, hashlib.sha256).hexdigest()
+        elif self.tps_hash_type == "SHA512":
+            m = hashlib.sha512()
+            m.update(self.secret_key + string)
+            tps_hash = m.hexdigest()
+        elif self.tps_hash_type == "SHA256":
+            m = hashlib.sha256()
+            m.update(self.secret_key + string)
+            tps_hash = m.hexdigest()
+        elif self.tps_hash_type == "MD5":
+            m = hashlib.md5()
+            m.update(self.secret_key + string)
+            tps_hash = m.hexdigest()
+        else:
+            tps_hash = hmac.new(self.secret_key, string, hashlib.sha512).hexdigest()
+
+        return tps_hash
+
+
     def calc_TPS(self):
-        tps_string = (self.secret_key + self.account_id + self.trans_type + self.amount +
-                      self.do_rebill + self.reb_first_date + self.reb_expr + self.reb_cycles + 
-                      self.reb_amount + self.rrno + self.mode)
-        m = hashlib.sha512()
-        m.update(tps_string.encode())
-        return m.hexdigest()
+        tps_string = (self.account_id + self.trans_type + self.amount + self.do_rebill + 
+                        self.reb_first_date + self.reb_expr + self.reb_cycles + self.reb_amount + 
+                        self.rrno + self.mode)
+        tps = self.create_tps_hash(tps_string)
+        return tps
 
     def calc_rebill_TPS(self):
-        tps_string = (self.secret_key + self.account_id + self.trans_type + self.rebill_id)
-        m = hashlib.md5()
-        m.update(tps_string)
-        return m.hexdigest()   
+        tps_string = (self.account_id + self.trans_type + self.rebill_id)
+        tps = self.create_tps_hash(tps_string)
+        return tps 
         
     def calc_report_TPS(self):
-        tps_string = (self.secret_key + self.account_id + self.report_start_date + self.report_end_date)
-        m = hashlib.md5()
-        m.update(tps_string)
-        return m.hexdigest()
+        tps_string = (self.account_id + self.report_start_date + self.report_end_date)
+        tps = self.create_tps_hash(tps_string)
+        return tps
         
     def calc_trans_notify_TPS(self):
-        tps_string = (secret_key, trans_id, trans_status, trans_type, amount, batch_id, batch_status,
+        tps_string = (trans_id, trans_status, trans_type, amount, batch_id, batch_status,
                       total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
-        m = hashlib.md5()
-        m.update(tps_string)
-        return m.hexdigest()
+        tps = self.create_tps_hash(tps_string)
+        return tps
 
     # Required arguments for generate_url:
     # merchant_name: Merchant name that will be displayed in the payment page.
@@ -662,7 +682,8 @@ class BluePay:
                 'DO_NOT_ESCAPE' : self.do_not_escape,
                 'QUERY_BY_SETTLEMENT' : self.query_by_settlement,
                 'QUERY_BY_HIERARCHY' : self.subaccounts_searched,
-                'EXCLUDE_ERRORS' : self.excludeErrors
+                'EXCLUDE_ERRORS' : self.excludeErrors,
+                'TPS_HASH_TYPE': self.tps_hash_type
             })
         elif self.api == 'stq':
             self.url = 'https://secure.bluepay.com/interfaces/stq'
@@ -673,6 +694,7 @@ class BluePay:
                 'TAMPER_PROOF_SEAL' : self.calc_report_TPS(),
                 'EXCLUDE_ERRORS' : self.excludeErrors,
                 'IGNORE_NULL_STR' : '1',
+                'TPS_HASH_TYPE': self.tps_hash_type,
                 'id' : self.trans_id,
                 'payment_type' : self.payment_type,
                 'trans_type' : self.trans_type,
@@ -713,7 +735,7 @@ class BluePay:
                 'REB_CYCLES': self.reb_cycles,
                 'REB_AMOUNT': self.reb_amount,
                 'SWIPE': self.track_data,
-                'TPS_HASH_TYPE': 'SHA512'
+                'TPS_HASH_TYPE': self.tps_hash_type
             })
             try:
                 fields.update({
@@ -747,7 +769,8 @@ class BluePay:
                 'REB_AMOUNT': self.reb_amount,
                 'NEXT_AMOUNT': self.reb_next_amount,
                 'STATUS': self.reb_status,
-                'TAMPER_PROOF_SEAL': self.calc_rebill_TPS()
+                'TAMPER_PROOF_SEAL': self.calc_rebill_TPS(),
+                'TPS_HASH_TYPE': self.tps_hash_type
             })
 
         fields.update(self.level2_info) # Update fields dictionary with Level 2 processing information, if available.

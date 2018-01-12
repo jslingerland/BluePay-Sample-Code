@@ -16,6 +16,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.security.MessageDigest;
+import hmac.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ public class BluePay
   private String CUSTOM_ID2 = "";
   private String ORDER_ID = "";
   private String INVOICE_ID = "";
+  private String TPS_HASH_TYPE = "HMAC_SHA512";
   
   // rebilling parameters
   private String REBILLING = "0";
@@ -698,6 +700,32 @@ public class BluePay
     }
     return code.toString();
   }
+
+  /**
+   * Calculates a hex sha256 based on input.
+   *
+   * @param message String to calculate sha256 of.
+   *
+   */
+  private String sha256(String message) throws java.security.NoSuchAlgorithmException
+  {
+    MessageDigest sha256 = null;
+    try {
+      sha256 = MessageDigest.getInstance("SHA-256");
+    }
+    catch (java.security.NoSuchAlgorithmException ex) {
+      ex.printStackTrace();
+      throw ex;
+    }
+    byte[] dig = sha256.digest((byte[]) message.getBytes());
+    StringBuffer code = new StringBuffer();
+    for (int i = 0; i < dig.length; ++i)
+    {
+      code.append(Integer.toHexString(0x0100 + (dig[i] & 0x00FF)).substring(1));
+    }
+    return code.toString();
+  }
+
   /**
    * Calculates a hex MD5 based on input.
    *
@@ -723,10 +751,33 @@ public class BluePay
     return code.toString();
   }
 
+  /**
+   * Generates the TAMPER_PROOF_SEAL to used to validate each transaction
+   *
+   * @return tps The Tamper Proof Seal
+   *
+   */
 
+  private String generateTPS(String message) throws java.security.NoSuchAlgorithmException {
+    String tpsHash = "";
+      if(TPS_HASH_TYPE == "HMAC_SHA256") {
+        HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-256");
+        tpsHash = h.getHMAC();
+      } else if (TPS_HASH_TYPE == "SHA512") {
+        tpsHash = sha512(BP_SECRET_KEY + message);
+      } else if (TPS_HASH_TYPE == "SHA256") {
+        tpsHash = sha256(BP_SECRET_KEY + message);
+      } else if (TPS_HASH_TYPE == "MD5") {
+        tpsHash = md5(BP_SECRET_KEY + message);
+      } else {
+        HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-512");
+        tpsHash = h.getHMAC();
+      }
+    return tpsHash;
+  }
 
   /**
-   * Calculates the TAMPER_PROOF_SEAL string to send with each transaction
+   * Calculates the TAMPER_PROOF_SEAL string used to generate the Tamper Proof Seal
    *
    * @return tps The Tamper Proof Seal
    *
@@ -741,31 +792,31 @@ public class BluePay
     REB_AMOUNT = REB_AMOUNT != null ? REB_AMOUNT : "";
     RRNO = RRNO != null ? RRNO : "";
     BP_MODE = BP_MODE != null ? BP_MODE : "";
-    String tps = BP_SECRET_KEY + BP_MERCHANT + TRANSACTION_TYPE + AMOUNT + REBILLING 
-                 + REB_FIRST_DATE + REB_EXPR + REB_CYCLES + REB_AMOUNT + RRNO + BP_MODE;
-    return sha512(tps);
+    String tps = BP_MERCHANT + TRANSACTION_TYPE + AMOUNT + REBILLING + 
+                REB_FIRST_DATE + REB_EXPR + REB_CYCLES + REB_AMOUNT + RRNO + BP_MODE;
+    return generateTPS(tps);
   }
   
   /**
-   * Calculates the TAMPER_PROOF_SEAL string to send with each transaction
+   * Calculates the TAMPER_PROOF_SEAL string used to generate the Tamper Proof Seal
    *
    * @return tps The Tamper Proof Seal
    *
    */
   private String calcRebillTPS() throws java.security.NoSuchAlgorithmException {
-    String tps = BP_SECRET_KEY + BP_MERCHANT + TRANSACTION_TYPE + REBILL_ID;
-    return md5(tps);
+    String tps = BP_MERCHANT + TRANSACTION_TYPE + REBILL_ID;
+    return generateTPS(tps);
   }
   
   /**
-   * Calculates the TAMPER_PROOF_SEAL string to send with each transaction
+   * Calculates the TAMPER_PROOF_SEAL string used to generate the Tamper Proof Seal
    *
    * @return tps The Tamper Proof Seal
    *
    */
   private String calcReportTPS() throws java.security.NoSuchAlgorithmException {
-    String tps = BP_SECRET_KEY + BP_MERCHANT + REPORT_START + REPORT_END;
-    return md5(tps);
+    String tps = BP_MERCHANT + REPORT_START + REPORT_END;
+    return generateTPS(tps);
   }
   
   /**
@@ -774,20 +825,20 @@ public class BluePay
    * @return tps The Tamper Proof Seal
    *
    */
-  public String calcTransNotifyTPS(String secretKey, String transID, String transStatus, String transType, 
+  public String calcTransNotifyTPS(String transID, String transStatus, String transType, 
 		  String amount, String batchID, String batchStatus, String totalCount, String totalAmount, 
 		  String batchUploadID, String rebillID, String rebillAmount, String rebillStatus) 
   throws java.security.NoSuchAlgorithmException {
-  	String tps = secretKey + transID + transStatus + transType + amount + batchID + batchStatus + 
+  	String tps = transID + transStatus + transType + amount + batchID + batchStatus + 
   	totalCount + totalAmount + batchUploadID + rebillID + rebillAmount + rebillStatus;
-  	return md5(tps);
+    return generateTPS(tps);
   }
 
   /**
   * Calls the methods necessary to generate a SHPF URL
   * Required arguments for generate_url:
   * @param merchantName: Merchant name that will be displayed in the payment page.
-  * @param returnURL: Link to be displayed on the transacton results page. Usually the merchant's web site home page.
+  * @param returnURL: Link to be displayed on the transaction results page. Usually the merchant's web site home page.
   * @param transactionType: SALE/AUTH -- Whether the customer should be charged or only check for enough credit available.
   * @param acceptDiscover: Yes/No -- Yes for most US merchants. No for most Canadian merchants.
   * @param acceptAmex: Yes/No -- Has an American Express merchant account been set up?
@@ -1045,6 +1096,7 @@ public class BluePay
   		  nameValuePairs.add(new BasicNameValuePair("QUERY_BY_SETTLEMENT", QUERY_BY_SETTLEMENT));
   		  nameValuePairs.add(new BasicNameValuePair("QUERY_BY_HIERARCHY", QUERY_BY_HIERARCHY));
   		  nameValuePairs.add(new BasicNameValuePair("EXCLUDE_ERRORS", EXCLUDE_ERRORS));
+        nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", TPS_HASH_TYPE));
 	  } else if (API.equals("stq")) {
         BP_URL = "https://secure.bluepay.com/interfaces/stq";
   		  nameValuePairs.add(new BasicNameValuePair("ACCOUNT_ID", BP_MERCHANT));
@@ -1053,6 +1105,7 @@ public class BluePay
   		  nameValuePairs.add(new BasicNameValuePair("REPORT_END_DATE", REPORT_END));
   		  nameValuePairs.add(new BasicNameValuePair("EXCLUDE_ERRORS", EXCLUDE_ERRORS));
   		  nameValuePairs.add(new BasicNameValuePair("id", ID));
+        nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", TPS_HASH_TYPE));
 	  } else if(API.equals("bp10emu")) {
     	  BP_URL = "https://secure.bluepay.com/interfaces/bp10emu";
         nameValuePairs.add(new BasicNameValuePair("MERCHANT", BP_MERCHANT));
@@ -1086,7 +1139,7 @@ public class BluePay
         nameValuePairs.add(new BasicNameValuePair("REB_CYCLES", REB_CYCLES));
         nameValuePairs.add(new BasicNameValuePair("REB_AMOUNT", REB_AMOUNT));
         nameValuePairs.add(new BasicNameValuePair("SWIPE", SWIPE));
-        nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", "SHA512"));
+        nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", TPS_HASH_TYPE));
         if (PAYMENT_TYPE.equals("CREDIT")) {
         	  nameValuePairs.add(new BasicNameValuePair("CC_NUM", CARD_NUM));  
         	  nameValuePairs.add(new BasicNameValuePair("CC_EXPIRES", CARD_EXPIRE));
@@ -1110,6 +1163,7 @@ public class BluePay
     	  nameValuePairs.add(new BasicNameValuePair("REB_AMOUNT", REB_AMOUNT));
     	  nameValuePairs.add(new BasicNameValuePair("NEXT_AMOUNT", NEXT_AMOUNT));
     	  nameValuePairs.add(new BasicNameValuePair("STATUS", REBILL_STATUS));
+        nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", TPS_HASH_TYPE));
     }
 	
 	// Add Level 2 data, if available.

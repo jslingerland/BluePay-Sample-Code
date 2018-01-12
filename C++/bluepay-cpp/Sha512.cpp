@@ -35,10 +35,11 @@
  * SUCH DAMAGE.
  */
 
-#include "Sha512.h"
+#include "sha512.h"
 #include <cstring>
 #include <fstream>
- 
+#include <iostream>
+
 const unsigned long long SHA512::sha512_k[80] = //ULL = uint64
             {0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL,
              0xb5c0fbcfec4d3b2fULL, 0xe9b5dba58189dbbcULL,
@@ -190,3 +191,38 @@ std::string sha512(std::string input)
         sprintf(buf+i*2, "%02x", digest[i]);
     return std::string(buf);
 }
+
+std::string sha512Hmac(std::string message, std::string ipad, std::string opad)
+{
+    unsigned char innerDigest[SHA512::DIGEST_SIZE];
+    memset(innerDigest,0,SHA512::DIGEST_SIZE);
+    
+    unsigned char digest[SHA512::DIGEST_SIZE];
+    memset(digest,0,SHA512::DIGEST_SIZE);
+    
+    // Step 1: Hash concatenation of ipad and message
+    SHA512 innerCtx = SHA512();
+    innerCtx.init();
+    innerCtx.update( (unsigned char*)(ipad + message).c_str(), (ipad + message).length() );
+    innerCtx.final(innerDigest);
+    
+    // Step 2: Append product of Step 1 to opad
+    unsigned char AppendBuffer[SHA512::HMAC_BUF_LEN];
+    memcpy( AppendBuffer, (unsigned char*)(opad).c_str(), opad.length() );
+    memcpy( AppendBuffer + opad.length(), innerDigest, sizeof(innerDigest) );
+
+    // Step 3: Hash concatenation of opad and product of Step 1
+    SHA512 ctx = SHA512();
+    ctx.init();
+    ctx.update( AppendBuffer, opad.length() + SHA512::DIGEST_SIZE );
+    ctx.final(digest);
+    
+    // Step 4: Return product of Step 3 as C++ string
+    char buf[2*SHA512::DIGEST_SIZE+1];
+    buf[2*SHA512::DIGEST_SIZE] = 0;
+    for (unsigned int i = 0; i < SHA512::DIGEST_SIZE; i++)
+        sprintf(buf+i*2, "%02x", digest[i]);
+    
+    return std::string(buf);
+}
+
