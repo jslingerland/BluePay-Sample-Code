@@ -492,10 +492,10 @@ class BluePay {
     }
 
     // Functions for calculating the TAMPER_PROOF_SEAL
-    public final function createTPSHash($string) {
+    public final function createTPSHash($string, $hashType) {
         $hash = "";
 
-        switch ($this->tpsHashType) {
+        switch ($hashType) {
             case "HMAC_SHA256":
                 $hash = hash_hmac("sha256", $string, $this->secretKey);
                 break;
@@ -518,24 +518,23 @@ class BluePay {
     public final function calcTPS() {
         $tpsString = $this->accountID . $this->transType . $this->amount . $this->doRebill . $this->rebillFirstDate .
         $this->rebillExpr . $this->rebillCycles . $this->rebillAmount . $this->masterID . $this->mode;
-        return $this->createTPSHash($tpsString);
+        return $this->createTPSHash($tpsString, $this->tpsHashType);
     }
 
     public final function calcRebillTPS() {
         $tpsString = $this->accountID . $this->transType . $this->rebillID;
-        return $this->createTPSHash($tpsString);
+        return $this->createTPSHash($tpsString, $this->tpsHashType);
     }
 
     public final function calcReportTPS() {
         $tpsString = $this->accountID . $this->reportStartDate . $this->reportEndDate;
-        return $this->createTPSHash($tpsString);
+        return $this->createTPSHash($tpsString, $this->tpsHashType);
     }
 
-    public static final function calcTransNotifyTPS($transID, $transStatus, $transType, $amount, $batchID, $batchStatus, 
-        $totalCount, $totalAmount, $batchUploadID, $rebillID, $rebillAmount, $rebillStatus) {
+    public static final function calcTransNotifyTPS($secretKey, $transID, $transStatus, $transType, $amount, $batchID, $batchStatus, $totalCount, $totalAmount, $batchUploadID, $rebillID, $rebillAmount, $rebillStatus, $hashType) {
         $tpsString = $transID + $transStatus + $transType + $amount + $batchID + $batchStatus + $totalCount +
         $totalAmount + $batchUploadID + $rebillID + $rebillAmount + $rebillStatus;
-        return $this->createTPSHash($tpsString);
+        return $this->createTPSHash($tpsString, $hashType);
     }
 
     // Required arguments for generate_url:
@@ -598,19 +597,36 @@ class BluePay {
         $this->shpfFormID = empty($params['paymentTemplate']) ? 'mobileform01' : $params['paymentTemplate'];
         $this->receiptFormID = empty($params['receiptTemplate']) ? 'mobileresult01' : $params['receiptTemplate'];
         $this->remoteURL = empty($params['receiptTempRemoteURL']) ? '' : $params['receiptTempRemoteURL'];
+        $this->shpfTpsHashType = 'HMAC_SHA512';
+        $this->receiptTpsHashType = $this->shpfTpsHashType;
+        $this->tpsHashType = $this->setHashType($params['TpsHashType'] ?? '');
         $this->cardTypes = $this->setCardTypes();
-        $this->receiptTpsDef = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF';
+        $this->receiptTpsDef = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE';
         $this->receiptTpsString = $this->setReceiptTpsString();
-        $this->receiptTamperProofSeal = $this->calcURLTps($this->receiptTpsString);
+        $this->receiptTamperProofSeal = $this->createTPSHash($this->receiptTpsString, $this->receiptTpsHashType);
         $this->receiptURL = $this->setReceiptURL();
-        $this->bp10emuTpsDef = $this->addDefProtectedStatus('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF');
+        $this->bp10emuTpsDef = $this->addDefProtectedStatus('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE');
         $this->bp10emuTpsString = $this->setBp10emuTpsString();
-        $this->bp10emuTamperProofSeal = $this->calcURLTps($this->bp10emuTpsString);
-        $this->shpfTpsDef = $this->addDefProtectedStatus('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF');
+        $this->bp10emuTamperProofSeal = $this->createTPSHash($this->bp10emuTpsString, $this->tpsHashType);
+        $this->shpfTpsDef = $this->addDefProtectedStatus('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE');
         $this->shpfTpsString = $this->setShpfTpsString();
-        $this->shpfTamperProofSeal = $this->calcURLTps($this->shpfTpsString);
+        $this->shpfTamperProofSeal = $this->createTPSHash($this->shpfTpsString, $this->shpfTpsHashType);
         return $this->calcURLResponse();
     }
+
+    // Validates hash type or returns default
+    public function setHashType($chosen_hash) {
+        $default_hash = 'HMAC_SHA512';
+        $chosen_hash = strtoupper($chosen_hash);
+        $result = '';
+        if ( in_array($chosen_hash, array('MD5', 'SHA256', 'SHA512', 'HMAC_SHA256')) ){
+            $result = $chosen_hash;
+        } else {
+            $result = $default_hash;
+        }
+        return $result;
+    }
+
     // Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generateURL.
     public function setCardTypes() {
         $creditCards = 'vi-mc';
@@ -621,18 +637,18 @@ class BluePay {
 
     // Sets the receipt Tamperproof Seal string. Must be used with generateURL.
     public function setReceiptTpsString() {
-        return $this->secretKey . $this->accountID . $this->receiptFormID. $this->returnURL . $this->dba . $this->amexImage . $this->discoverImage . $this->receiptTpsDef; 
+        return $this->accountID . $this->receiptFormID. $this->returnURL . $this->dba . $this->amexImage . $this->discoverImage . $this->receiptTpsDef . $this->receiptTpsHashType; 
     }
 
     // Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with generateURL.
     public function setBp10emuTpsString() {
-        $bp10emu = $this->secretKey . $this->accountID . $this->receiptURL . $this->receiptURL . $this->receiptURL . $this->mode . $this->transType . $this->bp10emuTpsDef;
+        $bp10emu = $this->accountID . $this->receiptURL . $this->receiptURL . $this->receiptURL . $this->mode . $this->transType . $this->bp10emuTpsDef . $this->tpsHashType;
         return $this->addStringProtectedStatus($bp10emu);
     }
 
     // Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with generateURL.
     public function setShpfTpsString() {
-        $shpf = $this->secretKey . $this->shpfFormID . $this->accountID . $this->dba . $this->bp10emuTamperProofSeal . $this->amexImage . $this->discoverImage . $this->bp10emuTpsDef . $this->shpfTpsDef; 
+        $shpf = $this->shpfFormID . $this->accountID . $this->dba . $this->bp10emuTamperProofSeal . $this->amexImage . $this->discoverImage . $this->bp10emuTpsDef . $this->tpsHashType . $this->shpfTpsDef . $this->shpfTpsHashType; 
         return $this->addStringProtectedStatus($shpf);
     }
 
@@ -684,11 +700,6 @@ class BluePay {
             }
         }
         return $encodedString;
-    }
-
-    // Generates a Tamperproof Seal for a url. Must be used with generateURL.
-    public final function calcURLTps($tpsType) {
-        return bin2hex(md5($tpsType, true));
     }
 
     // Generates the final url for the Simple Hosted Payment Form. Must be used with generateURL.
