@@ -9,8 +9,8 @@ class BluePay
   end
 
   # Generates TPS hash based on given hash type
-  def create_tps_hash(data)
-    case @PARAM_HASH['TPS_HASH_TYPE']   
+  def create_tps_hash(data, hash_type)
+    case hash_type   
     when 'HMAC_SHA256'
       OpenSSL::HMAC.hexdigest('sha256', @SECRET_KEY, data)
     when 'SHA512'
@@ -36,7 +36,8 @@ class BluePay
         (@PARAM_HASH["REB_CYCLES"] || '') + 
         (@PARAM_HASH["REB_AMOUNT"] || '') + 
         (@PARAM_HASH["RRNO"] || '') + 
-        @PARAM_HASH["MODE"]
+        @PARAM_HASH["MODE"], 
+        @PARAM_HASH['TPS_HASH_TYPE']
       )
   end
 
@@ -45,7 +46,8 @@ class BluePay
     @PARAM_HASH["TAMPER_PROOF_SEAL"] = create_tps_hash(
       @ACCOUNT_ID +
       @PARAM_HASH["TRANS_TYPE"] + 
-      @PARAM_HASH["REBILL_ID"]
+      @PARAM_HASH["REBILL_ID"], 
+      @PARAM_HASH['TPS_HASH_TYPE']
     )
   end
 
@@ -54,13 +56,15 @@ class BluePay
     @PARAM_HASH["TAMPER_PROOF_SEAL"] = create_tps_hash(
       @ACCOUNT_ID + 
       @PARAM_HASH["REPORT_START_DATE"] + 
-      @PARAM_HASH["REPORT_END_DATE"]
+      @PARAM_HASH["REPORT_END_DATE"],
+      @PARAM_HASH['TPS_HASH_TYPE']
       )
   end
 
   # Calculates TAMPER_PROOF_SEAL to be used with Trans Notify API 
-  def self.calc_trans_notify_tps(trans_id, trans_status, trans_type, amount, batch_id, batch_status, total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
+  def self.calc_trans_notify_tps(secret_key, trans_id, trans_status, trans_type, amount, batch_id, batch_status, total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
     create_tps_hash(
+      secret_key + 
       trans_id + 
       trans_status + 
       transtype + 
