@@ -35,21 +35,22 @@ sub new {
 sub generate_tps {
     my $self = shift;
     my $str  = shift;
+    my $hashType =
     my $hash = '';
 
-    if ($self->{TPS_HASH_TYPE} eq 'HMAC_SHA256')
+    if ($hashType eq 'HMAC_SHA256')
     {
         $hash = hmac_sha256_hex($str, $self->{SECRET_KEY});
     }
-    elsif ($self->{TPS_HASH_TYPE} eq 'SHA512')
+    elsif ($hashType eq 'SHA512')
     {
         $hash = sha512_hex($self->{SECRET_KEY} . $str);
     }
-    elsif ($self->{TPS_HASH_TYPE} eq 'SHA256')
+    elsif ($hashType eq 'SHA256')
     {
         $hash = sha256_hex($self->{SECRET_KEY} . $str);
     }
-    elsif ($self->{TPS_HASH_TYPE} eq 'MD5')
+    elsif ($hashType eq 'MD5')
     {
         $hash = md5_hex($self->{SECRET_KEY} . $str);
     }
@@ -104,14 +105,15 @@ sub calc_tps {
           . ( $self->{TRANS_TYPE} || '' )
           . ( $self->{REBILL_ID}  || '' );
     }
-    $TAMPER_PROOF_SEAL = $self->generate_tps($TAMPER_PROOF_DATA);
+    $TAMPER_PROOF_SEAL = $self->generate_tps($TAMPER_PROOF_DATA, $self->{TPS_HASH_TYPE});
     return $TAMPER_PROOF_SEAL;
 }
 
 sub calc_trans_notify_tps {
     my $self = shift;
     my $tpsString = shift;
-    my $bp_stamp = $self->generate_tps($tpsString);
+    my $hashType = shift;
+    my $bp_stamp = $self->generate_tps($tpsString, $hashType);
     return $bp_stamp;
 }
 
@@ -522,18 +524,38 @@ sub generate_url{
     $self->{SHPF_FORM_ID} = $params->{payment_template} || "mobileform01";
     $self->{RECEIPT_FORM_ID} = $params->{receipt_template} || "mobileresult01";
     $self->{REMOTE_URL} = $params->{receipt_temp_remote_url} || '';
+    $self->{SHPF_TPS_HASH_TYPE} = 'HMAC_SHA512';
+    $self->{RECEIPT_TPS_HASH_TYPE} = $self->{SHPF_TPS_HASH_TYPE};
+    $self->{TPS_HASH_TYPE} = $self->set_hash_type($params->{tps_hash_type} || '');
     $self->{CARD_TYPES} = $self->set_card_types();
-    $self->{RECEIPT_TPS_DEF} = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF';
+    $self->{RECEIPT_TPS_DEF} = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE';
     $self->{RECEIPT_TPS_STRING} = $self->set_receipt_tps_string();
-    $self->{RECEIPT_TAMPER_PROOF_SEAL} = $self->calc_url_tps($self->{RECEIPT_TPS_STRING});
+    $self->{RECEIPT_TAMPER_PROOF_SEAL} = $self->generate_tps($self->{RECEIPT_TPS_STRING}, $self->{RECEIPT_TPS_HASH_TYPE});
     $self->{RECEIPT_URL} = $self->set_receipt_url();
-    $self->{BP10EMU_TPS_DEF} = $self->add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF');
+    $self->{BP10EMU_TPS_DEF} = $self->add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE');
     $self->{BP10EMU_TPS_STRING} = $self->set_bp10emu_tps_string();
-    $self->{BP10EMU_TAMPER_PROOF_SEAL} = $self->calc_url_tps($self->{BP10EMU_TPS_STRING});
-    $self->{SHPF_TPS_DEF} = $self->add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF');
+    $self->{BP10EMU_TAMPER_PROOF_SEAL} = $self->generate_tps($self->{BP10EMU_TPS_STRING}, $self->{TPS_HASH_TYPE});
+    $self->{SHPF_TPS_DEF} = $self->add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE');
     $self->{SHPF_TPS_STRING} = $self->set_shpf_tps_string();
-    $self->{SHPF_TAMPER_PROOF_SEAL} = $self->calc_url_tps($self->{SHPF_TPS_STRING});
+    $self->{SHPF_TAMPER_PROOF_SEAL} = $self->generate_tps($self->{SHPF_TPS_STRING}, $self->{SHPF_TPS_HASH_TYPE});
     return $self->calc_url_response();
+}
+
+# Validates hash type or returns default
+sub set_hash_type{
+    my $self = shift;
+    my $chosen_hash = shift;
+    my $default_hash = 'HMAC_SHA512';
+    my $hash_type = '';
+    if(uc($chosen_hash) =~ m/^\s*(MD5|SHA256|SHA512|HMAC_SHA256|HMAC_SHA512)\s*$/)
+    {
+        $hash_type = $1;
+    }
+    else 
+    {
+        $hash_type = $default_hash;
+    }
+    return $hash_type;
 }
 
 # Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generate_url.
@@ -548,28 +570,28 @@ sub set_card_types{
 # Sets the receipt Tamperproof Seal string. Must be used with generate_url.
 sub set_receipt_tps_string{
     my $self = shift;
-    return $self->{SECRET_KEY} . 
-        $self->{ACCOUNT_ID} . 
+    return $self->{ACCOUNT_ID} . 
         $self->{RECEIPT_FORM_ID} .
         $self->{RETURN_URL} .
         $self->{DBA} .
         $self->{AMEX_IMAGE} .
         $self->{DISCOVER_IMAGE} .
-        $self->{RECEIPT_TPS_DEF};
+        $self->{RECEIPT_TPS_DEF} .
+        $self->{RECEIPT_TPS_HASH_TYPE};
 }
 
 # Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with generate_url.
 sub set_bp10emu_tps_string{
     my $self = shift;
     my $BP10EMU = 
-        $self->{SECRET_KEY} .
         $self->{ACCOUNT_ID} .
         $self->{RECEIPT_URL} .
         $self->{RECEIPT_URL} .
         $self->{RECEIPT_URL} .
         $self->{MODE} .
         $self->{TRANSACTION_TYPE} .
-        $self->{BP10EMU_TPS_DEF};
+        $self->{BP10EMU_TPS_DEF} .
+        $self->{TPS_HASH_TYPE};
     return add_string_protected_status($self, $BP10EMU);
 }
 
@@ -577,7 +599,6 @@ sub set_bp10emu_tps_string{
 sub set_shpf_tps_string{
     my $self = shift;
     my $SHPF = 
-        $self->{SECRET_KEY} .
         $self->{SHPF_FORM_ID} .
         $self->{ACCOUNT_ID} . 
         $self->{DBA} .
@@ -585,7 +606,9 @@ sub set_shpf_tps_string{
         $self->{AMEX_IMAGE} .
         $self->{DISCOVER_IMAGE} .
         $self->{BP10EMU_TPS_DEF} .
-        $self->{SHPF_TPS_DEF};
+        $self->{TPS_HASH_TYPE} .
+        $self->{SHPF_TPS_DEF} . 
+        $self->{SHPF_TPS_HASH_TYPE};
     return add_string_protected_status($self, $SHPF);
 }
 
