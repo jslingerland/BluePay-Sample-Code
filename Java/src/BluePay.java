@@ -69,7 +69,7 @@ public class BluePay
   private String CUSTOM_ID2 = "";
   private String ORDER_ID = "";
   private String INVOICE_ID = "";
-  private String TPS_HASH_TYPE = "HMAC_SHA512";
+  private String TPS_HASH_TYPE = "MD5";
   
   // rebilling parameters
   private String REBILLING = "0";

@@ -83,7 +83,7 @@ class BluePay
     ua.use_ssl = true
     
     # Set default hash function to HMAC SHA-512
-    @PARAM_HASH['TPS_HASH_TYPE'] = 'HMAC_SHA512'
+    @PARAM_HASH['TPS_HASH_TYPE'] = 'MD5'
 
     # Checks presence of CA certificate
     if File.directory?(RootCA)

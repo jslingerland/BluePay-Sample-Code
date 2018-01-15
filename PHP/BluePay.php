@@ -102,7 +102,7 @@ class BluePay {
     private $rebid;
 
     private $postURL;
-    private $tpsHashType = "HMAC_SHA512";
+    private $tpsHashType = "MD5";
 
     // Level 2 processing field
     private $level2Info;

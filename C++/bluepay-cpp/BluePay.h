@@ -28,7 +28,7 @@ private:
   std::string secretKey;
   std::string mode;
 
-  std::string tpsHashType = "HMAC_SHA512";
+  std::string tpsHashType = "MD5";
 
   // required for auth or sale
   std::string paymentAccount;
