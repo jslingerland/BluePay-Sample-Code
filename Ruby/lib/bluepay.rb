@@ -8,7 +8,7 @@ require_relative "api_request"
 require_relative "api_response"
 
 class BluePay
-  SERVER = "staging.stg.bluepay.com"
+  SERVER = "secure.bluepay.com"
   # Make sure this is the correct path to your CA certificates directory
   RootCA = "/"
 
