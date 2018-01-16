@@ -96,7 +96,7 @@ Namespace BPVB
         Private receiptFormID As String = ""
         Private remoteURL As String = ""
         Private shpfTpsHashType As String = ""
-        Private receiptTpsHashType As String = "
+        Private receiptTpsHashType As String = ""
         Private cardTypes As String = ""
         Private receiptTpsDef As String = ""
         Private receiptTpsString As String = ""
@@ -831,8 +831,12 @@ Namespace BPVB
             Dim defaultHash As String = "HMAC_SHA512"
             chosenHash = chosenHash.ToUpper()
             Dim result As String = ""
-            Dim hashes As List(Of String) = {"MD5", "SHA256", "SHA512", "HMAC_SHA256"}
-            If hashes.Contains(chosen_hash) Then
+            Dim hashes As ArrayList = New ArrayList(4)
+            hashes.Add("MD5")
+            hashes.Add("SHA256")
+            hashes.Add("SHA512")
+            hashes.Add("HMAC_SHA256")
+            If hashes.Contains(chosenHash) Then
                 result = chosenHash
             Else
                 result = defaultHash
@@ -973,7 +977,7 @@ Namespace BPVB
             "&REDIRECT_URL="        + encodeURL(Me.receiptURL)               +  _
             "&TPS_DEF="             + encodeURL(Me.bp10emuTpsDef)            +  _
             "&TPS_HASH_TYPE="       + encodeURL(Me.tpsHashType)              +  _
-            "&CARD_TYPES="          + encodeURL(Me.cardTypes
+            "&CARD_TYPES="          + encodeURL(Me.cardTypes)
         End Function
 
         Public Function process() As String
