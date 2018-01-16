@@ -734,17 +734,17 @@ void BluePay::setEmail(std::string Email)
 /// <summary>
 /// Generates the TAMPER_PROOF_SEAL to used to validate each transaction
 /// </summary>
-std::string BluePay::generateTps(std::string message)
+std::string BluePay::generateTps(std::string message, std::string hashType)
 {
     std::string result = "";
-    if (this->tpsHashType == "HMAC_SHA256") {
+    if (hashType == "HMAC_SHA256") {
         Hmac h(this->secretKey, message, "SHA256");
         result = h.calcHmac();
-    } else if (this->tpsHashType == "SHA512") {
+    } else if (hashType == "SHA512") {
         result = sha512(this->secretKey + message);
-    } else if (this->tpsHashType == "SHA256") {
+    } else if (hashType == "SHA256") {
        result = sha256(this->secretKey + message);
-    } else if (this->tpsHashType == "MD5") {
+    } else if (hashType == "MD5") {
         result = md5(this->secretKey + message);
     } else {
         Hmac h(this->secretKey, message, "SHA512");
@@ -760,7 +760,7 @@ void BluePay::calcTps()
 {
   std::string tamper_proof_seal = this->accountId + this->transType + this->amount + this->doRebill + this->rebillFirstDate +
     this->rebillExpr + this->rebillCycles + this->rebillAmount + this->masterId + this->mode;
-  this->Tps = generateTps(tamper_proof_seal);
+  this->Tps = generateTps(tamper_proof_seal, this->tpsHashType);
 }
 
 /// <summary>
@@ -769,7 +769,7 @@ void BluePay::calcTps()
 void BluePay::calcRebillTps()
 {
   std::string tamper_proof_seal = this->accountId + this->transType + this->rebillId;
-  this->Tps = generateTps(tamper_proof_seal);
+  this->Tps = generateTps(tamper_proof_seal, this->tpsHashType);
 }
 
 /// <summary>
@@ -778,7 +778,7 @@ void BluePay::calcRebillTps()
 void BluePay::calcReportTps()
 {
   std::string tamper_proof_seal = this->accountId + this->reportStartDate + this->reportEndDate;
-  this->Tps = generateTps(tamper_proof_seal);
+  this->Tps = generateTps(tamper_proof_seal, this->tpsHashType);
 }
 
 /// <summary>
@@ -798,14 +798,13 @@ void BluePay::calcReportTps()
 /// <param name="rebillAmount"></param>
 /// <param name="rebillStatus"></param>
 /// <returns></returns>
-std::string BluePay::calcTransNotifyTps(std::string transId, std::string transStatus, std::string transType,
+std::string BluePay::calcTransNotifyTps(std::string secretKey, std::string transId, std::string transStatus, std::string transType,
     std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
     std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus)
 {
-  std::string tamper_proof_seal = transId + transStatus + transType + amount + batchId + batchStatus +
+  std::string tamper_proof_seal = secretKey + transId + transStatus + transType + amount + batchId + batchStatus +
     totalCount + totalAmount + batchUploadId + rebillId + rebillAmount + rebillStatus;
-  std::string result = generateTps(tamper_proof_seal);
-  return result;
+  return md5(tamper_proof_seal);
 }
 
 /// <summary>
@@ -824,7 +823,7 @@ std::string BluePay::setCardTypes()
 /// </summary>
 std::string BluePay::setReceiptTpsString()
 {
-  return this->secretKey + this->accountId + this->receiptFormID + this->returnURL + this->dba + this->amexImage + this->discoverImage + this->receiptTpsDef; 
+  return this->accountId + this->receiptFormID + this->returnURL + this->dba + this->amexImage + this->discoverImage + this->receiptTpsDef + this->receiptTpsHashType;
 }
         
 /// <summary>
@@ -873,7 +872,7 @@ std::string BluePay::addStringProtectedStatus(std::string input)
 /// </summary>
 std::string BluePay::setBp10emuTpsString() 
 {
-  std::string bp10emu = this->secretKey + this->accountId + this->receiptURL + this->receiptURL + this->receiptURL + this->mode + this->transType + this->bp10emuTpsDef;
+  std::string bp10emu = this->accountId + this->receiptURL + this->receiptURL + this->receiptURL + this->mode + this->transType + this->bp10emuTpsDef + this->tpsHashType;
   return addStringProtectedStatus(bp10emu);
 }
 
@@ -882,17 +881,8 @@ std::string BluePay::setBp10emuTpsString()
 /// </summary>
 std::string BluePay::setShpfTpsString() 
 {
-  std::string shpf = this->secretKey + this->shpfFormID + this->accountId + this->dba + this->bp10emuTamperProofSeal + this->amexImage + this->discoverImage + this->bp10emuTpsDef + this->shpfTpsDef; 
+  std::string shpf = this->shpfFormID + this->accountId + this->dba + this->bp10emuTamperProofSeal + this->amexImage + this->discoverImage + this->bp10emuTpsDef + this->tpsHashType + this->shpfTpsDef + this->shpfTpsHashType;
   return addStringProtectedStatus(shpf);
-}
-
-/// <summary>
-/// Generates a Tamperproof Seal for a url. Must be used with GenerateURL.
-/// </summary>
-/// <param name="input"></param>
-std::string BluePay::calcURLTps(std::string input)
-{
-  return md5(input);
 }
 
 /// <summary>
@@ -930,7 +920,8 @@ std::string BluePay::setReceiptURL()
   {
     output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + this->receiptFormID +
     "&SHPF_ACCOUNT_ID=" + this->accountId + 
-    "&SHPF_TPS_DEF="    + encodeURL(receiptTpsDef) + 
+    "&SHPF_TPS_DEF="    + encodeURL(receiptTpsDef) +
+    "&SHPF_HASH_TYPE="  + encodeURL(receiptTpsHashType) +
     "&SHPF_TPS="        + encodeURL(receiptTamperProofSeal) + 
     "&RETURN_URL="      + encodeURL(returnURL) +
     "&DBA="             + encodeURL(dba) + 
@@ -949,6 +940,7 @@ std::string BluePay::calcURLResponse()
   output += "SHPF_FORM_ID="         + encodeURL(shpfFormID);
   output += "&SHPF_ACCOUNT_ID="     + encodeURL(accountId);
   output += "&SHPF_TPS_DEF="        + encodeURL(shpfTpsDef);
+  output += "&SHPF_TPS_HASH_TYPE="  + encodeURL(shpfTpsHashType);
   output += "&SHPF_TPS="            + encodeURL(shpfTamperProofSeal);
   output += "&MODE="                + encodeURL(mode);
   output += "&TRANSACTION_TYPE="    + encodeURL(transType);
@@ -966,7 +958,8 @@ std::string BluePay::calcURLResponse()
   output += "&DISCOVER_IMAGE="      + encodeURL(discoverImage);
   output += "&REDIRECT_URL="        + encodeURL(receiptURL);
   output += "&TPS_DEF="             + encodeURL(bp10emuTpsDef);
-  output += "&CARD_TYPES="          + encodeURL(cardTypes);            
+  output += "&TPS_HASH_TYPE="       + encodeURL(tpsHashType);
+  output += "&CARD_TYPES="          + encodeURL(cardTypes);
   return output;           
 }
 
@@ -1011,7 +1004,7 @@ std::string BluePay::calcURLResponse()
 /// <param name="customID2"></param> A merchant defined custom ID 2 value.
 /// <param name="protectCustomID2"></param> Yes/No -- Should the Custom ID 2 value be protected from change using the tamperproof seal?
 /// </summary>
-std::string BluePay::generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate, std::string receiptTemplate, std::string receiptTempRemoteURL, std::string rebilling, std::string rebProtect, std::string rebAmount, std::string rebCycles, std::string rebStartDate, std::string rebFrequency, std::string customID1, std::string protectCustomID1, std::string customID2, std::string protectCustomID2)
+std::string BluePay::generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate, std::string receiptTemplate, std::string receiptTempRemoteURL, std::string rebilling, std::string rebProtect, std::string rebAmount, std::string rebCycles, std::string rebStartDate, std::string rebFrequency, std::string customID1, std::string protectCustomID1, std::string customID2, std::string protectCustomID2, std::string tpsHashType)
 {
   this->dba = merchantName;
   this->returnURL = returnURL;
@@ -1033,18 +1026,37 @@ std::string BluePay::generateURL(std::string merchantName, std::string returnURL
   this->protectCustomID1 = protectCustomID1;
   this->customId2 = customID2;
   this->protectCustomID2 = protectCustomID2;
+  this->shpfTpsHashType = "HMAC_SHA512";
+  this->receiptTpsHashType = this->shpfTpsHashType;
+  this->tpsHashType = setHashType(tpsHashType);
   this->cardTypes = setCardTypes();
-  this->receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF";
+  this->receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE";
   this->receiptTpsString = setReceiptTpsString();
-  this->receiptTamperProofSeal = calcURLTps(this->receiptTpsString);
+  this->receiptTamperProofSeal = generateTps(this->receiptTpsString, this->receiptTpsHashType);
   this->receiptURL = setReceiptURL();
-  this->bp10emuTpsDef = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF");
+  this->bp10emuTpsDef = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE");
   this->bp10emuTpsString = setBp10emuTpsString();
-  this->bp10emuTamperProofSeal = calcURLTps(this->bp10emuTpsString);
-  this->shpfTpsDef = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF");
+  this->bp10emuTamperProofSeal = generateTps(this->bp10emuTpsString, this->tpsHashType);
+  this->shpfTpsDef = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE");
   this->shpfTpsString = setShpfTpsString();
-  this->shpfTamperProofSeal = calcURLTps(this->shpfTpsString);
+  this->shpfTamperProofSeal = generateTps(this->shpfTpsString, this->shpfTpsHashType);
   return calcURLResponse();
+}
+
+std::string BluePay::setHashType(std::string chosenHash)
+{
+    std::string default_hash;
+    std::string result = "";
+    std::transform(chosenHash.begin(), chosenHash.end(),chosenHash.begin(), ::toupper);
+    std::vector<std::string> hashes = {"MD5", "SHA256", "SHA512", "HMAC_SHA256"};
+    if (std::find(hashes.begin(), hashes.end(), chosenHash) != hashes.end())
+    {
+        result = chosenHash;
+    } else {
+        result = default_hash;
+    }
+    
+    return result;
 }
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)

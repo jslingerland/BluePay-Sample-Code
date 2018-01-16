@@ -106,6 +106,8 @@ private:
   std::string shpfFormID;
   std::string receiptFormID;
   std::string remoteURL;
+  std::string shpfTpsHashType;
+  std::string receiptTpsHashType;
   std::string cardTypes;
   std::string receiptTpsDef;
   std::string receiptTpsString;
@@ -211,11 +213,11 @@ public:
   void setPhone(std::string phone);
   void setEmail(std::string email);
 
-  std::string generateTps(std::string message);
+  std::string generateTps(std::string message, std::string hashType);
   void calcTps();
   void calcRebillTps();
   void calcReportTps();
-  static std::string calcTransNotifyTps(std::string transId, std::string transStatus, std::string transType,
+  static std::string calcTransNotifyTps(std::string secretKey, std::string transId, std::string transStatus, std::string transType,
     std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
     std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus);
 
@@ -229,7 +231,8 @@ public:
   std::string setBp10emuTpsString();
   std::string setShpfTpsString();
   std::string calcURLResponse(); 
-  std::string generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate = "mobileform01", std::string receiptTemplate = "mobileresult01", std::string receiptTempRemoteURL = "", std::string rebilling = "No", std::string rebProtect = "Yes", std::string rebAmount = "", std::string rebCycles = "", std::string rebStartDate = "", std::string rebFrequency = "", std::string customID1 = "", std::string protectCustomID1 = "No", std::string customID2 = "", std::string protectCustomID2 = "No");
+  std::string generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate = "mobileform01", std::string receiptTemplate = "mobileresult01", std::string receiptTempRemoteURL = "", std::string rebilling = "No", std::string rebProtect = "Yes", std::string rebAmount = "", std::string rebCycles = "", std::string rebStartDate = "", std::string rebFrequency = "", std::string customID1 = "", std::string protectCustomID1 = "No", std::string customID2 = "", std::string protectCustomID2 = "No", std::string tpsHashType = "");
+  std::string setHashType(std::string chosenHash);
 
   void addHeader(const std::string& s);
   size_t rcvHeaders(void *buffer, size_t size, size_t nmemb, void *userp);
