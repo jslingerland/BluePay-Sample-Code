@@ -473,6 +473,7 @@ class BluePay
       return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' + @PARAM_HASH['RECEIPT_FORM_ID'] + 
       '&SHPF_ACCOUNT_ID=' + @ACCOUNT_ID + 
       '&SHPF_TPS_DEF='    + url_encode(@receipt_tps_def) + 
+      '&SHPF_HASH_TYPE='  + url_encode(@PARAM_HASH['RECEIPT_TPS_HASH_TYPE']) +
       '&SHPF_TPS='        + url_encode(@receipt_tamper_proof_seal) + 
       '&RETURN_URL='      + url_encode(@PARAM_HASH['RETURN_URL']) + 
       '&DBA='             + url_encode(@PARAM_HASH['DBA']) + 
@@ -520,6 +521,7 @@ class BluePay
     'SHPF_FORM_ID='       .concat(url_encode    (@PARAM_HASH['SHPF_FORM_ID'])       ) +
     '&SHPF_ACCOUNT_ID='   .concat(url_encode    (@ACCOUNT_ID)                       ) +
     '&SHPF_TPS_DEF='      .concat(url_encode    (@shpf_tps_def)                     ) +
+    '&SHPF_TPS_HASH_TYPE='.concat(url_encode    (@PARAM_HASH['SHPF_TPS_HASH_TYPE']) ) +
     '&SHPF_TPS='          .concat(url_encode    (@shpf_tamper_proof_seal)           ) +
     '&MODE='              .concat(url_encode    (@PARAM_HASH['MODE'])               ) +
     '&TRANSACTION_TYPE='  .concat(url_encode    (@PARAM_HASH['TRANSACTION_TYPE'])   ) +
@@ -537,6 +539,7 @@ class BluePay
     '&DISCOVER_IMAGE='    .concat(url_encode    (@PARAM_HASH['DISCOVER_IMAGE'])     ) +
     '&REDIRECT_URL='      .concat(url_encode    (@receipt_url)                      ) +
     '&TPS_DEF='           .concat(url_encode    (@bp10emu_tps_def)                  ) +
+    '&TPS_HASH_TYPE='     .concat(url_encode    (@PARAM_HASH['TPS_HASH_TYPE'])      ) +
     '&CARD_TYPES='        .concat(url_encode    (@card_types)                       )
   end
 end

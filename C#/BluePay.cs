@@ -99,6 +99,8 @@ namespace BluePayLibrary
         public string shpfFormID = "";
         public string receiptFormID = "";
         public string remoteURL = "";
+        public string shpfTpsHashType = "";
+        public string receiptTpsHashType = "";
         public string cardTypes = "";
         public string receiptTpsDef = "";
         public string receiptTpsString = "";
@@ -644,7 +646,7 @@ namespace BluePayLibrary
                                     + this.rebillAmount
                                     + this.masterID
                                     + this.mode;
-            this.TPS = GenerateTPS(tamper_proof_seal);
+            this.TPS = GenerateTPS(tamper_proof_seal, this.tpsHashType);
         }
 
         /// <summary>
@@ -653,7 +655,7 @@ namespace BluePayLibrary
         public void CalcRebillTPS()
         {
             string tamper_proof_seal = this.accountID + this.transType + this.rebillID;
-            this.TPS = GenerateTPS(tamper_proof_seal);
+            this.TPS = GenerateTPS(tamper_proof_seal, this.tpsHashType);
         }
 
         /// <summary>
@@ -662,7 +664,7 @@ namespace BluePayLibrary
         public void CalcReportTPS()
         {
             string tamper_proof_seal = this.accountID + this.reportStartDate + this.reportEndDate;
-            this.TPS = GenerateTPS(tamper_proof_seal);
+            this.TPS = GenerateTPS(tamper_proof_seal, this.tpsHashType);
         }
 
         /// <summary>
@@ -694,12 +696,12 @@ namespace BluePayLibrary
         /// <summary>
         /// Generates the TAMPER_PROOF_SEAL to used to validate each transaction
         /// </summary>
-        public string GenerateTPS(string Message)
+        public string GenerateTPS(string Message, string HashType)
         {
             string tpsHash = "";
             ASCIIEncoding encode = new ASCIIEncoding();
 
-            if (this.tpsHashType == "HMAC_SHA256")
+            if (HashType == "HMAC_SHA256")
             {
                 byte[] SecretKeyBytes = encode.GetBytes(this.secretKey);
                 byte[] MessageBytes = encode.GetBytes(Message);
@@ -707,21 +709,21 @@ namespace BluePayLibrary
                 byte[] HashBytes = Hmac.ComputeHash(MessageBytes);
                 tpsHash = ByteArrayToString(HashBytes);
             }
-            else if (this.tpsHashType == "SHA512")
+            else if (HashType == "SHA512")
             {
                 SHA512 sha512 = new SHA512CryptoServiceProvider();
                 byte[] buffer = encode.GetBytes(this.secretKey + Message);
                 byte[] Hash = sha512.ComputeHash(buffer);
                 tpsHash = ByteArrayToString(Hash);
             }
-            else if (this.tpsHashType == "SHA256")
+            else if (HashType == "SHA256")
             {
                 SHA256 Sha256 = new SHA256CryptoServiceProvider();
                 byte[] Buffer = encode.GetBytes(this.secretKey + Message);
                 byte[] Hash = Sha256.ComputeHash(Buffer);
                 tpsHash = ByteArrayToString(Hash);
             }
-            else if (this.tpsHashType == "MD5")
+            else if (HashType == "MD5")
             {
                 MD5 Md5 = new MD5CryptoServiceProvider();
                 byte[] Buffer = encode.GetBytes(this.secretKey + Message);
@@ -836,18 +838,39 @@ namespace BluePayLibrary
             this.shpfFormID = paymentTemplate;
             this.receiptFormID = receiptTemplate;
             this.remoteURL = receiptTempRemoteURL;
+            this.shpfTpsHashType = "HMAC_SHA512";
+            this.receiptTpsHashType = this.shpfTpsHashType;
+            this.tpsHashType = SetHashType(tpsHashType);
             this.cardTypes = SetCardTypes();
-            this.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF";
+            this.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE";
             this.receiptTpsString = SetReceiptTpsString();
-            this.receiptTamperProofSeal = CalcURLTps(receiptTpsString);
+            this.receiptTamperProofSeal = GenerateTPS(receiptTpsString, this.receiptTpsHashType);
             this.receiptURL = SetReceiptURL();
-            this.bp10emuTpsDef = AddDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF");
+            this.bp10emuTpsDef = AddDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE");
             this.bp10emuTpsString = SetBp10emuTpsString();
-            this.bp10emuTamperProofSeal = CalcURLTps(bp10emuTpsString);
-            this.shpfTpsDef = AddDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF");
+            this.bp10emuTamperProofSeal = GenerateTPS(bp10emuTpsString, this.tpsHashType);
+            this.shpfTpsDef = AddDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE");
             this.shpfTpsString = SetShpfTpsString();
-            this.shpfTamperProofSeal = CalcURLTps(shpfTpsString);
+            this.shpfTamperProofSeal = GenerateTPS(shpfTpsString, this.shpfTpsHashType);
             return CalcURLResponse();
+        }
+
+        /// <summary>
+        /// Validates chosen hash type or returns default hash.
+        /// </summary>
+        public string SetHashType(string chosen_hash)
+        {
+            string default_hash = "HMAC_SHA512";
+            chosen_hash = chosen_hash.ToUpper();
+            string result = "";
+            string[] hashes = { "MD5", "SHA256", "SHA512", "HMAC_SHA256" };
+            int pos = Array.IndexOf(hashes, chosen_hash);
+            if (pos > -1){
+                result = chosen_hash;
+            } else {
+                result = default_hash;
+            }
+            return result;
         }
 
         /// <summary>
@@ -866,7 +889,7 @@ namespace BluePayLibrary
         /// </summary>
         public string SetReceiptTpsString()
         {
-            return secretKey + accountID + receiptFormID + returnURL + dba + amexImage + discoverImage + receiptTpsDef;
+            return accountID + receiptFormID + returnURL + dba + amexImage + discoverImage + receiptTpsDef + receiptTpsHashType;
         }
 
         /// <summary>
@@ -874,7 +897,7 @@ namespace BluePayLibrary
         /// </summary>
         public string SetBp10emuTpsString()
         {
-            string bp10emu = secretKey + accountID + receiptURL + receiptURL + receiptURL + mode + transType + bp10emuTpsDef;
+            string bp10emu = accountID + receiptURL + receiptURL + receiptURL + mode + transType + bp10emuTpsDef + tpsHashType;
             return AddStringProtectedStatus(bp10emu);
         }
 
@@ -883,7 +906,7 @@ namespace BluePayLibrary
         /// </summary>
         public string SetShpfTpsString()
         {
-            string shpf = secretKey + shpfFormID + accountID + dba + bp10emuTamperProofSeal + amexImage + discoverImage + bp10emuTpsDef + shpfTpsDef;
+            string shpf = shpfFormID + accountID + dba + bp10emuTamperProofSeal + amexImage + discoverImage + bp10emuTpsDef + tpsHashType + shpfTpsDef + shpfTpsHashType;
             return AddStringProtectedStatus(shpf);
         }
 
@@ -900,6 +923,7 @@ namespace BluePayLibrary
                 output = "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + receiptFormID +
                 "&SHPF_ACCOUNT_ID=" + accountID +
                 "&SHPF_TPS_DEF=" + EncodeURL(receiptTpsDef) +
+                "&SHPF_HASH_TYPE=" + EncodeURL(receiptTpsHashType) +
                 "&SHPF_TPS=" + EncodeURL(receiptTamperProofSeal) +
                 "&RETURN_URL=" + EncodeURL(returnURL) +
                 "&DBA=" + EncodeURL(dba) +
@@ -963,21 +987,6 @@ namespace BluePayLibrary
         }
 
         /// <summary>
-        /// Generates a Tamperproof Seal for a url. Must be used with GenerateURL.
-        /// </summary>
-        public string CalcURLTps(string input)
-        {
-            MD5 md5Hash = MD5.Create();
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-            StringBuilder sBuilder = new StringBuilder();
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-            return sBuilder.ToString();
-        }
-
-        /// <summary>
         /// Generates the final url for the Simple Hosted Payment Form. Must be used with GenerateURL.
         /// </summary>
         public string CalcURLResponse()
@@ -987,6 +996,7 @@ namespace BluePayLibrary
             "SHPF_FORM_ID=" + EncodeURL(shpfFormID) +
             "&SHPF_ACCOUNT_ID=" + EncodeURL(accountID) +
             "&SHPF_TPS_DEF=" + EncodeURL(shpfTpsDef) +
+            "&SHPF_TPS_HASH_TYPE=" + EncodeURL(shpfTpsHashType) +
             "&SHPF_TPS=" + EncodeURL(shpfTamperProofSeal) +
             "&MODE=" + EncodeURL(mode) +
             "&TRANSACTION_TYPE=" + EncodeURL(transType) +
@@ -1004,6 +1014,7 @@ namespace BluePayLibrary
             "&DISCOVER_IMAGE=" + EncodeURL(discoverImage) +
             "&REDIRECT_URL=" + EncodeURL(receiptURL) +
             "&TPS_DEF=" + EncodeURL(bp10emuTpsDef) +
+            "&TPS_HASH_TYPE=" + EncodeURL(tpsHashType) +
             "&CARD_TYPES=" + EncodeURL(cardTypes);
         }
 

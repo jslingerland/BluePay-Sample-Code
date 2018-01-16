@@ -103,6 +103,8 @@ public class BluePay
   private String SHPF_FORM_ID = "mobileform01";
   private String RECEIPT_FORM_ID = "mobileresult01";
   private String REMOTE_URL = "";
+  private String SHPF_TPS_HASH_TYPE = "";
+  private String RECEIPT_TPS_HASH_TYPE = "";
   private String CARD_TYPES = "";
   private String RECEIPT_TPS_DEF = "";
   private String RECEIPT_TPS_STRING = "";
@@ -744,16 +746,16 @@ public class BluePay
    *
    */
 
-  private String generateTPS(String message) throws java.security.NoSuchAlgorithmException {
+  private String generateTPS(String message, String hashType) throws java.security.NoSuchAlgorithmException {
     String tpsHash = "";
-      if(TPS_HASH_TYPE == "HMAC_SHA256") {
+      if(hashType == "HMAC_SHA256") {
         HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-256");
         tpsHash = h.getHMAC();
-      } else if (TPS_HASH_TYPE == "SHA512") {
+      } else if (hashType == "SHA512") {
         tpsHash = sha512(BP_SECRET_KEY + message);
-      } else if (TPS_HASH_TYPE == "SHA256") {
+      } else if (hashType == "SHA256") {
         tpsHash = sha256(BP_SECRET_KEY + message);
-      } else if (TPS_HASH_TYPE == "MD5") {
+      } else if (hashType == "MD5") {
         tpsHash = md5(BP_SECRET_KEY + message);
       } else {
         HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-512");
@@ -780,7 +782,7 @@ public class BluePay
     BP_MODE = BP_MODE != null ? BP_MODE : "";
     String tps = BP_MERCHANT + TRANSACTION_TYPE + AMOUNT + REBILLING + 
                 REB_FIRST_DATE + REB_EXPR + REB_CYCLES + REB_AMOUNT + RRNO + BP_MODE;
-    return generateTPS(tps);
+    return generateTPS(tps, TPS_HASH_TYPE);
   }
   
   /**
@@ -791,7 +793,7 @@ public class BluePay
    */
   private String calcRebillTPS() throws java.security.NoSuchAlgorithmException {
     String tps = BP_MERCHANT + TRANSACTION_TYPE + REBILL_ID;
-    return generateTPS(tps);
+    return generateTPS(tps, TPS_HASH_TYPE);
   }
   
   /**
@@ -802,7 +804,7 @@ public class BluePay
    */
   private String calcReportTPS() throws java.security.NoSuchAlgorithmException {
     String tps = BP_MERCHANT + REPORT_START + REPORT_END;
-    return generateTPS(tps);
+    return generateTPS(tps, TPS_HASH_TYPE);
   }
   
   /**
@@ -811,13 +813,13 @@ public class BluePay
    * @return tps The Tamper Proof Seal
    *
    */
-  public String calcTransNotifyTPS(String transID, String transStatus, String transType, 
+  public String calcTransNotifyTPS(String secretKey, String transID, String transStatus, String transType, 
 		  String amount, String batchID, String batchStatus, String totalCount, String totalAmount, 
-		  String batchUploadID, String rebillID, String rebillAmount, String rebillStatus) 
+		  String batchUploadID, String rebillID, String rebillAmount, String rebillStatus, String hashType) 
   throws java.security.NoSuchAlgorithmException {
-  	String tps = transID + transStatus + transType + amount + batchID + batchStatus + 
+  	String tps = secretKey + transID + transStatus + transType + amount + batchID + batchStatus + 
   	totalCount + totalAmount + batchUploadID + rebillID + rebillAmount + rebillStatus;
-    return generateTPS(tps);
+    return generateTPS(tps, hashType);
   }
 
   /**
@@ -884,18 +886,36 @@ public class BluePay
     SHPF_FORM_ID  = params.get("paymentTemplate");
     RECEIPT_FORM_ID  = params.get("receiptTemplate");
     REMOTE_URL  = params.get("receiptTempRemoteURL");
+    SHPF_TPS_HASH_TYPE = "HMAC_SHA512";
+    RECEIPT_TPS_HASH_TYPE = SHPF_TPS_HASH_TYPE;
+    TPS_HASH_TYPE = setHashType( Optional.ofNullable(params.get("tpsHashType")).orElse("") );
     CARD_TYPES = setCardTypes();
-    RECEIPT_TPS_DEF = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF";
+    RECEIPT_TPS_DEF = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE";
     RECEIPT_TPS_STRING = setReceiptTpsString();
-    RECEIPT_TAMPER_PROOF_SEAL = calcURLTps(RECEIPT_TPS_STRING);
+    RECEIPT_TAMPER_PROOF_SEAL =  generateTPS(RECEIPT_TPS_STRING, RECEIPT_TPS_HASH_TYPE);
     RECEIPT_URL = setReceiptURL();
-    BP10EMU_TPS_DEF = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF");
+    BP10EMU_TPS_DEF = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE");
     BP10EMU_TPS_STRING = setBp10emuTpsString();
-    BP10EMU_TAMPER_PROOF_SEAL = calcURLTps(BP10EMU_TPS_STRING); 
-    SHPF_TPS_DEF = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF");
+    BP10EMU_TAMPER_PROOF_SEAL = generateTPS(BP10EMU_TPS_STRING, TPS_HASH_TYPE); 
+    SHPF_TPS_DEF = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE");
     SHPF_TPS_STRING = setShpfTpsString();
-    SHPF_TAMPER_PROOF_SEAL = calcURLTps(SHPF_TPS_STRING);      
+    SHPF_TAMPER_PROOF_SEAL = generateTPS(SHPF_TPS_STRING, SHPF_TPS_HASH_TYPE);      
     return calcURLResponse();
+  }
+
+  private String setHashType(String chosenHash)
+  {
+    String default_hash = "HMAC_SHA512";
+    chosenHash = chosenHash.toUpperCase();
+    String result = "";
+    String[] hashes = new String[] {"MD5", "SHA256", "SHA512", "HMAC_SHA256"};
+    List<String> hashList = Arrays.asList(hashes);
+    if ( hashList.contains(chosenHash) ) {
+      result = chosenHash;
+    } else {
+      result = default_hash;
+    }
+    return result;
   }
 
   /**
@@ -918,7 +938,7 @@ public class BluePay
   */
   public String setReceiptTpsString()
   {
-    return BP_SECRET_KEY + BP_MERCHANT + RECEIPT_FORM_ID + RETURN_URL + DBA + AMEX_IMAGE + DISCOVER_IMAGE + RECEIPT_TPS_DEF;
+    return BP_MERCHANT + RECEIPT_FORM_ID + RETURN_URL + DBA + AMEX_IMAGE + DISCOVER_IMAGE + RECEIPT_TPS_DEF + RECEIPT_TPS_HASH_TYPE;
   }
 
   /**
@@ -928,9 +948,8 @@ public class BluePay
   */
   public String setBp10emuTpsString()
   {
-    String bp10emu = BP_SECRET_KEY + BP_MERCHANT + RECEIPT_URL + RECEIPT_URL + RECEIPT_URL + BP_MODE + TRANSACTION_TYPE + BP10EMU_TPS_DEF;
+    String bp10emu = BP_MERCHANT + RECEIPT_URL + RECEIPT_URL + RECEIPT_URL + BP_MODE + TRANSACTION_TYPE + BP10EMU_TPS_DEF + TPS_HASH_TYPE;
     return addStringProtectedStatus(bp10emu);
-
   }
 
   /**
@@ -940,7 +959,7 @@ public class BluePay
   */
   public String setShpfTpsString()
   {
-    String shpf = BP_SECRET_KEY + SHPF_FORM_ID + BP_MERCHANT + DBA + BP10EMU_TAMPER_PROOF_SEAL + AMEX_IMAGE + DISCOVER_IMAGE + BP10EMU_TPS_DEF + SHPF_TPS_DEF; 
+    String shpf = SHPF_FORM_ID + BP_MERCHANT + DBA + BP10EMU_TAMPER_PROOF_SEAL + AMEX_IMAGE + DISCOVER_IMAGE + BP10EMU_TPS_DEF + TPS_HASH_TYPE + SHPF_TPS_DEF + SHPF_TPS_HASH_TYPE; 
     return addStringProtectedStatus(shpf);
   }
 
@@ -959,6 +978,7 @@ public class BluePay
         output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + RECEIPT_FORM_ID +
         "&SHPF_ACCOUNT_ID=" + BP_MERCHANT + 
         "&SHPF_TPS_DEF="    + encodeURL(RECEIPT_TPS_DEF) + 
+        "&SHPF_HASH_TYPE="  + encodeURL(RECEIPT_TPS_HASH_TYPE) +
         "&SHPF_TPS="        + encodeURL(RECEIPT_TAMPER_PROOF_SEAL) + 
         "&RETURN_URL="      + encodeURL(RETURN_URL) +
         "&DBA="             + encodeURL(DBA) + 
@@ -1021,16 +1041,6 @@ public class BluePay
   }
 
   /**
-  * Generates a Tamperproof Seal for a URL. Must be used with GenerateURL.
-  *
-  * @return Tamperproof Seal for a URL.
-  */
-  public String calcURLTps(String input) throws java.security.NoSuchAlgorithmException
-  {
-    return md5(input);
-  }
-
-  /**
   * Generates the final url for the Simple Hosted Payment Form. Must be used with GenerateURL.
   *
   * @return final Simple Hosted Payment Form URL
@@ -1042,6 +1052,7 @@ public class BluePay
     "SHPF_FORM_ID="         + encodeURL(SHPF_FORM_ID)               +
     "&SHPF_ACCOUNT_ID="     + encodeURL(BP_MERCHANT)                +
     "&SHPF_TPS_DEF="        + encodeURL(SHPF_TPS_DEF)               +
+    "&SHPF_TPS_HASH_TYPE="  + encodeURL(SHPF_TPS_HASH_TYPE)         +
     "&SHPF_TPS="            + encodeURL(SHPF_TAMPER_PROOF_SEAL)     +
     "&MODE="                + encodeURL(BP_MODE)                    +
     "&TRANSACTION_TYPE="    + encodeURL(TRANSACTION_TYPE)           +
@@ -1059,6 +1070,7 @@ public class BluePay
     "&DISCOVER_IMAGE="      + encodeURL(DISCOVER_IMAGE)             +
     "&REDIRECT_URL="        + encodeURL(RECEIPT_URL)                +
     "&TPS_DEF="             + encodeURL(BP10EMU_TPS_DEF)            +
+    "&TPS_HASH_TYPE="       + encodeURL(TPS_HASH_TYPE)              +
     "&CARD_TYPES="          + encodeURL(CARD_TYPES);               
   }
 

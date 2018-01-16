@@ -658,13 +658,14 @@ class BluePay {
             return $this->remoteURL;
         } else {
             return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' . $this->receiptFormID. 
-            '&SHPF_ACCOUNT_ID=' . $this->accountID . 
-            '&SHPF_TPS_DEF='    . $this->encodeURL($this->receiptTpsDef) . 
-            '&SHPF_TPS='        . $this->encodeURL($this->receiptTamperProofSeal) . 
-            '&RETURN_URL='      . $this->encodeURL($this->returnURL) .
-            '&DBA='             . $this->encodeURL($this->dba) . 
-            '&AMEX_IMAGE='      . $this->encodeURL($this->amexImage) . 
-            '&DISCOVER_IMAGE='  . $this->encodeURL($this->discoverImage);
+            '&SHPF_ACCOUNT_ID='   . $this->accountID . 
+            '&SHPF_TPS_DEF='      . $this->encodeURL($this->receiptTpsDef) . 
+            '&SHPF_HASH_TYPE='    . $this->encodeURL($this->receiptTpsHashType) . 
+            '&SHPF_TPS='          . $this->encodeURL($this->receiptTamperProofSeal) . 
+            '&RETURN_URL='        . $this->encodeURL($this->returnURL) .
+            '&DBA='               . $this->encodeURL($this->dba) . 
+            '&AMEX_IMAGE='        . $this->encodeURL($this->amexImage) . 
+            '&DISCOVER_IMAGE='    . $this->encodeURL($this->discoverImage);
         }
     }
 
@@ -709,6 +710,7 @@ class BluePay {
         'SHPF_FORM_ID='         . $this->encodeURL($this->shpfFormID)               .
         '&SHPF_ACCOUNT_ID='     . $this->encodeURL($this->accountID)                .
         '&SHPF_TPS_DEF='        . $this->encodeURL($this->shpfTpsDef)               .
+        '&SHPF_TPS_HASH_TYPE='  . $this->encodeURL($this->shpfTpsHashType)          .
         '&SHPF_TPS='            . $this->encodeURL($this->shpfTamperProofSeal)      .
         '&MODE='                . $this->encodeURL($this->mode)                     .
         '&TRANSACTION_TYPE='    . $this->encodeURL($this->transType)                .
@@ -726,6 +728,7 @@ class BluePay {
         '&DISCOVER_IMAGE='      . $this->encodeURL($this->discoverImage)            .
         '&REDIRECT_URL='        . $this->encodeURL($this->receiptURL)               .
         '&TPS_DEF='             . $this->encodeURL($this->bp10emuTpsDef)            .
+        '&TPS_HASH_TYPE='       . $this->encodeURL($this->tpsHashType)              .
         '&CARD_TYPES='          . $this->encodeURL($this->cardTypes);
     }
 

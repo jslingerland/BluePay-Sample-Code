@@ -595,6 +595,7 @@ class BluePay:
             'SHPF_FORM_ID=' + self.receipt_form_id + 
             '&SHPF_ACCOUNT_ID=' + self.account_id + 
             '&SHPF_TPS_DEF=' + self.url_encode(self.receipt_tps_def) + 
+            '&SHPF_HASH_TYPE=' + self.url_encode(self.receipt_tps_hash_type) +
             '&SHPF_TPS=' + self.url_encode(self.receipt_tamper_proof_seal) + 
             '&RETURN_URL=' + self.url_encode(self.return_url) + 
             '&DBA=' + self.url_encode(self.dba) + 
@@ -640,6 +641,7 @@ class BluePay:
             'SHPF_FORM_ID='       + self.url_encode(self.shpf_form_id) +
             '&SHPF_ACCOUNT_ID='   + self.url_encode(self.account_id) +
             '&SHPF_TPS_DEF='      + self.url_encode(self.shpf_tps_def) +
+            '&SHPF_TPS_HASH_TYPE='+ self.url_encode(self.shpf_tps_hash_type) +
             '&SHPF_TPS='          + self.url_encode(self.shpf_tamper_proof_seal) +
             '&MODE='              + self.url_encode(self.mode) +
             '&TRANSACTION_TYPE='  + self.url_encode(self.trans_type) +
@@ -656,7 +658,8 @@ class BluePay:
             '&AMEX_IMAGE='        + self.url_encode(self.accept_amex) +
             '&DISCOVER_IMAGE='    + self.url_encode(self.accept_discover) +
             '&REDIRECT_URL='      + self.url_encode(self.receipt_url) +
-            '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def)+
+            '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def) +
+            '&TPS_HASH_TYPE='     + self.url_encode(self.tps_hash_type) +
             '&CARD_TYPES='        + self.url_encode(self.card_types))
 
     ### PROCESSES THE API REQUEST ####

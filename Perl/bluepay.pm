@@ -622,6 +622,7 @@ sub set_receipt_url{
       return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' . $self->{RECEIPT_FORM_ID} .
       '&SHPF_ACCOUNT_ID=' . $self->{ACCOUNT_ID} . 
       '&SHPF_TPS_DEF='    . $self->url_encode($self->{RECEIPT_TPS_DEF}) . 
+      '&SHPF_HASH_TYPE='  . $self->url_encode($self->{RECEIPT_TPS_HASH_TYPE}) . 
       '&SHPF_TPS='        . $self->url_encode($self->{RECEIPT_TAMPER_PROOF_SEAL}) . 
       '&RETURN_URL='      . $self->url_encode($self->{RETURN_URL}) . 
       '&DBA='             . $self->url_encode($self->{DBA}) . 
@@ -678,6 +679,7 @@ sub calc_url_response{
     'SHPF_FORM_ID='       . $self->url_encode    ($self->{SHPF_FORM_ID})                .
     '&SHPF_ACCOUNT_ID='   . $self->url_encode    ($self->{ACCOUNT_ID})                  .
     '&SHPF_TPS_DEF='      . $self->url_encode    ($self->{SHPF_TPS_DEF})                .
+    '&SHPF_TPS_HASH_TYPE='. $self->url_encode    ($self->{SHPF_TPS_HASH_TYPE})          .
     '&SHPF_TPS='          . $self->url_encode    ($self->{SHPF_TAMPER_PROOF_SEAL})      .
     '&MODE='              . $self->url_encode    ($self->{MODE})                        .
     '&TRANSACTION_TYPE='  . $self->url_encode    ($self->{TRANSACTION_TYPE})            .
@@ -695,6 +697,7 @@ sub calc_url_response{
     '&DISCOVER_IMAGE='    . $self->url_encode    ($self->{DISCOVER_IMAGE})              .
     '&REDIRECT_URL='      . $self->url_encode    ($self->{RECEIPT_URL})                 .
     '&TPS_DEF='           . $self->url_encode    ($self->{BP10EMU_TPS_DEF})             .
+    '&TPS_HASH_TYPE='     . $self->url_encode    ($self->{TPS_HASH_TYPE})               .
     '&CARD_TYPES='        . $self->url_encode    ($self->{CARD_TYPES});
 }
 
