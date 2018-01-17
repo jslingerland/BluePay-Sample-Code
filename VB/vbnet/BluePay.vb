@@ -811,7 +811,7 @@ Namespace BPVB
             Me.receiptTpsHashType = Me.shpfTpsHashType
             Me.tpsHashType = setHashType(tpsHashType)
             Me.cardTypes = setCardTypes()
-            Me.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE"
+            Me.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE"
             Me.receiptTpsString = setReceiptTpsString()
             Me.receiptTamperProofSeal = generateTPS(Me.receiptTpsString, Me.receiptTpsHashType)
             Me.receiptURL = setReceiptURL()
@@ -886,14 +886,14 @@ Namespace BPVB
                 output = Me.remoteURL
             Else 
                 output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + Me.receiptFormID + _
-                "&SHPF_ACCOUNT_ID=" + Me.accountID +  _
-                "&SHPF_TPS_DEF="    + encodeURL(Me.receiptTpsDef) +  _
-                "&SHPF_HASH_TYPE="  + encodeURL(Me.receiptTpsHashType) +  _
-                "&SHPF_TPS="        + encodeURL(Me.receiptTamperProofSeal) +  _
-                "&RETURN_URL="      + encodeURL(Me.returnURL) + _
-                "&DBA="             + encodeURL(Me.dba) +  _
-                "&AMEX_IMAGE="      + encodeURL(Me.amexImage) +  _
-                "&DISCOVER_IMAGE="  + encodeURL(Me.discoverImage)
+                "&SHPF_ACCOUNT_ID="     + Me.accountID +  _
+                "&SHPF_TPS_DEF="        + encodeURL(Me.receiptTpsDef) +  _
+                "&SHPF_TPS_HASH_TYPE="  + encodeURL(Me.receiptTpsHashType) +  _
+                "&SHPF_TPS="            + encodeURL(Me.receiptTamperProofSeal) +  _
+                "&RETURN_URL="          + encodeURL(Me.returnURL) + _
+                "&DBA="                 + encodeURL(Me.dba) +  _
+                "&AMEX_IMAGE="          + encodeURL(Me.amexImage) +  _
+                "&DISCOVER_IMAGE="      + encodeURL(Me.discoverImage)
             End If
             Return output
         End Function

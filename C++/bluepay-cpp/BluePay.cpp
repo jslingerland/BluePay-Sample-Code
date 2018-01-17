@@ -919,14 +919,14 @@ std::string BluePay::setReceiptURL()
   else 
   {
     output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + this->receiptFormID +
-    "&SHPF_ACCOUNT_ID=" + this->accountId + 
-    "&SHPF_TPS_DEF="    + encodeURL(receiptTpsDef) +
-    "&SHPF_HASH_TYPE="  + encodeURL(receiptTpsHashType) +
-    "&SHPF_TPS="        + encodeURL(receiptTamperProofSeal) + 
-    "&RETURN_URL="      + encodeURL(returnURL) +
-    "&DBA="             + encodeURL(dba) + 
-    "&AMEX_IMAGE="      + encodeURL(amexImage) + 
-    "&DISCOVER_IMAGE="  + encodeURL(discoverImage);
+    "&SHPF_ACCOUNT_ID="     + this->accountId + 
+    "&SHPF_TPS_DEF="        + encodeURL(receiptTpsDef) +
+    "&SHPF_TPS_HASH_TYPE="  + encodeURL(receiptTpsHashType) +
+    "&SHPF_TPS="            + encodeURL(receiptTamperProofSeal) + 
+    "&RETURN_URL="          + encodeURL(returnURL) +
+    "&DBA="                 + encodeURL(dba) + 
+    "&AMEX_IMAGE="          + encodeURL(amexImage) + 
+    "&DISCOVER_IMAGE="      + encodeURL(discoverImage);
   }
   return output;
 }
@@ -1030,7 +1030,7 @@ std::string BluePay::generateURL(std::string merchantName, std::string returnURL
   this->receiptTpsHashType = this->shpfTpsHashType;
   this->tpsHashType = setHashType(tpsHashType);
   this->cardTypes = setCardTypes();
-  this->receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE";
+  this->receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE";
   this->receiptTpsString = setReceiptTpsString();
   this->receiptTamperProofSeal = generateTps(this->receiptTpsString, this->receiptTpsHashType);
   this->receiptURL = setReceiptURL();

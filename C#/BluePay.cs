@@ -842,7 +842,7 @@ namespace BluePayLibrary
             this.receiptTpsHashType = this.shpfTpsHashType;
             this.tpsHashType = SetHashType(tpsHashType);
             this.cardTypes = SetCardTypes();
-            this.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE";
+            this.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE";
             this.receiptTpsString = SetReceiptTpsString();
             this.receiptTamperProofSeal = GenerateTPS(receiptTpsString, this.receiptTpsHashType);
             this.receiptURL = SetReceiptURL();
@@ -923,7 +923,7 @@ namespace BluePayLibrary
                 output = "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + receiptFormID +
                 "&SHPF_ACCOUNT_ID=" + accountID +
                 "&SHPF_TPS_DEF=" + EncodeURL(receiptTpsDef) +
-                "&SHPF_HASH_TYPE=" + EncodeURL(receiptTpsHashType) +
+                "&SHPF_TPS_HASH_TYPE=" + EncodeURL(receiptTpsHashType) +
                 "&SHPF_TPS=" + EncodeURL(receiptTamperProofSeal) +
                 "&RETURN_URL=" + EncodeURL(returnURL) +
                 "&DBA=" + EncodeURL(dba) +

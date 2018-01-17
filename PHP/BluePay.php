@@ -601,7 +601,7 @@ class BluePay {
         $this->receiptTpsHashType = $this->shpfTpsHashType;
         $this->tpsHashType = $this->setHashType($params['TpsHashType'] ?? '');
         $this->cardTypes = $this->setCardTypes();
-        $this->receiptTpsDef = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE';
+        $this->receiptTpsDef = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE';
         $this->receiptTpsString = $this->setReceiptTpsString();
         $this->receiptTamperProofSeal = $this->createTPSHash($this->receiptTpsString, $this->receiptTpsHashType);
         $this->receiptURL = $this->setReceiptURL();
@@ -658,14 +658,14 @@ class BluePay {
             return $this->remoteURL;
         } else {
             return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' . $this->receiptFormID. 
-            '&SHPF_ACCOUNT_ID='   . $this->accountID . 
-            '&SHPF_TPS_DEF='      . $this->encodeURL($this->receiptTpsDef) . 
-            '&SHPF_HASH_TYPE='    . $this->encodeURL($this->receiptTpsHashType) . 
-            '&SHPF_TPS='          . $this->encodeURL($this->receiptTamperProofSeal) . 
-            '&RETURN_URL='        . $this->encodeURL($this->returnURL) .
-            '&DBA='               . $this->encodeURL($this->dba) . 
-            '&AMEX_IMAGE='        . $this->encodeURL($this->amexImage) . 
-            '&DISCOVER_IMAGE='    . $this->encodeURL($this->discoverImage);
+            '&SHPF_ACCOUNT_ID='       . $this->accountID . 
+            '&SHPF_TPS_DEF='          . $this->encodeURL($this->receiptTpsDef) . 
+            '&SHPF_TPS_HASH_TYPE='    . $this->encodeURL($this->receiptTpsHashType) . 
+            '&SHPF_TPS='              . $this->encodeURL($this->receiptTamperProofSeal) . 
+            '&RETURN_URL='            . $this->encodeURL($this->returnURL) .
+            '&DBA='                   . $this->encodeURL($this->dba) . 
+            '&AMEX_IMAGE='            . $this->encodeURL($this->amexImage) . 
+            '&DISCOVER_IMAGE='        . $this->encodeURL($this->discoverImage);
         }
     }
 

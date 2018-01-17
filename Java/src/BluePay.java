@@ -890,7 +890,7 @@ public class BluePay
     RECEIPT_TPS_HASH_TYPE = SHPF_TPS_HASH_TYPE;
     TPS_HASH_TYPE = setHashType( Optional.ofNullable(params.get("tpsHashType")).orElse("") );
     CARD_TYPES = setCardTypes();
-    RECEIPT_TPS_DEF = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE";
+    RECEIPT_TPS_DEF = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE";
     RECEIPT_TPS_STRING = setReceiptTpsString();
     RECEIPT_TAMPER_PROOF_SEAL =  generateTPS(RECEIPT_TPS_STRING, RECEIPT_TPS_HASH_TYPE);
     RECEIPT_URL = setReceiptURL();
@@ -976,14 +976,14 @@ public class BluePay
     else 
     {
         output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + RECEIPT_FORM_ID +
-        "&SHPF_ACCOUNT_ID=" + BP_MERCHANT + 
-        "&SHPF_TPS_DEF="    + encodeURL(RECEIPT_TPS_DEF) + 
-        "&SHPF_HASH_TYPE="  + encodeURL(RECEIPT_TPS_HASH_TYPE) +
-        "&SHPF_TPS="        + encodeURL(RECEIPT_TAMPER_PROOF_SEAL) + 
-        "&RETURN_URL="      + encodeURL(RETURN_URL) +
-        "&DBA="             + encodeURL(DBA) + 
-        "&AMEX_IMAGE="      + encodeURL(AMEX_IMAGE) + 
-        "&DISCOVER_IMAGE="  + encodeURL(DISCOVER_IMAGE);
+        "&SHPF_ACCOUNT_ID="     + BP_MERCHANT + 
+        "&SHPF_TPS_DEF="        + encodeURL(RECEIPT_TPS_DEF) + 
+        "&SHPF_TPS_HASH_TYPE="  + encodeURL(RECEIPT_TPS_HASH_TYPE) +
+        "&SHPF_TPS="            + encodeURL(RECEIPT_TAMPER_PROOF_SEAL) + 
+        "&RETURN_URL="          + encodeURL(RETURN_URL) +
+        "&DBA="                 + encodeURL(DBA) + 
+        "&AMEX_IMAGE="          + encodeURL(AMEX_IMAGE) + 
+        "&DISCOVER_IMAGE="      + encodeURL(DISCOVER_IMAGE);
     }
     return output;
   }

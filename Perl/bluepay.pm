@@ -35,7 +35,7 @@ sub new {
 sub generate_tps {
     my $self = shift;
     my $str  = shift;
-    my $hashType =
+    my $hashType = shift;
     my $hash = '';
 
     if ($hashType eq 'HMAC_SHA256')
@@ -67,14 +67,14 @@ sub calc_tps {
     my $TAMPER_PROOF_DATA = '';
 
     if ($self->{API} eq 'bpdailyreport2' ) {
-        $self->{URL} = 'https://secure.bluepay.com/interfaces/bpdailyreport2';
+        $self->{URL} = 'https://staging.stg.bluepay.com/interfaces/bpdailyreport2';
         $TAMPER_PROOF_DATA =
             ( $self->{ACCOUNT_ID}        || '' )
           . ( $self->{REPORT_START_DATE} || '' )
           . ( $self->{REPORT_END_DATE}   || '' );
     }
     elsif ($self->{API} eq "stq") {
-        $self->{URL} = 'https://secure.bluepay.com/interfaces/stq';
+        $self->{URL} = 'https://staging.stg.bluepay.com/interfaces/stq';
         $TAMPER_PROOF_DATA =
             ( $self->{ACCOUNT_ID}        || '' )
           . ( $self->{REPORT_START_DATE} || '' )
@@ -84,7 +84,7 @@ sub calc_tps {
         #returns the remote host IP address
         my $q = CGI->new;
         $self->{REMOTE_IP} = $q->remote_addr(); 
-        $self->{URL} = 'https://secure.bluepay.com/interfaces/bp10emu';
+        $self->{URL} = 'https://staging.stg.bluepay.com/interfaces/bp10emu';
         $self->{MERCHANT} = $self->{ACCOUNT_ID};
         $TAMPER_PROOF_DATA =
             ( $self->{MERCHANT}         || '' )
@@ -99,7 +99,7 @@ sub calc_tps {
           . ( $self->{MODE}             || '' );
     }
     elsif ($self->{API} eq 'bp20rebadmin' ) {
-        $self->{URL} = 'https://secure.bluepay.com/interfaces/bp20rebadmin';
+        $self->{URL} = 'https://staging.stg.bluepay.com/interfaces/bp20rebadmin';
         $TAMPER_PROOF_DATA =
             ( $self->{ACCOUNT_ID} || '' )
           . ( $self->{TRANS_TYPE} || '' )
@@ -528,7 +528,7 @@ sub generate_url{
     $self->{RECEIPT_TPS_HASH_TYPE} = $self->{SHPF_TPS_HASH_TYPE};
     $self->{TPS_HASH_TYPE} = $self->set_hash_type($params->{tps_hash_type} || '');
     $self->{CARD_TYPES} = $self->set_card_types();
-    $self->{RECEIPT_TPS_DEF} = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE';
+    $self->{RECEIPT_TPS_DEF} = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE';
     $self->{RECEIPT_TPS_STRING} = $self->set_receipt_tps_string();
     $self->{RECEIPT_TAMPER_PROOF_SEAL} = $self->generate_tps($self->{RECEIPT_TPS_STRING}, $self->{RECEIPT_TPS_HASH_TYPE});
     $self->{RECEIPT_URL} = $self->set_receipt_url();
@@ -619,15 +619,15 @@ sub set_receipt_url{
       return $self->{REMOTE_URL};
     }
     else {
-      return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' . $self->{RECEIPT_FORM_ID} .
-      '&SHPF_ACCOUNT_ID=' . $self->{ACCOUNT_ID} . 
-      '&SHPF_TPS_DEF='    . $self->url_encode($self->{RECEIPT_TPS_DEF}) . 
-      '&SHPF_HASH_TYPE='  . $self->url_encode($self->{RECEIPT_TPS_HASH_TYPE}) . 
-      '&SHPF_TPS='        . $self->url_encode($self->{RECEIPT_TAMPER_PROOF_SEAL}) . 
-      '&RETURN_URL='      . $self->url_encode($self->{RETURN_URL}) . 
-      '&DBA='             . $self->url_encode($self->{DBA}) . 
-      '&AMEX_IMAGE='      . $self->url_encode($self->{AMEX_IMAGE}) . 
-      '&DISCOVER_IMAGE='  . $self->url_encode($self->{DISCOVER_IMAGE});
+      return 'https://staging.stg.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' . $self->{RECEIPT_FORM_ID} .
+      '&SHPF_ACCOUNT_ID='     . $self->{ACCOUNT_ID} . 
+      '&SHPF_TPS_DEF='        . $self->url_encode($self->{RECEIPT_TPS_DEF}) . 
+      '&SHPF_TPS_HASH_TYPE='  . $self->url_encode($self->{RECEIPT_TPS_HASH_TYPE}) . 
+      '&SHPF_TPS='            . $self->url_encode($self->{RECEIPT_TAMPER_PROOF_SEAL}) . 
+      '&RETURN_URL='          . $self->url_encode($self->{RETURN_URL}) . 
+      '&DBA='                 . $self->url_encode($self->{DBA}) . 
+      '&AMEX_IMAGE='          . $self->url_encode($self->{AMEX_IMAGE}) . 
+      '&DISCOVER_IMAGE='      . $self->url_encode($self->{DISCOVER_IMAGE});
     }
   }
 
@@ -675,7 +675,7 @@ sub calc_url_tps{
 # Generates the final url for the Simple Hosted Payment Form. Must be used with generate_url.
 sub calc_url_response{
     my $self = shift;
-    return 'https://secure.bluepay.com/interfaces/shpf?'                                .
+    return 'https://staging.stg.bluepay.com/interfaces/shpf?'                           .
     'SHPF_FORM_ID='       . $self->url_encode    ($self->{SHPF_FORM_ID})                .
     '&SHPF_ACCOUNT_ID='   . $self->url_encode    ($self->{ACCOUNT_ID})                  .
     '&SHPF_TPS_DEF='      . $self->url_encode    ($self->{SHPF_TPS_DEF})                .

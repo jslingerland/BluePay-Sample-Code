@@ -522,7 +522,7 @@ class BluePay:
         self.receipt_tps_hash_type = self.shpf_tps_hash_type
         self.tps_hash_type = self.set_hash_type(params.get('tps_hash_type', ''))
         self.card_types = self.set_card_types()
-        self.receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF RECEIPT_TPS_HASH_TYPE'
+        self.receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE'
         self.receipt_tps_string = self.set_receipt_tps_string()
         self.receipt_tamper_proof_seal = self.create_tps_hash(self.receipt_tps_string, self.receipt_tps_hash_type)
         self.receipt_url = self.set_receipt_url()
@@ -595,7 +595,7 @@ class BluePay:
             'SHPF_FORM_ID=' + self.receipt_form_id + 
             '&SHPF_ACCOUNT_ID=' + self.account_id + 
             '&SHPF_TPS_DEF=' + self.url_encode(self.receipt_tps_def) + 
-            '&SHPF_HASH_TYPE=' + self.url_encode(self.receipt_tps_hash_type) +
+            '&SHPF_TPS_HASH_TYPE=' + self.url_encode(self.receipt_tps_hash_type) +
             '&SHPF_TPS=' + self.url_encode(self.receipt_tamper_proof_seal) + 
             '&RETURN_URL=' + self.url_encode(self.return_url) + 
             '&DBA=' + self.url_encode(self.dba) + 
