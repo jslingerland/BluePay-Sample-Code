@@ -709,7 +709,7 @@ Namespace BPVB
         ''' Calculates BP_STAMP for trans notify post API
         ''' </summary>
         '''
-        Public Shared Function calcTransNotifyTPS(ByVal bp_stamp As String)
+        Public Shared Function calcTransNotifyTPS(ByVal bp_stamp As String) As String
             Return generateTPS(bp_stamp)
         End Function
 

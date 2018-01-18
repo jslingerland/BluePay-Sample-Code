@@ -1045,7 +1045,7 @@ std::string BluePay::generateURL(std::string merchantName, std::string returnURL
 
 std::string BluePay::setHashType(std::string chosenHash)
 {
-    std::string default_hash;
+    std::string default_hash = "HMAC_SHA512";
     std::string result = "";
     std::transform(chosenHash.begin(), chosenHash.end(),chosenHash.begin(), ::toupper);
     std::vector<std::string> hashes = {"MD5", "SHA256", "SHA512", "HMAC_SHA256"};
