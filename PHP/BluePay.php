@@ -151,6 +151,14 @@ class BluePay {
         $this->masterID = $masterID;
         $this->amount = $amount;
     }
+    
+    // performs an UPDATE
+    public function update($masterID, $amount=null) {
+        $this->api = 'bp10emu';
+        $this->transType = "UPDATE";
+        $this->masterID = $masterID;
+        $this->amount = $amount;
+    }
 
     // performs a VOID
     public function void($masterID) {

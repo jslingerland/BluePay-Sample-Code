@@ -196,6 +196,8 @@ public:
   void auth(std::string amount, std::string masterId);
   void refund(std::string masterID);
   void refund(std::string masterID, std::string amount);
+  void update(std::string masterID);
+  void update(std::string masterID, std::string amount);
   void voidTransaction(std::string masterID);
   void capture(std::string masterID);
   void capture(std::string masterID, std::string amount);

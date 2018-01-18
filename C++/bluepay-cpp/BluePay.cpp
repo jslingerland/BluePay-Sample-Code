@@ -600,6 +600,30 @@ void BluePay::refund(std::string masterId, std::string amount)
   this->amount = amount;
 }
 
+/// <summary>
+/// Runs an Update Transaction
+/// </summary>
+/// <param name="masterId"></param>
+void BluePay::update(std::string masterId)
+{
+    this->transType = "UPDATE";
+    this->api = "bp10emu";
+    this->masterId = masterId;
+}
+
+/// <summary>
+/// Runs an Update Transaction
+/// </summary>
+/// <param name="masterId"></param>
+/// <param name="amount"></param>
+void BluePay::update(std::string masterId, std::string amount)
+{
+    this->transType = "UPDATE";
+    this->api = "bp10emu";
+    this->masterId = masterId;
+    this->amount = amount;
+}
+
 void BluePay::voidTransaction(std::string masterId)
 {
   this->transType = "VOID";

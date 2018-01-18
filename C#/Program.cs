@@ -31,6 +31,7 @@ namespace bluepayc
 			// CheckCustomerCredit.Main();
 			// CustomerDefinedData.Main();
 			// HowToUseToken.Main();
+			// UpdateTransaction.Main();
 			// ReturnFunds.Main();
 			// StorePaymentInformation.Main();
 			// Swipe.Main();

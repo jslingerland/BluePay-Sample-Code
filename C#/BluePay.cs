@@ -503,6 +503,20 @@ namespace BluePayLibrary
         }
 
         /// <summary>
+        /// Updates a Transaction
+        /// </summary>
+        /// <param name="masterID"></param>
+        /// <param name="amount"></param>
+
+        public void Update(string masterID, string amount = null)
+        {
+            this.transType = "UPDATE";
+            this.api = "bp10emu";
+            this.masterID = masterID;
+            this.amount = amount;
+        }
+
+        /// <summary>
         /// Voids a transaction
         /// </summary>
         /// <param name="masterID"></param>
