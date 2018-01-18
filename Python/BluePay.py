@@ -437,12 +437,6 @@ class BluePay:
         tps_string = (self.account_id + self.report_start_date + self.report_end_date)
         tps = self.create_tps_hash(tps_string, self.tps_hash_type)
         return tps
-        
-    def calc_trans_notify_TPS(self):
-        tps_string = (trans_id, trans_status, trans_type, amount, batch_id, batch_status,
-                      total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status, hash_type)
-        tps = self.create_tps_hash(tps_string, hash_type)
-        return tps
 
     # Required arguments for generate_url:
     # merchant_name: Merchant name that will be displayed in the payment page.

@@ -682,32 +682,6 @@ namespace BluePayLibrary
         }
 
         /// <summary>
-        /// Calculates BP_STAMP for trans notify post API
-        /// </summary>
-        /// <param name="secretKey"></param>
-        /// <param name="transID"></param>
-        /// <param name="transStatus"></param>
-        /// <param name="transType"></param>
-        /// <param name="amount"></param>
-        /// <param name="batchID"></param>
-        /// <param name="batchStatus"></param>
-        /// <param name="totalCount"></param>
-        /// <param name="totalAmount"></param>
-        /// <param name="batchUploadID"></param>
-        /// <param name="rebillID"></param>
-        /// <param name="rebillAmount"></param>
-        /// <param name="rebillStatus"></param>
-        /// <returns></returns>
-        public static string CalcTransNotifyTPS(string transID, string transStatus, string transType,
-            string amount, string batchID, string batchStatus, string totalCount, string totalAmount,
-            string batchUploadID, string rebillID, string rebillAmount, string rebillStatus)
-        {
-            string tamper_proof_seal = transID + transStatus + transType + amount + batchID + batchStatus +
-            totalCount + totalAmount + batchUploadID + rebillID + rebillAmount + rebillStatus;
-            return GenerateTPS(tamper_proof_seal);
-        }
-
-        /// <summary>
         /// Generates the TAMPER_PROOF_SEAL to used to validate each transaction
         /// </summary>
         public string GenerateTPS(string Message, string HashType)

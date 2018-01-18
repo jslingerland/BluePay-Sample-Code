@@ -10,7 +10,15 @@
 
 include('../BluePay.php');
 
-$secretKey = '';
+$accountID = "Merchant's Account ID Here";
+$secretKey = "Merchant's Secret Key Here";
+$mode = "TEST";
+
+$tps = new BluePay(
+    $accountID,
+    $secretKey,
+    $mode
+);
 
 // get POST parameters
 $transID = isset($_REQUEST['trans_id']) ? $_REQUEST['trans_id'] : null;
@@ -25,27 +33,28 @@ $batchUploadID = isset($_REQUEST['bupload_id']) ? $REQUEST['bupload_id'] : null;
 $rebillID = isset($_REQUEST['rebill_id']) ? $_REQUEST['rebill_id'] : null;
 $rebillAmount = isset($_REQUEST['reb_amount']) ? $_REQUEST['reb_amount'] : null;
 $rebillStatus = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+$tpsHashType = isset($_REQUEST['TPS_HASH_TYPE']) ? $_REQUEST['TPS_HASH_TYPE'] : null;
 
 // calculate expected bp_stamp
-$bpStamp = BluePay::calcTransNotifyTPS(
-    $secretKey,
-    $transID,
-    $transStatus,
-    $transType,
-    $amount,
-    $batchID,
-    $batchStatus,
-    $totalCount,
-    $totalAmount,
-    $batchUploadID,
-    $rebillID,
-    $rebillAmount,
-    $rebillStatus);
+$bpStamp = $tps->createTPSHash(
+    $transID +
+    $transStatus +
+    $transType +
+    $amount +
+    $batchID +
+    $batchStatus +
+    $totalCount +
+    $totalAmount +
+    $batchUploadID +
+    $rebillID +
+    $rebillAmount +
+    $rebillStatus,
+    $tpsHashType);
 
 // check if expected bp_stamp = actual bp_stamp
-if (isset($_REQUEST['bp_stamp'])) {
+if (isset($_REQUEST['BP_STAMP'])) {
 
-    if ($bpStamp == $_REQUEST['bp_stamp']) {
+    if ($bpStamp == $_REQUEST['BP_STAMP']) {
 
         // Read response from BluePay
         echo 'Transaction ID: ' . $transID . '<br />' .

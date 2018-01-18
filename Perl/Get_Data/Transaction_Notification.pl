@@ -17,8 +17,13 @@ my $account_id = "Merchant's Account ID Here";
 my $secret_key = "Merchant's Secret Key Here";
 my $mode = "TEST";
 
+my $tps = BluePay->new(
+    $account_id, 
+    $secret_key, 
+    $mode
+);
+
 my $vars = new CGI;
-my $secret_key = '';
 
 # Check if a Transaction ID was returned from BluePay
 if (defined $vars->param("trans_id")) {
@@ -36,10 +41,10 @@ if (defined $vars->param("trans_id")) {
     my $rebill_id = $vars->param("rebill_id");
     my $rebill_amount = $vars->param("reb_amount");
     my $rebill_status = $vars->param("status");
+    my $tps_hash_type = $vars->param("TPS_HASH_TYPE");
 
     # Calculate expected bp_stamp
-    my $bp_stamp = calc_trans_notify_tps(
-        $secretkey +
+    my $bp_stamp = $tps->generate_tps(
         $trans_id +
         $trans_status +
         $trans_type +
@@ -51,7 +56,8 @@ if (defined $vars->param("trans_id")) {
         $batch_upload_id +
         $rebill_id +
         $rebill_amount +
-        $rebill_status);
+        $rebill_status,
+        $tps_hash_type);
 
     # If expected bp_stamp = actual bp_stamp
     if ($bp_stamp eq $vars->param("BP_STAMP")) {

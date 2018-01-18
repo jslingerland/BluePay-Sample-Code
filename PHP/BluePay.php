@@ -539,12 +539,6 @@ class BluePay {
         return $this->createTPSHash($tpsString, $this->tpsHashType);
     }
 
-    public static final function calcTransNotifyTPS($secretKey, $transID, $transStatus, $transType, $amount, $batchID, $batchStatus, $totalCount, $totalAmount, $batchUploadID, $rebillID, $rebillAmount, $rebillStatus, $hashType) {
-        $tpsString = $transID + $transStatus + $transType + $amount + $batchID + $batchStatus + $totalCount +
-        $totalAmount + $batchUploadID + $rebillID + $rebillAmount + $rebillStatus;
-        return $this->createTPSHash($tpsString, $hashType);
-    }
-
     // Required arguments for generate_url:
     // merchantName: Merchant name that will be displayed in the payment page.
     // returnURL: Link to be displayed on the transacton results page. Usually the merchant's web site home page.

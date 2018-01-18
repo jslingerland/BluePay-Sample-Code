@@ -729,14 +729,6 @@ Namespace BPVB
             Me.TPS = generateTPS(tps, Me.tpsHashType)
         End Sub
 
-        ''' <summary>
-        ''' Calculates BP_STAMP for trans notify post API
-        ''' </summary>
-        '''
-        Public Shared Function calcTransNotifyTPS(ByVal bp_stamp As String) As String
-            Return generateTPS(bp_stamp)
-        End Function
-
         'This is used to convert a byte array to a hex string
         Private Shared Function ByteArrayToString(ByVal arrInput() As Byte) As String
             Dim i As Integer

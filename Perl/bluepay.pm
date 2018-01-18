@@ -109,14 +109,6 @@ sub calc_tps {
     return $TAMPER_PROOF_SEAL;
 }
 
-sub calc_trans_notify_tps {
-    my $self = shift;
-    my $tpsString = shift;
-    my $hashType = shift;
-    my $bp_stamp = $self->generate_tps($tpsString, $hashType);
-    return $bp_stamp;
-}
-
 # Makes the API request and gets response
 sub process {
     my $self = shift;

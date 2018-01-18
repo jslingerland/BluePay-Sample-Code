@@ -14,7 +14,16 @@ import cgi
 
 vars = cgi.FieldStorage()
 
+account_id = "Merchant's Account ID Here"
 secret_key = "Merchant's Secret Key Here"
+mode = "TEST"  
+
+tps = BluePay(
+    account_id = account_id, 
+    secret_key = secret_key, 
+    mode = mode 
+)
+
 try:
     # Assign values
     trans_id = vars["trans_id"]
@@ -29,24 +38,26 @@ try:
     rebill_id = vars["rebill_id"]
     rebill_amount = vars["reb_amount"]
     rebill_status = vars["status"]
+    tps_hash_type = vars["TPS_HASH_TYPE"]
 
     # Calculate expected bp_stamp
-    bp_stamp = BluePay.calc_trans_notify_TPS(secret_key,
-        trans_id,
-        trans_status,
-        trans_type,
-        amount,
-        batch_id,
-        batch_status,
-        total_count,
-        total_amount,
-        batch_upload_id,
-        rebill_id,
-        rebill_amount,
-        rebill_status)
+    bp_stamp = tps.create_tps_hash(
+        trans_id +
+        trans_status +
+        trans_type +
+        amount +
+        batch_id +
+        batch_status +
+        total_count +
+        total_amount +
+        batch_upload_id +
+        rebill_id +
+        rebill_amount +
+        rebill_status,
+        tps_hash_type)
 
     # check if expected bp_stamp = actual bp_stamp
-    if bp_stamp == vars["bp_stamp"]:
+    if bp_stamp == vars["BP_STAMP"]:
 
         # Get response from BluePay
         print('Transaction ID: ' + trans_id)

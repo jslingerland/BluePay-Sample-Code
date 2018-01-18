@@ -21,9 +21,18 @@ namespace GetData
     {
         public static void Main()
         {
+            string accountID = "Merchant's Account ID Here";
+            string secretKey = "Merchant's Secret Key Here";
+            string mode = "TEST";
+            
+            BluePay tps = new BluePay
+            (
+                accountID,
+                secretKey,
+                mode
+            );
 
             HttpListener listener = new HttpListener();
-            string secretKey = "";
             string response = "";
 
             try
@@ -73,34 +82,36 @@ namespace GetData
             string rebillID = vals["rebill_id"];
             string rebillAmount = vals["rebill_amount"];
             string rebillStatus = vals["rebill_status"];
+            string tpsHashType = vals["TPS_HASH_TYPE"];
 
             // calculate the expected BP_STAMP
-            string bpStamp = BluePay.CalcTransNotifyTPS(secretKey,
-                vals["trans_id"],
-                vals["trans_stats"],
-                vals["trans_type"],
-                vals["amount"],
-                vals["batch_id"],
-                vals["batch_status"],
-                vals["total_count"],
-                vals["total_amount"],
-                vals["batch_upload_id"],
-                vals["rebill_id"],
-                vals["rebill_amount"],
-                vals["rebill_status"]);
+            string bpStamp = tps.GenerateTPS(
+                vals["trans_id"] + 
+                vals["trans_stats"] + 
+                vals["trans_type"] + 
+                vals["amount"] + 
+                vals["batch_id"] + 
+                vals["batch_status"] + 
+                vals["total_count"] + 
+                vals["total_amount"] + 
+                vals["batch_upload_id"] + 
+                vals["rebill_id"] + 
+                vals["rebill_amount"] + 
+                vals["rebill_status"],
+                tpsHashType);
 
             // Output data if the expected BP_STAMP matches the actual BP_STAMP
             if (bpStamp == vals["BP_STAMP"]) {
                 Console.Write("Transaction ID: " + transID);
-            Console.Write("Transaction Status: " + transStatus);
-            Console.Write("Transaction Type: " + transType);
-            Console.Write("Transaction Amount: " + amount);
-            Console.Write("Rebill ID: " + rebillID);
-            Console.Write("Rebill Amount: " + rebillAmount);
-            Console.Write("Rebill Status: " + rebillStatus);
-    } else {
+                Console.Write("Transaction Status: " + transStatus);
+                Console.Write("Transaction Type: " + transType);
+                Console.Write("Transaction Amount: " + amount);
+                Console.Write("Rebill ID: " + rebillID);
+                Console.Write("Rebill Amount: " + rebillAmount);
+                Console.Write("Rebill Status: " + rebillStatus);
+            } else {
                 Console.Write("ERROR IN RECEIVING DATA FROM BLUEPAY");
-    }
+            }
         }
     }
 }

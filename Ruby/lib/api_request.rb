@@ -10,7 +10,6 @@ class BluePay
 
   # Generates TPS hash based on given hash type
   def create_tps_hash(data, hash_type)
-    puts "Hash Type: " + hash_type + "\n"
     case hash_type   
     when 'HMAC_SHA256'
       OpenSSL::HMAC.hexdigest('sha256', @SECRET_KEY, data)
@@ -60,26 +59,6 @@ class BluePay
       @PARAM_HASH["REPORT_END_DATE"],
       @PARAM_HASH['TPS_HASH_TYPE']
       )
-  end
-
-  # Calculates TAMPER_PROOF_SEAL to be used with Trans Notify API 
-  def self.calc_trans_notify_tps(secret_key, trans_id, trans_status, trans_type, amount, batch_id, batch_status, total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status, hash_type)
-    create_tps_hash(
-      secret_key + 
-      trans_id + 
-      trans_status + 
-      transtype + 
-      amount + 
-      batch_id + 
-      batch_status + 
-      total_count + 
-      total_amount + 
-      batch_upload_id + 
-      rebill_id + 
-      rebill_amount + 
-      rebill_status, 
-      hash_type
-    )
   end
 
  # sends HTTPS POST to BluePay gateway for processing

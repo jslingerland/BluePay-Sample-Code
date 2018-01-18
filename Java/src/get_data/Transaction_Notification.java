@@ -42,27 +42,29 @@ public class Transaction_Notification extends HttpServlet {
     String REBILL_ID = request.getParameter("rebill_id");
     String REBILL_AMOUNT = request.getParameter("reb_amount");
     String REBILL_STATUS = request.getParameter("status");
+    String TPS_HASH_TYPE = request.getParameter("TPS_HASH_TYPE");
 
     // calculate expected bp_stamp
     String bpStamp;
     try { 
       bpStamp = tps.calcTransNotifyTPS(
-        SECRET_KEY,
-        TRANS_ID,
-        TRANS_STATUS,
-        TRANS_TYPE,
-        AMOUNT,
-        BATCH_ID,
-        BATCH_STATUS,
-        TOTAL_COUNT,
-        TOTAL_AMOUNT,
-        BATCH_UPLOAD_ID,
-        REBILL_ID,
-        REBILL_AMOUNT,
-        REBILL_STATUS);
+        SECRET_KEY + 
+        TRANS_ID + 
+        TRANS_STATUS + 
+        TRANS_TYPE + 
+        AMOUNT + 
+        BATCH_ID + 
+        BATCH_STATUS + 
+        TOTAL_COUNT + 
+        TOTAL_AMOUNT + 
+        BATCH_UPLOAD_ID + 
+        REBILL_ID + 
+        REBILL_AMOUNT + 
+        REBILL_STATUS,
+        TPS_HASH_TYPE);
 
     // check if expected bp_stamp = actual bp_stamp
-    if (bpStamp == request.getParameter("bp_stamp")) {
+    if (bpStamp == request.getParameter("BP_STAMP")) {
     // output response
       System.out.println("Transaction ID: " + TRANS_ID);
       System.out.println("Transaction Status: " + TRANS_STATUS);
