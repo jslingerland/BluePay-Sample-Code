@@ -47,7 +47,7 @@ public class Transaction_Notification extends HttpServlet {
     // calculate expected bp_stamp
     String bpStamp;
     try { 
-      bpStamp = tps.calcTransNotifyTPS(
+      bpStamp = tps.generateTPS(
         SECRET_KEY + 
         TRANS_ID + 
         TRANS_STATUS + 

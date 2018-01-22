@@ -86,6 +86,9 @@ class BluePay
       rescue Exception
     end
 
+    # Response version to be returned
+    @PARAM_HASH["RESPONSEVERSION"] = '3'
+
     # Generate the query string and headers.  Chooses which API to make request to.
     case @api
     when "bpdailyreport2"
@@ -110,8 +113,6 @@ class BluePay
       'User-Agent' => 'Bluepay Ruby Client',
       'Content-Type' => 'application/x-www-form-urlencoded'
     }
-    # Response version to be returned
-    @PARAM_HASH["VERSION"] = '3'
     # Post parameters to BluePay gateway
     headers, body = ua.post(path, query, queryheaders)
     # Split the response into the response hash.

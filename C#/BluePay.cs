@@ -1221,6 +1221,64 @@ namespace BluePayLibrary
 
         }
 
+        public string ValidBPStamp()
+        {
+            string result = "";
+
+            Dictionary<string, string> responsePairs = GetResponsePairs();
+            if (responsePairs.ContainsKey("BP_STAMP"))
+            {
+                string bpStampString = "";
+                string[] defSeparator = new string[] { "%20" };
+                string[] bpStampFields = responsePairs["BP_STAMP_DEF"].Split(defSeparator, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string field in bpStampFields)
+                {
+                    bpStampString += responsePairs[field];
+                }
+                bpStampString = HttpUtility.UrlDecode(bpStampString);
+                string calculatedStamp = GenerateTPS(bpStampString, responsePairs["BP_STAMP_DEF"]);
+                result = calculatedStamp == responsePairs["BP_STAMP"] ? "TRUE" : "FALSE";
+            }
+            else
+            {
+                result = "ERROR - RESPONSEVERSION MUST BE >= 3";    
+            }
+
+            return result;
+        }
+
+        public Dictionary<string, string> GetResponsePairs()
+        {
+            Dictionary<string, string> responsePairs = new Dictionary<string, string>();
+
+            string[] responseFields;
+            string[] fieldsSeparator = new string[] { "wlcatch?" };
+            responseFields = response.Split(fieldsSeparator, StringSplitOptions.RemoveEmptyEntries);
+            string fieldsString = responseFields[1];
+
+            string[] fields;
+            string[] pairSeparator = new string[] { "&" };
+            fields = fieldsString.Split(pairSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+            string[] kvSeparator = new string[] { "=" };
+            string[] pair;
+            string name;
+            string value = "";
+            foreach (string field in fields)
+            {
+                pair = field.Split(kvSeparator, StringSplitOptions.RemoveEmptyEntries);
+                name = pair[0];
+                // Some pairs won't have values
+                if (1 < pair.Length)
+                {
+                    value = pair[1];
+                }
+                responsePairs.Add(name, value); 
+            }
+
+            return responsePairs;
+        }
+        
         public bool IsSuccessfulTransaction()
         {
             string status = this.GetStatus();

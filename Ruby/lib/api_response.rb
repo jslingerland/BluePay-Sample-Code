@@ -3,6 +3,18 @@ class BluePay
     @RESPONSE_HASH
   end
 
+  def valid_bp_stamp
+    if get_bp_stamp == nil or get_bp_stamp == ""
+      'ERROR - RESPONSEVERSION MUST BE >= 3'
+    else
+      bp_stamp_string = ""
+      get_bp_stamp_def.split(" ").each do |field|
+        bp_stamp_string += @RESPONSE_HASH[field]
+      end
+      create_tps_hash(bp_stamp_string, get_hash_type).upcase == get_bp_stamp ? "TRUE" : "FALSE"
+    end
+  end
+
   # Returns true if response status is approved and not a duplicate, else returns false
   def successful_transaction?
     self.get_status == "APPROVED" && self.get_message != "DUPLICATE"
@@ -22,6 +34,21 @@ class BluePay
     else
       m
     end
+  end
+
+  # Returns the BP_STAMP used to authenticate response
+  def get_bp_stamp
+    @RESPONSE_HASH['BP_STAMP']
+  end
+
+  # Returns the fields used to calculate the BP_STAMP
+  def get_bp_stamp_def
+    @RESPONSE_HASH['BP_STAMP_DEF']
+  end
+  
+  # Returns hash function used for transaction
+  def get_hash_type
+    @RESPONSE_HASH['TPS_HASH_TYPE']
   end
 
   # Returns the single-character AVS response from the 

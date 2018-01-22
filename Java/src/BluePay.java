@@ -761,7 +761,7 @@ public class BluePay
    *
    */
 
-  private String generateTPS(String message, String hashType) throws java.security.NoSuchAlgorithmException {
+  public String generateTPS(String message, String hashType) throws java.security.NoSuchAlgorithmException {
     String tpsHash = "";
       if(hashType == "HMAC_SHA256") {
         HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-256");
@@ -1083,7 +1083,8 @@ public class BluePay
    */
   public HashMap<String,String> process() throws ClientProtocolException, IOException, NoSuchAlgorithmException {
     List <NameValuePair> nameValuePairs = new ArrayList <NameValuePair>();
-	  nameValuePairs.add(new BasicNameValuePair("MODE", BP_MODE));	
+	  nameValuePairs.add(new BasicNameValuePair("MODE", BP_MODE));
+    nameValuePairs.add(new BasicNameValuePair("RESPONSEVERSION", "3")); 
 	  if (API.equals("bpdailyreport2")) {
   		  BP_URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
   		  nameValuePairs.add(new BasicNameValuePair("ACCOUNT_ID", BP_MERCHANT));
@@ -1225,6 +1226,30 @@ public class BluePay
     }  
     return map;  
   } 
+
+  /** Validates the BP Stamp used to authenticate the message.
+  *
+  * @return 'TRUE' or 'FALSE'
+  * @throws NoSuchAlgorithmException 
+  * @throws UnsupportedEncodingException 
+  *
+  */
+  public String validBPStamp() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+   String result = "";
+   if(response.containsKey("BP_STAMP")) {
+     String bpStampString = "";
+     String[] bpStampFields = response.get("BP_STAMP_DEF").split("%20");
+     for (String field : bpStampFields) {
+       bpStampString += response.get(field);
+     }
+     bpStampString = java.net.URLDecoder.decode(bpStampString, "UTF-8");
+     String calculatedStamp = generateTPS(bpStampString, response.get("TPS_HASH_TYPE")).toUpperCase(); 
+     result = calculatedStamp.equals(response.get("BP_STAMP")) ? "TRUE" : "FALSE";
+   } else {
+     result = "ERROR - RESPONSEVERSION MUST BE >= 3";
+   }
+   return result;
+  }
 
   /** Returns a one word description indicating the result.
    *

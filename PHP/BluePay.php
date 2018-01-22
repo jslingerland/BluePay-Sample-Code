@@ -736,6 +736,7 @@ class BluePay {
 
     public function process() {
         $post["MODE"] = $this->mode;
+        $post["RESPONSEVERSION"] = '3'; # Response version to be returned
         // Case Statement based on which api is used
         switch ($this->api) {
             case "bp10emu":
@@ -899,6 +900,11 @@ class BluePay {
         $this->paymentType = isset($payment_type) ? $payment_type : null;
         $this->transType = isset($trans_type) ? $trans_type : null;
         $this->amount = isset($amount) ? $amount : null;
+
+        /* BP Stamp response parameters */
+        $this->bpStamp = isset($BP_STAMP) ? $BP_STAMP : null;
+        $this->bpStampDef = isset($BP_STAMP_DEF) ? $BP_STAMP_DEF : null;
+        $this->tpsHashType = isset($TPS_HASH_TYPE) ? $TPS_HASH_TYPE : null;
     }
 
     public function getResponse() { return $this->response; }
@@ -932,10 +938,26 @@ class BluePay {
     public function getTransType() { return $this->transType; }
     public function getAmount() { return $this->amount; }
 
+
     // Returns true if the transaction was approved and not a duplicate
     public function isSuccessfulResponse() {
         // return true;
         return ($this->getStatus() == "APPROVED" && $this->getMessage() != "DUPLICATE"); 
+    }
+
+    public function validBPStamp() {
+        if ($this->bpStamp == null) {
+            $result = 'ERROR - RESPONSEVERSION MUST BE >= 3';
+        } else {
+            parse_str($this->response, $output);
+            $bpStampFields = explode(" ", $this->bpStampDef);
+            $bpStampString = '';
+            foreach ($bpStampFields as $field) {
+                $bpStampString .= $output[$field];
+            }
+            $result = ( strtoupper($this->createTPSHash($bpStampString, $this->tpsHashType)) == $this->bpStamp ? "True" : "False" );
+        }
+        return $result;
     }
 }
 ?>

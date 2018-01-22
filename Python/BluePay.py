@@ -671,7 +671,8 @@ class BluePay:
     def process(self, card=None, customer=None, order=None):
         fields = {
             'MODE': self.mode,
-            'RRNO': self.rrno
+            'RRNO': self.rrno,
+            'RESPONSEVERSION': '3' # Response version to be returned   
         }
         if self.api == 'bpdailyreport2':
             self.url = 'https://secure.bluepay.com/interfaces/bpdailyreport2'
@@ -892,7 +893,23 @@ class BluePay:
         self.trans_type_response = self.response['trans_type'][0] if 'trans_type' in self.response else ''
         # Amount associated with the transaction
         self.amount_response = self.response['amount'][0] if 'amount' in self.response else ''
+        # Returns the BP_STAMP used to authenticate response
+        self.bp_stamp_response = self.response['BP_STAMP'][0] if 'BP_STAMP' in self.response else ''
+        # Returns the fields used to calculate the BP_STAMP
+        self.bp_stamp_def_response = self.response['BP_STAMP_DEF'][0] if 'BP_STAMP_DEF' in self.response else ''
+        # Returns hash function used for transaction
+        self.tps_hash_type_response = self.response['TPS_HASH_TYPE'][0] if 'TPS_HASH_TYPE' in self.response else ''
 
+    def valid_bp_stamp(self):
+        if self.bp_stamp_response == '':
+            result = 'ERROR - RESPONSEVERSION MUST BE >= 3'
+        else:
+            bp_stamp_string = ''
+            bp_stamp_fields = self.bp_stamp_def_response.split(' ')
+            for field in bp_stamp_fields:
+                bp_stamp_string += self.response[field][0]
+            result = 'TRUE' if self.create_tps_hash(bp_stamp_string, self.tps_hash_type_response).upper() == self.bp_stamp_response else 'FALSE'
+        return result
     
 
 
