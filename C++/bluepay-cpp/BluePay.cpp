@@ -1205,10 +1205,7 @@ char* BluePay::process()
       "&AMOUNT_FOOD=" + (this->amountFood) +
       "&AMOUNT_MISC=" + (this->amountMisc) +
       "&SWIPE=" + (this->trackData) +
-      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
-      "&RESPONSEVERSION=1"
-      ;
-      // std::cout << postData;
+      "&TPS_HASH_TYPE=" + (this->tpsHashType);
       
     if (this->paymentType == "CREDIT") {
       postData = postData + "&CC_NUM=" + (this->paymentAccount) +
@@ -1235,6 +1232,9 @@ char* BluePay::process()
       "&TPS_HASH_TYPE=" + (this->tpsHashType) +
       "&STATUS=" + (this->rebillStatus);
   }
+  // Add Response version to return
+  postData += "&RESPONSEVERSION=3";
+
   // Add Level 2 data, if available.
   for( auto field : level2Info )
   {
@@ -1313,6 +1313,59 @@ char* BluePay::process()
   this->response = readBuffer;
   //std::cout << "response:" + this->getResponse();
   return getMessage();
+}
+
+/// <summary>
+/// Validates BP_Stamp used to authenticate response
+/// </summary>
+/// <returns></returns>
+std::string BluePay::validBPStamp()
+{
+    std::string result;
+
+    // Map Response to key-value pairs
+    CURL *curl = curl_easy_init();
+    char* unescapedResponse = curl_easy_unescape(curl, queryResponse, 0, NULL);
+    curl_easy_cleanup(curl);
+    std::string responseString = unescapedResponse;
+    std::map<std::string, std::string> responsePairs = mapResponsePairs(responseString);
+
+    if (responsePairs.find("BP_STAMP") == responsePairs.end()) {
+        result = "ERROR - RESPONSEVERSION MUST BE >= 3";
+    } else {
+        std::string bpStampDef = responsePairs["BP_STAMP_DEF"];
+        std::string bpStampString = "";
+        std::vector<std::string> bpStampFields = split(bpStampDef, ' ');
+        for (std::string field : bpStampFields) {
+            bpStampString += responsePairs[field];
+        }
+        std::string calculatedStamp = generateTps(bpStampString, responsePairs["TPS_HASH_TYPE"]);
+        std::transform(calculatedStamp.begin(), calculatedStamp.end(),calculatedStamp.begin(), ::toupper);
+        result = (calculatedStamp == responsePairs["BP_STAMP"]) ? "TRUE" : "FALSE";
+    }
+    return result;
+}
+
+/// <summary>
+/// Returns Map of Response Pairs
+/// </summary>
+/// <returns></returns>
+std::map<std::string, std::string> BluePay::mapResponsePairs(std::string responseString)
+{
+    std::map<std::string, std::string> responsePairs = {};
+    std::vector<std::string> pairStrings = split(responseString, '&');
+    std::vector<std::string> kvStrings;
+    std::string key;
+    std::string value = "";
+    for (std::string pair : pairStrings) {
+        kvStrings = split(pair, '=');
+        key = kvStrings[0];
+        if (1 < kvStrings.size()) {
+            value = kvStrings[1];
+        }
+        responsePairs.insert({key, value});
+    }
+    return responsePairs;
 }
 
 /// <summary>

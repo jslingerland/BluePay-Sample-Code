@@ -239,6 +239,8 @@ public:
   void addHeader(const std::string& s);
   size_t rcvHeaders(void *buffer, size_t size, size_t nmemb, void *userp);
   char* process();
+  std::string validBPStamp();
+  std::map<std::string, std::string> mapResponsePairs(std::string responseString);
   std::string getResponse();
   char* getResult();
   char* getTransId();
