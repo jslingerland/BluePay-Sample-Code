@@ -136,16 +136,13 @@ sub process {
     # Create Agent
     my $ua = new LWP::UserAgent;
     my $content;
-    print "Request: " . $request . "\n";
     if ($self->{API} eq 'bp10emu' ) {
         my $req = new HTTP::Request 'POST', $self->{URL};
         $req->content($request);
         my $raw_response = $ua->request($req);
-        print "Response: " . $raw_response->header("Location") . "\n";
         my $response_string = $raw_response->header("Location");
         my @content_string  = split(/wlcatch\?/, $response_string);
         my $content_string = $content_string[1];
-        print "Content String: " . $content_string . "\n";
 
         # use the parse response method to parse the raw response and assign response values
         $self->parse_response($content_string);
