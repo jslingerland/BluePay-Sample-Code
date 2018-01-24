@@ -932,6 +932,31 @@ std::string BluePay::encodeURL(std::string input)
 }
 
 /// <summary>
+/// Decodes a URL into a string.
+/// </summary>
+/// <param name="input"></param>
+std::string BluePay::urlDecode(std::string str){
+    std::string result;
+    char ch;
+    int i, ii, len = str.length();
+    
+    for (i=0; i < len; i++){
+        if(str[i] != '%'){
+            if(str[i] == '+')
+                result += ' ';
+            else
+                result += str[i];
+        }else{
+            sscanf(str.substr(i + 1, 2).c_str(), "%x", &ii);
+            ch = static_cast<char>(ii);
+            result += ch;
+            i = i + 2;
+        }
+    }
+    return result;
+}
+
+/// <summary>
 /// Sets the receipt url or uses the remote url provided. Must be used with GenerateURL.
 /// </summary>
 std::string BluePay::setReceiptURL()
@@ -1107,212 +1132,188 @@ std::vector<std::string> split(const std::string &s, char delim)
   return elems;
 }
 
-char* getResponseField(char *nvp, const char *Name, char *Value) 
-{
-  char *pos1 = strstr(nvp, Name);
-
-  if (pos1) {
-    pos1 += strlen(Name);
-
-    if (*pos1 == '=') {
-      pos1++;
-
-      while (*pos1 && *pos1 != '&') {
-        if (*pos1 == '%') {
-          *Value++ = (char)ToHex(pos1[1]) * 16 + ToHex(pos1[2]);
-          pos1 += 3;
-        } else if (*pos1 == '+') {
-          *Value++ = ' ';
-          pos1++;
-        } else {
-          *Value++ = *pos1++;
-        }
-      }
-
-      *Value++ = '\0';
-      return Value;
-    }
-  }
-  char * error_string = strdup("Error");
-  return error_string;
-}
-
 char* BluePay::process()
-{  
+{
     std::string postData = "";
-
-  if (this->api == "bpdailyreport2") {
-    calcReportTps();
-    this->URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
-    postData += "ACCOUNT_ID=" + this->accountId +
-      "&MODE=" + (this->mode) +
-      "&TAMPER_PROOF_SEAL=" + (this->Tps) +
-      "&REPORT_START_DATE=" + (this->reportStartDate) +
-      "&REPORT_END_DATE=" + (this->reportEndDate) +
-      "&DO_NOT_ESCAPE=" + (this->doNotEscape) +
-      "&QUERY_BY_SETTLEMENT=" + (this->queryBySettlement) +
-      "&QUERY_BY_HIERARCHY=" + (this->queryByHierarchy) +
-      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
-      "&EXCLUDE_ERRORS=" + (this->excludeErrors);
-  // } else if (this->reportStartDate != "") {
-  } else if (this->api == "stq") {
-    calcReportTps();
-    this->URL = "https://secure.bluepay.com/interfaces/stq";
-    postData += "ACCOUNT_ID=" + (this->accountId) +
-      "&MODE=" + (this->mode) +
-      "&TAMPER_PROOF_SEAL=" + (this->Tps) +
-      "&REPORT_START_DATE=" + (this->reportStartDate) +
-      "&REPORT_END_DATE=" + (this->reportEndDate) +
-      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
-      "&EXCLUDE_ERRORS=" + (this->excludeErrors);
-    postData += (this->masterId != "") ? "&id=" + (this->masterId) : "";
-    postData += (this->paymentType != "") ? "&payment_type=" + (this->paymentType) : "";
-    postData += (this->transType != "") ? "&trans_type=" + (this->transType) : "";
-    postData += (this->amount != "") ? "&amount=" + (this->amount) : "";
-    postData += (this->name1 != "") ? "&name1=" + (this->name1) : "";
-    postData += (this->name2 != "") ? "&name2=" + (this->name2) : "";
-  } else if (this->api == "bp10emu") {
-    calcTps();
-    this->URL = "https://secure.bluepay.com/interfaces/bp10emu";
-    postData += "MERCHANT=" + (this->accountId) +
-      "&MODE=" + (this->mode) +
-      "&TRANSACTION_TYPE=" + (this->transType) +
-      "&TAMPER_PROOF_SEAL=" + (this->Tps) +
-      "&NAME1=" + (this->name1) +
-      "&NAME2=" + (this->name2) +
-      "&AMOUNT=" + (this->amount) +
-      "&ADDR1=" + (this->addr1) +
-      "&ADDR2=" + (this->addr2) +
-      "&CITY=" + (this->city) +
-      "&STATE=" + (this->state) +
-      "&ZIPCODE=" + (this->zip) +
-      "&COMMENT=" + (this->memo) +
-      "&PHONE=" + (this->phone) +
-      "&EMAIL=" + (this->email) +
-      "&REBILLING=" + (this->doRebill) +
-      "&REB_FIRST_DATE=" + (this->rebillFirstDate) +
-      "&REB_EXPR=" + (this->rebillExpr) +
-      "&REB_CYCLES=" + (this->rebillCycles) +
-      "&REB_AMOUNT=" + (this->rebillAmount) +
-      "&RRNO=" + (this->masterId) +
-      "&PAYMENT_TYPE=" + (this->paymentType) +
-      "&CUSTOM_ID=" + (this->customId1) +
-      "&CUSTOM_ID2=" + (this->customId2) +
-      "&INVOICE_ID=" + (this->invoiceId) +
-      "&ORDER_ID=" + (this->orderId) +
-      "&AMOUNT_TIP=" + (this->amountTip) +
-      "&AMOUNT_TAX=" + (this->amountTax) +
-      "&AMOUNT_FOOD=" + (this->amountFood) +
-      "&AMOUNT_MISC=" + (this->amountMisc) +
-      "&SWIPE=" + (this->trackData) +
-      "&TPS_HASH_TYPE=" + (this->tpsHashType);
-      
-    if (this->paymentType == "CREDIT") {
-      postData = postData + "&CC_NUM=" + (this->paymentAccount) +
-        "&CC_EXPIRES=" + (this->cardExpire) +
-        "&CVCVV2=" + (this->cvv2);
-    } else {
-      postData = postData + "&ACH_ROUTING=" + (this->routingNum) +
-        "&ACH_ACCOUNT=" + (this->accountNum) +
-        "&ACH_ACCOUNT_TYPE=" + (this->accountType) +
-        "&DOC_TYPE=" + (this->docType);
+    
+    if (this->api == "bpdailyreport2") {
+        calcReportTps();
+        this->URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
+        postData += "ACCOUNT_ID=" + this->accountId +
+        "&MODE=" + (this->mode) +
+        "&TAMPER_PROOF_SEAL=" + (this->Tps) +
+        "&REPORT_START_DATE=" + (this->reportStartDate) +
+        "&REPORT_END_DATE=" + (this->reportEndDate) +
+        "&DO_NOT_ESCAPE=" + (this->doNotEscape) +
+        "&QUERY_BY_SETTLEMENT=" + (this->queryBySettlement) +
+        "&QUERY_BY_HIERARCHY=" + (this->queryByHierarchy) +
+        "&TPS_HASH_TYPE=" + (this->tpsHashType) +
+        "&EXCLUDE_ERRORS=" + (this->excludeErrors);
+        // } else if (this->reportStartDate != "") {
+    } else if (this->api == "stq") {
+        calcReportTps();
+        this->URL = "https://secure.bluepay.com/interfaces/stq";
+        postData += "ACCOUNT_ID=" + (this->accountId) +
+        "&MODE=" + (this->mode) +
+        "&TAMPER_PROOF_SEAL=" + (this->Tps) +
+        "&REPORT_START_DATE=" + (this->reportStartDate) +
+        "&REPORT_END_DATE=" + (this->reportEndDate) +
+        "&TPS_HASH_TYPE=" + (this->tpsHashType) +
+        "&EXCLUDE_ERRORS=" + (this->excludeErrors);
+        postData += (this->masterId != "") ? "&id=" + (this->masterId) : "";
+        postData += (this->paymentType != "") ? "&payment_type=" + (this->paymentType) : "";
+        postData += (this->transType != "") ? "&trans_type=" + (this->transType) : "";
+        postData += (this->amount != "") ? "&amount=" + (this->amount) : "";
+        postData += (this->name1 != "") ? "&name1=" + (this->name1) : "";
+        postData += (this->name2 != "") ? "&name2=" + (this->name2) : "";
+    } else if (this->api == "bp10emu") {
+        calcTps();
+        this->URL = "https://secure.bluepay.com/interfaces/bp10emu";
+        postData += "MERCHANT=" + (this->accountId) +
+        "&MODE=" + (this->mode) +
+        "&TRANSACTION_TYPE=" + (this->transType) +
+        "&TAMPER_PROOF_SEAL=" + (this->Tps) +
+        "&NAME1=" + (this->name1) +
+        "&NAME2=" + (this->name2) +
+        "&AMOUNT=" + (this->amount) +
+        "&ADDR1=" + (this->addr1) +
+        "&ADDR2=" + (this->addr2) +
+        "&CITY=" + (this->city) +
+        "&STATE=" + (this->state) +
+        "&ZIPCODE=" + (this->zip) +
+        "&COMMENT=" + (this->memo) +
+        "&PHONE=" + (this->phone) +
+        "&EMAIL=" + (this->email) +
+        "&REBILLING=" + (this->doRebill) +
+        "&REB_FIRST_DATE=" + (this->rebillFirstDate) +
+        "&REB_EXPR=" + (this->rebillExpr) +
+        "&REB_CYCLES=" + (this->rebillCycles) +
+        "&REB_AMOUNT=" + (this->rebillAmount) +
+        "&RRNO=" + (this->masterId) +
+        "&PAYMENT_TYPE=" + (this->paymentType) +
+        "&CUSTOM_ID=" + (this->customId1) +
+        "&CUSTOM_ID2=" + (this->customId2) +
+        "&INVOICE_ID=" + (this->invoiceId) +
+        "&ORDER_ID=" + (this->orderId) +
+        "&AMOUNT_TIP=" + (this->amountTip) +
+        "&AMOUNT_TAX=" + (this->amountTax) +
+        "&AMOUNT_FOOD=" + (this->amountFood) +
+        "&AMOUNT_MISC=" + (this->amountMisc) +
+        "&SWIPE=" + (this->trackData) +
+        "&TPS_HASH_TYPE=" + (this->tpsHashType);
+        
+        if (this->paymentType == "CREDIT") {
+            postData = postData + "&CC_NUM=" + (this->paymentAccount) +
+            "&CC_EXPIRES=" + (this->cardExpire) +
+            "&CVCVV2=" + (this->cvv2);
+        } else {
+            postData = postData + "&ACH_ROUTING=" + (this->routingNum) +
+            "&ACH_ACCOUNT=" + (this->accountNum) +
+            "&ACH_ACCOUNT_TYPE=" + (this->accountType) +
+            "&DOC_TYPE=" + (this->docType);
+        }
+    } else if (this->api == "bp20rebadmin"){
+        calcRebillTps();
+        this->URL = "https://secure.bluepay.com/interfaces/bp20rebadmin";
+        postData += "ACCOUNT_ID=" + (this->accountId) +
+        "&TAMPER_PROOF_SEAL=" + (this->Tps) +
+        "&TRANS_TYPE=" + (this->transType) +
+        "&REBILL_ID=" + (this->rebillId) +
+        "&TEMPLATE_ID=" + (this->templateId) +
+        "&REB_EXPR=" + (this->rebillExpr) +
+        "&REB_CYCLES=" + (this->rebillCycles) +
+        "&REB_AMOUNT=" + (this->rebillAmount) +
+        "&NEXT_AMOUNT=" + (this->rebillNextAmount) +
+        "&TPS_HASH_TYPE=" + (this->tpsHashType) +
+        "&STATUS=" + (this->rebillStatus);
     }
-  } else if (this->api == "bp20rebadmin"){
-    calcRebillTps();
-    this->URL = "https://secure.bluepay.com/interfaces/bp20rebadmin";
-    postData += "ACCOUNT_ID=" + (this->accountId) +
-      "&TAMPER_PROOF_SEAL=" + (this->Tps) +
-      "&TRANS_TYPE=" + (this->transType) +
-      "&REBILL_ID=" + (this->rebillId) +
-      "&TEMPLATE_ID=" + (this->templateId) +
-      "&REB_EXPR=" + (this->rebillExpr) +
-      "&REB_CYCLES=" + (this->rebillCycles) +
-      "&REB_AMOUNT=" + (this->rebillAmount) +
-      "&NEXT_AMOUNT=" + (this->rebillNextAmount) +
-      "&TPS_HASH_TYPE=" + (this->tpsHashType) +
-      "&STATUS=" + (this->rebillStatus);
-  }
-  // Add Response version to return
-  postData += "&RESPONSEVERSION=3";
-
-  // Add Level 2 data, if available.
-  for( auto field : level2Info )
-  {
-    postData += "&" + field.first + "=" + field.second;
-  }
-
-  // Add Level 3 item data, if available.
-  for( auto item : lineItems )
-  {
-    for( auto field : item )
+    // Add Response version to return
+    postData += "&RESPONSEVERSION=3";
+    
+    // Add Level 2 data, if available.
+    for( auto field : level2Info )
     {
         postData += "&" + field.first + "=" + field.second;
     }
-  }
     
-  //Create HTTPS POST object and send to BluePay
-  CURL *curl;
-  CURLcode res;
-  std::string readBuffer;
-  curl_global_init(CURL_GLOBAL_ALL);
-  char *postToBp = (char*)postData.c_str();
-
-  curl = curl_easy_init();
-  if (curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, this->URL.c_str());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postToBp);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0);
-    if (this->URL == "https://secure.bluepay.com/interfaces/bp10emu") {
-      curl_easy_setopt(curl, CURLOPT_HEADER, 1);
+    // Add Level 3 item data, if available.
+    for( auto item : lineItems )
+    {
+        for( auto field : item )
+        {
+            postData += "&" + field.first + "=" + field.second;
+        }
     }
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-    res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-      curl_easy_strerror(res));
+    
+    //Create HTTPS POST object and send to BluePay
+    CURL *curl;
+    CURLcode res;
+    std::string readBuffer;
+    curl_global_init(CURL_GLOBAL_ALL);
+    char *postToBp = (char*)postData.c_str();
+    
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, this->URL.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postToBp);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0);
+        if (this->URL == "https://secure.bluepay.com/interfaces/bp10emu") {
+            curl_easy_setopt(curl, CURLOPT_HEADER, 1);
+        }
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror(res));
+        }
+        curl_easy_cleanup(curl);
     }
-    curl_easy_cleanup(curl);
-  }
-  curl_global_cleanup();
-  std::istringstream stream(readBuffer);
-  std::string line;
-  //std::cout << readBuffer;
-  while (std::getline(stream, line))  {
-    if (line.find("Location") == 0) {
-      std::vector<std::string> nvp = split(line, '?');
-      queryResponse = (char*)nvp[1].c_str();
-      getResponseField(queryResponse, "Result", result);
-      getResponseField(queryResponse, "MESSAGE", message);
-      getResponseField(queryResponse, "TRANS_ID", transId);
-      getResponseField(queryResponse, "CVV2_RESULT", cvv2Response);
-      getResponseField(queryResponse, "AVS_RESULT", avsResponse);
-      getResponseField(queryResponse, "PAYMENT_ACCOUNT", maskedAccount);
-      getResponseField(queryResponse, "CARD_TYPE", cardType);
-      getResponseField(queryResponse, "BANK_NAME", bank);
-      getResponseField(queryResponse, "AUTH_CODE", authCode);
-      getResponseField(queryResponse, "REBID", rebId);
-      break;
-    } else if (this->URL != "https://secure.bluepay.com/interfaces/bp10emu") {
-      std::vector<std::string> nvp = split(line, '?');
-      queryResponse = (char*)line.c_str();
-      getResponseField(queryResponse, "rebill_id", rebId);
-      getResponseField(queryResponse, "status", rebStatus);
-      getResponseField(queryResponse, "creation_date", rebCreationDate);
-      getResponseField(queryResponse, "next_date", rebNextDate);
-      getResponseField(queryResponse, "last_date", rebLastDate);
-      getResponseField(queryResponse, "sched_expr", rebSchedExpr);
-      getResponseField(queryResponse, "cycles_remain", rebCyclesRemaining);
-      getResponseField(queryResponse, "reb_amount", rebAmount);
-      getResponseField(queryResponse, "next_amount", rebNextAmount);
-      break;
+    curl_global_cleanup();
+    std::istringstream stream(readBuffer);
+    std::string line;
+    //std::cout << readBuffer;
+    while (std::getline(stream, line))  {
+        if (line.find("Location") == 0) {
+            std::vector<std::string> nvp = split(line, '?');
+            this->queryResponse = (char*)nvp[1].c_str();
+            
+            std::string responseString = urlDecode(queryResponse);
+            this->responseFields = mapResponsePairs(responseString);
+            
+            std::strcpy(result, responseFields["Result"].c_str());
+            std::strcpy(message, responseFields["MESSAGE"].c_str());
+            std::strcpy(transId, responseFields["TRANS_ID"].c_str());
+            std::strcpy(cvv2Response, responseFields["CVV2_RESULT"].c_str());
+            std::strcpy(avsResponse, responseFields["AVS_RESULT"].c_str());
+            std::strcpy(maskedAccount, responseFields["PAYMENT_ACCOUNT"].c_str());
+            std::strcpy(cardType, responseFields["CARD_TYPE"].c_str());
+            std::strcpy(bank, responseFields["BANK_NAME"].c_str());
+            std::strcpy(authCode, responseFields["AUTH_CODE"].c_str());
+            std::strcpy(rebId, responseFields["REBID"].c_str());
+            break;
+        } else if (this->URL != "https://secure.bluepay.com/interfaces/bp10emu") {
+            queryResponse = (char*)line.c_str();
+            std::string responseString = urlDecode(queryResponse);
+            this->responseFields = mapResponsePairs(responseString);
+            
+            std::strcpy(rebId, responseFields["rebill_id"].c_str());
+            std::strcpy(rebStatus, responseFields["status"].c_str());
+            std::strcpy(rebCreationDate, responseFields["creation_date"].c_str());
+            std::strcpy(rebNextDate, responseFields["next_date"].c_str());
+            std::strcpy(rebLastDate, responseFields["last_date"].c_str());
+            std::strcpy(rebSchedExpr, responseFields["sched_expr"].c_str());
+            std::strcpy(rebCyclesRemaining, responseFields["cycles_remain"].c_str());
+            std::strcpy(rebAmount, responseFields["reb_amount"].c_str());
+            std::strcpy(rebNextAmount, responseFields["next_amount"].c_str());
+            break;
+        }
     }
-  }
-  this->response = readBuffer;
-  //std::cout << "response:" + this->getResponse();
-  return getMessage();
+    this->response = readBuffer;
+    //std::cout << "response:" + this->getResponse();
+    return getMessage();
 }
 
 /// <summary>
@@ -1322,24 +1323,18 @@ char* BluePay::process()
 std::string BluePay::validBPStamp()
 {
     std::string result;
-
-    // Map Response to key-value pairs
-    CURL *curl = curl_easy_init();
-    char* unescapedResponse = curl_easy_unescape(curl, queryResponse, 0, NULL);
-    curl_easy_cleanup(curl);
-    std::string responseString = unescapedResponse;
-    std::map<std::string, std::string> responsePairs = mapResponsePairs(responseString);
-
-    if (responsePairs.find("BP_STAMP") == responsePairs.end()) {
+    
+    if (responseFields.find("BP_STAMP") == responseFields.end()) {
         result = "ERROR - RESPONSEVERSION MUST BE >= 3";
     } else {
-        std::string bpStampDef = responsePairs["BP_STAMP_DEF"];
+        std::string bpStamp = responseFields["BP_STAMP"];
+        std::string bpStampDef = responseFields["BP_STAMP_DEF"];
         std::string bpStampString = "";
         std::vector<std::string> bpStampFields = split(bpStampDef, ' ');
         for (std::string field : bpStampFields) {
-            bpStampString += responsePairs[field];
+            bpStampString += responseFields[field];
         }
-        std::string calculatedStamp = generateTps(bpStampString, responsePairs["TPS_HASH_TYPE"]);
+        std::string calculatedStamp = generateTps(bpStampString, responseFields["TPS_HASH_TYPE"]);
         std::transform(calculatedStamp.begin(), calculatedStamp.end(),calculatedStamp.begin(), ::toupper);
         result = (calculatedStamp == responsePairs["BP_STAMP"]) ? "TRUE" : "FALSE";
     }

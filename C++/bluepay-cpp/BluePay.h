@@ -124,6 +124,7 @@ private:
 
   char *queryResponse;
   std::string response;
+  std::map<std::string, std::string> responseFields;
   char result[128];
   char message[128];
   char transId[16];
@@ -228,6 +229,7 @@ public:
   std::string calcURLTps(std::string);
   std::string setReceiptURL();
   std::string encodeURL(std::string);
+  std::string urlDecode(std::string);
   std::string addStringProtectedStatus(std::string);
   std::string addDefProtectedStatus(std::string);
   std::string setBp10emuTpsString();
@@ -265,4 +267,3 @@ public:
 
 
 };
-
