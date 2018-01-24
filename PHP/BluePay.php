@@ -736,7 +736,7 @@ class BluePay {
 
     public function process() {
         $post["MODE"] = $this->mode;
-        $post["RESPONSEVERSION"] = '3'; # Response version to be returned
+        $post["RESPONSEVERSION"] = '1'; # Response version to be returned
         // Case Statement based on which api is used
         switch ($this->api) {
             case "bp10emu":
@@ -947,7 +947,7 @@ class BluePay {
 
     public function validBPStamp() {
         if ($this->bpStamp == null) {
-            $result = 'ERROR - RESPONSEVERSION MUST BE >= 3';
+            $result = 'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION';
         } else {
             parse_str($this->response, $output);
             $bpStampFields = explode(" ", $this->bpStampDef);

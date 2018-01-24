@@ -121,7 +121,7 @@ sub process {
         . "&TAMPER_PROOF_SEAL="
         . uri_escape( $TAMPER_PROOF_SEAL || '' )
         . "&RESPONSEVERSION="
-        . uri_escape("3");
+        . uri_escape("1");
     
     # converts the object's attributes into a query string for the api request
     while ( my ( $key, $value ) = each(%$self) ) {
@@ -196,7 +196,7 @@ sub valid_bp_stamp {
     my $self = shift;
     my $result = '';
     if (!defined $self->{BP_STAMP}){
-        $result = 'ERROR - RESPONSEVERSION MUST BE >= 3';
+        $result = 'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION';
     } else {
         my $bp_stamp_string = '';
         foreach my $field (split(' ', $self->{BP_STAMP_DEF})){

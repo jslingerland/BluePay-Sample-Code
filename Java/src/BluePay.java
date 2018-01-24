@@ -1084,7 +1084,7 @@ public class BluePay
   public HashMap<String,String> process() throws ClientProtocolException, IOException, NoSuchAlgorithmException {
     List <NameValuePair> nameValuePairs = new ArrayList <NameValuePair>();
 	  nameValuePairs.add(new BasicNameValuePair("MODE", BP_MODE));
-    nameValuePairs.add(new BasicNameValuePair("RESPONSEVERSION", "3")); 
+    nameValuePairs.add(new BasicNameValuePair("RESPONSEVERSION", "1")); 
 	  if (API.equals("bpdailyreport2")) {
   		  BP_URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
   		  nameValuePairs.add(new BasicNameValuePair("ACCOUNT_ID", BP_MERCHANT));
@@ -1246,7 +1246,7 @@ public class BluePay
      String calculatedStamp = generateTPS(bpStampString, response.get("TPS_HASH_TYPE")).toUpperCase(); 
      result = calculatedStamp.equals(response.get("BP_STAMP")) ? "TRUE" : "FALSE";
    } else {
-     result = "ERROR - RESPONSEVERSION MUST BE >= 3";
+     result = "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION";
    }
    return result;
   }

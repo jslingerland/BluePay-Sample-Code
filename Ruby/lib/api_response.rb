@@ -5,7 +5,7 @@ class BluePay
 
   def valid_bp_stamp
     if get_bp_stamp == nil or get_bp_stamp == ""
-      'ERROR - RESPONSEVERSION MUST BE >= 3'
+      'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION'
     else
       bp_stamp_string = ""
       get_bp_stamp_def.split(" ").each do |field|

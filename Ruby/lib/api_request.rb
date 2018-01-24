@@ -87,7 +87,7 @@ class BluePay
     end
 
     # Response version to be returned
-    @PARAM_HASH["RESPONSEVERSION"] = '3'
+    @PARAM_HASH["RESPONSEVERSION"] = '1'
 
     # Generate the query string and headers.  Chooses which API to make request to.
     case @api

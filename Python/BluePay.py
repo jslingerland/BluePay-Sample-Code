@@ -672,7 +672,7 @@ class BluePay:
         fields = {
             'MODE': self.mode,
             'RRNO': self.rrno,
-            'RESPONSEVERSION': '3' # Response version to be returned   
+            'RESPONSEVERSION': '1' # Response version to be returned   
         }
         if self.api == 'bpdailyreport2':
             self.url = 'https://secure.bluepay.com/interfaces/bpdailyreport2'
@@ -902,7 +902,7 @@ class BluePay:
 
     def valid_bp_stamp(self):
         if self.bp_stamp_response == '':
-            result = 'ERROR - RESPONSEVERSION MUST BE >= 3'
+            result = 'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION'
         else:
             bp_stamp_string = ''
             bp_stamp_fields = self.bp_stamp_def_response.split(' ')

@@ -1228,7 +1228,7 @@ char* BluePay::process()
         "&STATUS=" + (this->rebillStatus);
     }
     // Add Response version to return
-    postData += "&RESPONSEVERSION=3";
+    postData += "&RESPONSEVERSION=1";
     
     // Add Level 2 data, if available.
     for( auto field : level2Info )
@@ -1325,7 +1325,7 @@ std::string BluePay::validBPStamp()
     std::string result;
     
     if (responseFields.find("BP_STAMP") == responseFields.end()) {
-        result = "ERROR - RESPONSEVERSION MUST BE >= 3";
+        result = "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION";
     } else {
         std::string bpStamp = responseFields["BP_STAMP"];
         std::string bpStampDef = responseFields["BP_STAMP_DEF"];
@@ -1336,7 +1336,7 @@ std::string BluePay::validBPStamp()
         }
         std::string calculatedStamp = generateTps(bpStampString, responseFields["TPS_HASH_TYPE"]);
         std::transform(calculatedStamp.begin(), calculatedStamp.end(),calculatedStamp.begin(), ::toupper);
-        result = (calculatedStamp == responsePairs["BP_STAMP"]) ? "TRUE" : "FALSE";
+        result = (calculatedStamp == bpStamp) ? "TRUE" : "FALSE";
     }
     return result;
 }

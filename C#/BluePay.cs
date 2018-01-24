@@ -1079,7 +1079,7 @@ namespace BluePayLibrary
                     "&AMOUNT_MISC=" + HttpUtility.UrlEncode(this.amountMisc) +
                     "&REMOTE_IP=" + System.Net.Dns.GetHostEntry("").AddressList[0].ToString() +
                     "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
-                    "&RESPONSEVERSION=3";
+                    "&RESPONSEVERSION=1";
                     if (this.swipeData != "")
                     {
                         Match matchTrack1And2 = track1And2.Match(this.swipeData);
@@ -1241,7 +1241,7 @@ namespace BluePayLibrary
             }
             else
             {
-                result = "ERROR - RESPONSEVERSION MUST BE >= 3";    
+                result = "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION";    
             }
 
             return result;

@@ -998,7 +998,7 @@ Namespace BPVB
 
         Public Function process() As String
             Dim postData As String = "MODE=" + HttpUtility.UrlEncode(Me.mode)
-            postData = postData + "&RESPONSEVERSION=3"
+            postData = postData + "&RESPONSEVERSION=1"
             'If (Me.transType <> "SET" And Me.transType <> "GET") Then
             If (Me.API = "bp10emu") Then
                 calcTPS()
@@ -1154,7 +1154,7 @@ Namespace BPVB
                 Dim calculatedStamp As String = generateTPS(bpStampString, tpsHashType)
                 result = If(calculatedStamp = responsePairs.Item("BP_STAMP"), "TRUE", "FALSE")
             Else
-                result = "ERROR - RESPONSEVERSION MUST BE >= 3"
+                result = "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION"
             End If 
 
             Return result 
