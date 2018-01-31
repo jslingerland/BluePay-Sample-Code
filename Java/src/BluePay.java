@@ -763,14 +763,14 @@ public class BluePay
 
   public String generateTPS(String message, String hashType) throws java.security.NoSuchAlgorithmException {
     String tpsHash = "";
-      if(hashType == "HMAC_SHA256") {
+      if(hashType.equals("HMAC_SHA256")) {
         HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-256");
         tpsHash = h.getHMAC();
-      } else if (hashType == "SHA512") {
+      } else if (hashType.equals("SHA512")) {
         tpsHash = sha512(BP_SECRET_KEY + message);
-      } else if (hashType == "SHA256") {
-        tpsHash = sha256(BP_SECRET_KEY + message);
-      } else if (hashType == "MD5") {
+      } else if (hashType.equals("SHA256")) {
+          tpsHash = sha256(BP_SECRET_KEY + message);
+      } else if (hashType.equals("MD5")) {
         tpsHash = md5(BP_SECRET_KEY + message);
       } else {
         HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-512");
