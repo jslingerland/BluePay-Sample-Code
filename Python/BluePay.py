@@ -190,8 +190,13 @@ class BluePay:
         self.city = params['city']
         self.state = params['state']
         self.zipcode = params['zipcode']
-        self.addr2 = params['addr2']
+        if 'addr2' in params:
+           self.addr2 = params['addr2']
         self.country = params['country']
+        if 'phone' in params:
+            self.phone = params['phone']
+        if 'email' in params:
+            self.email = params['email']
         
     # Sets payment type. Needed if using ACH tokens
     def set_payment_type(self, pay_type):
