@@ -1225,30 +1225,6 @@ public class BluePay
   	  }
     }  
     return map;  
-  } 
-
-  /** Validates the BP Stamp used to authenticate the message.
-  *
-  * @return 'TRUE' or 'FALSE'
-  * @throws NoSuchAlgorithmException 
-  * @throws UnsupportedEncodingException 
-  *
-  */
-  public String validBPStamp() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-   String result = "";
-   if(response.containsKey("BP_STAMP")) {
-     String bpStampString = "";
-     String[] bpStampFields = response.get("BP_STAMP_DEF").split("%20");
-     for (String field : bpStampFields) {
-       bpStampString += response.get(field);
-     }
-     bpStampString = java.net.URLDecoder.decode(bpStampString, "UTF-8");
-     String calculatedStamp = generateTPS(bpStampString, response.get("TPS_HASH_TYPE")).toUpperCase(); 
-     result = calculatedStamp.equals(response.get("BP_STAMP")) ? "TRUE" : "FALSE";
-   } else {
-     result = "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION";
-   }
-   return result;
   }
 
   /** Returns a one word description indicating the result.

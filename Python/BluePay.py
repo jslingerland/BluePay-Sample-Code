@@ -900,18 +900,6 @@ class BluePay:
         # Returns hash function used for transaction
         self.tps_hash_type_response = self.response['TPS_HASH_TYPE'][0] if 'TPS_HASH_TYPE' in self.response else ''
 
-    def valid_bp_stamp(self):
-        if self.bp_stamp_response == '':
-            result = 'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION'
-        else:
-            bp_stamp_string = ''
-            bp_stamp_fields = self.bp_stamp_def_response.split(' ')
-            for field in bp_stamp_fields:
-                bp_stamp_string += self.response[field][0]
-            result = 'TRUE' if self.create_tps_hash(bp_stamp_string, self.tps_hash_type_response).upper() == self.bp_stamp_response else 'FALSE'
-        return result
-    
-
 
  
     

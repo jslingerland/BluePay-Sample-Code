@@ -1,63 +1,47 @@
+#!/usr/bin/ruby
+
 ##
 # BluePay Ruby Sample code.
 #
-# This code sample runs a $3.00 Credit Card sales transaction
-# against a customer using test payment information.
-# It then validates the BP_STAMP returned by BluePay
-# to authenticate the transaction.
-# If using TEST mode, odd dollar amounts will return
-# an approval and even dollar amounts will return a decline.
+# This code sample reads the values from a BP10emu redirect
+# and authenticates the message using the the BP_STAMP
+# provided in the response. Point the REDIRECT_URL of your 
+# BP10emu request to the location of this script on your server.
 ##
 
-require_relative "../../lib/bluepay.rb"
+print "Content-type:text/html\r\n\r\n"
+print "<html><head></head><body>"
+
+require_relative "bluepay.rb"
+require "cgi"
 
 ACCOUNT_ID = "Merchant's Account ID Here"
 SECRET_KEY = "Merchant's Secret Key Here"
-MODE = "TEST"  
+MODE = "TEST" 
 
-payment = BluePay.new(
-  account_id: ACCOUNT_ID,  
-  secret_key: SECRET_KEY,  
-  mode: MODE
-)
+response = CGI.new
+responsePairs = response.params()
 
-payment.set_customer_information(
-  first_name: "Bob", 
-  last_name: "Tester",
-  address1: "123 Test St.", 
-  address2: "Apt #500", 
-  city: "Testville", 
-  state: "IL", 
-  zip_code: "54321", 
-  country: "USA",
-  phone: "123-123-1234",  
-  email: "test@bluepay.com"  
-)
+if responsePairs["BP_STAMP"] # Check whether BP_STAMP is provided
 
-payment.set_cc_information(
-  cc_number: "4111111111111111", # Customer Credit Card Number
-  cc_expiration: "1225", # Card Expiration Date: MMYY
-  cvv2: "123" # Card CVV2
-)
+  bp = BluePay.new(account_id: ACCOUNT_ID, secret_key: SECRET_KEY, mode: MODE)
 
-payment.sale(amount: "3.00") # Sale Amount: $3.00
+  bp_stamp_string = ''
+  responsePairs["BP_STAMP_DEF"][0].split(" ").each do |field| # Split BP_STAMP_DEF on whitespace
+    bp_stamp_string += responsePairs[field][0] # Concatenate values used to calculate expected BP_STAMP
+  end
+  expected_stamp = bp.create_tps_hash(bp_stamp_string, responsePairs["TPS_HASH_TYPE"][0]).upcase # Calculate expected BP_STAMP using hash function specified in response
 
-# Makes the API Request with BluePay
-payment.process
+  if expected_stamp == responsePairs["BP_STAMP"][0] # Compare expected BP_STAMP with received BP_STAMP
+    # Validate BP_STAMP and reads the response results
+    print "VALID BP_STAMP: TRUE<br/>"
+    responsePairs.each{|k,v| print "#{k}: #{v[0]}<br/>"}
+  else
+    print "ERROR: BP_STAMP VALUES DO NOT MATCH<br/>"
+  end
 
-# If transaction was successful reads the responses from BluePay
-if payment.successful_transaction?  
-  puts "TRANSACTION STATUS: " + payment.get_status
-  puts "TRANSACTION MESSAGE: " + payment.get_message
-  puts "TRANSACTION ID: " + payment.get_trans_id
-  puts "AVS RESPONSE: " + payment.get_avs_code
-  puts "CVV2 RESPONSE: " + payment.get_cvv2_code
-  puts "MASKED PAYMENT ACCOUNT: " + payment.get_masked_account
-  puts "CARD TYPE: " + payment.get_card_type
-  puts "AUTH CODE: " + payment.get_auth_code
-  # Validate the BP_STAMP. Returns "TRUE" for a valid stamp, "FALSE" for invalid.
-  puts "VALID BP_STAMP: " + payment.valid_bp_stamp
 else
-  puts payment.get_message
+  print "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION<br/>"
 end
 
+print "</body></html>"

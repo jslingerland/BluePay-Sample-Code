@@ -191,22 +191,6 @@ sub parse_response {
     }
 }
 
-# Validates BP Stamp provided by BluePay
-sub valid_bp_stamp {
-    my $self = shift;
-    my $result = '';
-    if (!defined $self->{BP_STAMP}){
-        $result = 'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION';
-    } else {
-        my $bp_stamp_string = '';
-        foreach my $field (split(' ', $self->{BP_STAMP_DEF})){
-            $bp_stamp_string .= $self->{$field};
-        }
-        $result = uc( $self->generate_tps($bp_stamp_string, $self->{TPS_HASH_TYPE}) ) eq $self->{BP_STAMP} ? 'TRUE' : 'FALSE';
-    }
-    return $result;
-}
-
 # returns true if the transaction is successful
 sub is_successful_response{
     my $self = shift;

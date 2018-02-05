@@ -13,7 +13,7 @@
 // #include "../Get_Data/Retrieve_Settlement_Data.h"
 // #include "../Get_Data/Retrieve_Transaction_Data.h"
 // #include "../Get_Data/Single_Transaction_Query.h"
-// #include "../Get_Data/Valid_BP_Stamp.h"
+// #include "../Get_Data/Validate_BP_Stamp.h"
 
 // #include "../Rebill/Cancel_Recurring_Payment.h"
 // #include "../Rebill/Create_Recurring_Payment_ACH.h"

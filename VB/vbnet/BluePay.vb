@@ -1136,55 +1136,6 @@ Namespace BPVB
             Dim httpResponse As WebResponse = request.Response()
             responseParams(httpResponse)
         End Sub
-
-        Public Function validBPStamp() As String
-            Dim result As String
-            Dim responsePairs As Collection = getResponsePairs()
-
-            If responsePairs.Contains("BP_STAMP") Then
-                Dim bpStampString As String = ""
-                Dim separator() As String = {"%20"}
-                Dim bpStampDef As String = responsePairs.Item("BP_STAMP_DEF")
-                Dim bpStampFields() As String = bpStampDef.Split(separator, StringSplitOptions.RemoveEmptyEntries)
-                For Each field As String in bpStampFields
-                    bpStampString = bpStampString + responsePairs.Item(field)
-                Next
-                bpStampString = HttpUtility.UrlDecode(bpStampString)
-                Dim tpsHashType As String = responsePairs.Item("TPS_HASH_TYPE")
-                Dim calculatedStamp As String = generateTPS(bpStampString, tpsHashType)
-                result = If(calculatedStamp = responsePairs.Item("BP_STAMP"), "TRUE", "FALSE")
-            Else
-                result = "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION"
-            End If 
-
-            Return result 
-        End Function
-
-        Public Function getResponsePairs() As Collection
-            Dim responsePairs As Collection = New Collection()
-
-            Dim responseSections() As String
-            Dim responseSeparator() As String = {"wlcatch?"}
-            responseSections = Me.response.Split(responseSeparator, StringSplitOptions.RemoveEmptyEntries)
-            Dim responseString As String = responseSections(1)
-
-            Dim pairSeparator() As String = {"&"}
-            Dim pairs() As String
-            pairs = responseString.Split(pairSeparator, StringSplitOptions.RemoveEmptyEntries)
-
-            Dim kvSeparator() As String = {"="}
-            Dim pair() As String
-            Dim value As String = ""
-            For Each field As String in pairs
-                pair = field.Split(kvSeparator, StringSplitOptions.RemoveEmptyEntries)
-                If (1 < pair.Length) Then
-                    value = pair(1)
-                End If
-                responsePairs.Add(value, pair(0))
-            Next
-
-            Return responsePairs
-        End Function
         
         Public Function responseParams(ByVal httpResponse As WebResponse) As String
             Dim responseFromServer As String = ""

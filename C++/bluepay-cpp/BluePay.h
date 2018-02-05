@@ -240,8 +240,9 @@ public:
 
   void addHeader(const std::string& s);
   size_t rcvHeaders(void *buffer, size_t size, size_t nmemb, void *userp);
+  std::vector<std::string> split(const std::string &s, char delim);
+  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
   char* process();
-  std::string validBPStamp();
   std::map<std::string, std::string> mapResponsePairs(std::string responseString);
   std::string getResponse();
   char* getResult();

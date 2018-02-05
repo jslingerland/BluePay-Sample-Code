@@ -2,19 +2,7 @@ class BluePay
   def get_response
     @RESPONSE_HASH
   end
-
-  def valid_bp_stamp
-    if get_bp_stamp == nil or get_bp_stamp == ""
-      'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION'
-    else
-      bp_stamp_string = ""
-      get_bp_stamp_def.split(" ").each do |field|
-        bp_stamp_string += @RESPONSE_HASH[field]
-      end
-      create_tps_hash(bp_stamp_string, get_hash_type).upcase == get_bp_stamp ? "TRUE" : "FALSE"
-    end
-  end
-
+  
   # Returns true if response status is approved and not a duplicate, else returns false
   def successful_transaction?
     self.get_status == "APPROVED" && self.get_message != "DUPLICATE"

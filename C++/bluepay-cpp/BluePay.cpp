@@ -1114,22 +1114,22 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
   return size * nmemb;
 }
 
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) 
+std::vector<std::string> BluePay::split(const std::string &s, char delim, std::vector<std::string> &elems)
 {
-  std::stringstream ss(s);
-  std::string item;
-  while (std::getline(ss, item, delim))  {
-    elems.push_back(item);
-  }
-  return elems;
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim))  {
+        elems.push_back(item);
+    }
+    return elems;
 }
 
 
-std::vector<std::string> split(const std::string &s, char delim) 
+std::vector<std::string> BluePay::split(const std::string &s, char delim) 
 {
-  std::vector<std::string> elems;
-  split(s, delim, elems);
-  return elems;
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
 }
 
 char* BluePay::process()
@@ -1314,31 +1314,6 @@ char* BluePay::process()
     this->response = readBuffer;
     //std::cout << "response:" + this->getResponse();
     return getMessage();
-}
-
-/// <summary>
-/// Validates BP_Stamp used to authenticate response
-/// </summary>
-/// <returns></returns>
-std::string BluePay::validBPStamp()
-{
-    std::string result;
-    
-    if (responseFields.find("BP_STAMP") == responseFields.end()) {
-        result = "ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION";
-    } else {
-        std::string bpStamp = responseFields["BP_STAMP"];
-        std::string bpStampDef = responseFields["BP_STAMP_DEF"];
-        std::string bpStampString = "";
-        std::vector<std::string> bpStampFields = split(bpStampDef, ' ');
-        for (std::string field : bpStampFields) {
-            bpStampString += responseFields[field];
-        }
-        std::string calculatedStamp = generateTps(bpStampString, responseFields["TPS_HASH_TYPE"]);
-        std::transform(calculatedStamp.begin(), calculatedStamp.end(),calculatedStamp.begin(), ::toupper);
-        result = (calculatedStamp == bpStamp) ? "TRUE" : "FALSE";
-    }
-    return result;
 }
 
 /// <summary>

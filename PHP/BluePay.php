@@ -944,20 +944,5 @@ class BluePay {
         // return true;
         return ($this->getStatus() == "APPROVED" && $this->getMessage() != "DUPLICATE"); 
     }
-
-    public function validBPStamp() {
-        if ($this->bpStamp == null) {
-            $result = 'ERROR: BP_STAMP NOT FOUND. CHECK MESSAGE & RESPONSEVERSION';
-        } else {
-            parse_str($this->response, $output);
-            $bpStampFields = explode(" ", $this->bpStampDef);
-            $bpStampString = '';
-            foreach ($bpStampFields as $field) {
-                $bpStampString .= $output[$field];
-            }
-            $result = ( strtoupper($this->createTPSHash($bpStampString, $this->tpsHashType)) == $this->bpStamp ? "True" : "False" );
-        }
-        return $result;
-    }
 }
 ?>
