@@ -193,6 +193,12 @@ class BluePay {
         if(isset($params["country"])) {
             $this->country = $params["country"];
         }
+        if(isset($params["phone"])) {
+            $this->phone = $params["phone"];
+        }
+        if(isset($params["email"])) {
+            $this->email = $params["email"];
+        }
     }
 
     // Passes credit card information into the transaction
