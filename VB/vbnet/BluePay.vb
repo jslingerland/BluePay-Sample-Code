@@ -119,7 +119,7 @@ Namespace BPVB
         Private excludeErrors As String = ""
 
         Private TPS As String = ""
-        Private tpsHashType As String = "MD5"
+        Private tpsHashType As String = "HMAC_SHA512"
         Private api As String = ""
         Public response As String = ""
 

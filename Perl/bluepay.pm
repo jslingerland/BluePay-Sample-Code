@@ -25,7 +25,7 @@ sub new {
     $self->{ACCOUNT_ID} = shift;
     $self->{SECRET_KEY} = shift;
     $self->{MODE} = shift;
-    $self->{TPS_HASH_TYPE} = "MD5";
+    $self->{TPS_HASH_TYPE} = "HMAC_SHA512";
 
     # return object
     return $self;

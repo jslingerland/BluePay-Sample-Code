@@ -126,7 +126,7 @@ namespace BluePayLibrary
         public string BPheaderstring = "";
 
         public int numRetries = 0;
-        public string tpsHashType = "MD5";
+        public string tpsHashType = "HMAC_SHA512";
 
         // level 2 processing field
         public Dictionary<string, string> level2Info = new Dictionary<string, string>();

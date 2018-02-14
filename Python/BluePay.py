@@ -97,7 +97,7 @@ class BluePay:
     # Processing fields
     url = ''
     api = ''
-    tps_hash_type = 'MD5'
+    tps_hash_type = 'HMAC_SHA512'
 
     # Level 2 Processing field
     level2_info = {}
