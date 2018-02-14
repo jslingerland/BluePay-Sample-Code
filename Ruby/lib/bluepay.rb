@@ -393,19 +393,27 @@ class BluePay
     @PARAM_HASH['PROTECT_CUSTOM_ID2'] = params[:protect_custom_id2] || "No" 
     @PARAM_HASH['SHPF_FORM_ID'] = params[:payment_template] || "mobileform01"
     @PARAM_HASH['RECEIPT_FORM_ID'] = params[:receipt_template] || "mobileresult01"
-    @PARAM_HASH['REMOTE_URL'] = params[:receipt_temp_remote_url] || '' 
+    @PARAM_HASH['REMOTE_URL'] = params[:receipt_temp_remote_url] || ''
+    @PARAM_HASH['SHPF_TPS_HASH_TYPE'] = "HMAC_SHA512"
+    @PARAM_HASH['RECEIPT_TPS_HASH_TYPE'] = @PARAM_HASH['SHPF_TPS_HASH_TYPE']
+    @PARAM_HASH['TPS_HASH_TYPE'] = set_hash_type(params[:tps_hash_type] || '')
     @card_types = set_card_types
-    @receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF'
+    @receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE'
     @receipt_tps_string = set_receipt_tps_string
-    @receipt_tamper_proof_seal = calc_url_tps(@receipt_tps_string)
+    @receipt_tamper_proof_seal = create_tps_hash(@receipt_tps_string, @PARAM_HASH['RECEIPT_TPS_HASH_TYPE'])
     @receipt_url = set_receipt_url
-    @bp10emu_tps_def = add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF')
+    @bp10emu_tps_def = add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE')
     @bp10emu_tps_string = set_bp10emu_tps_string
-    @bp10emu_tamper_proof_seal = calc_url_tps(@bp10emu_tps_string)
-    @shpf_tps_def = add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF')
+    @bp10emu_tamper_proof_seal = create_tps_hash(@bp10emu_tps_string, @PARAM_HASH['TPS_HASH_TYPE'])
+    @shpf_tps_def = add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE')
     @shpf_tps_string = set_shpf_tps_string
-    @shpf_tamper_proof_seal = calc_url_tps(@shpf_tps_string)
+    @shpf_tamper_proof_seal = create_tps_hash(@shpf_tps_string, @PARAM_HASH['SHPF_TPS_HASH_TYPE'])
     return calc_url_response
+  end
+
+  def set_hash_type(chosen_hash)
+    default_hash = "HMAC_SHA512"
+    ["MD5", "SHA256", "SHA512", "HMAC_SHA256"].include?(chosen_hash.upcase) ? chosen_hash.upcase : default_hash
   end
 
   # Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generate_url.
@@ -418,41 +426,42 @@ class BluePay
 
   # Sets the receipt Tamperproof Seal string. Must be used with generate_url.
   def set_receipt_tps_string
-    [@SECRET_KEY, 
-    @ACCOUNT_ID, 
+    [@ACCOUNT_ID, 
     @PARAM_HASH['RECEIPT_FORM_ID'], 
     @PARAM_HASH['RETURN_URL'], 
     @PARAM_HASH['DBA'], 
     @PARAM_HASH['AMEX_IMAGE'], 
     @PARAM_HASH['DISCOVER_IMAGE'], 
-    @receipt_tps_def].join('')
+    @receipt_tps_def,
+    @PARAM_HASH['RECEIPT_TPS_HASH_TYPE']].join('')
   end
 
   # Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with generate_url.
   def set_bp10emu_tps_string
     bp10emu = [
-    @SECRET_KEY,
     @ACCOUNT_ID,
     @receipt_url,
     @receipt_url,
     @receipt_url,
     @PARAM_HASH['MODE'],
     @PARAM_HASH['TRANSACTION_TYPE'],
-    @bp10emu_tps_def].join('')
+    @bp10emu_tps_def,
+    @PARAM_HASH['TPS_HASH_TYPE']].join('')
     return add_string_protected_status(bp10emu)
   end
 
   # Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with generate_url.
   def set_shpf_tps_string 
-    shpf = ([@SECRET_KEY,
-    @PARAM_HASH['SHPF_FORM_ID'], 
+    shpf = ([@PARAM_HASH['SHPF_FORM_ID'], 
     @ACCOUNT_ID, 
     @PARAM_HASH['DBA'], 
     @bp10emu_tamper_proof_seal, 
     @PARAM_HASH['AMEX_IMAGE'], 
     @PARAM_HASH['DISCOVER_IMAGE'], 
-    @bp10emu_tps_def, 
-    @shpf_tps_def].join(''))
+    @bp10emu_tps_def,
+    @PARAM_HASH['TPS_HASH_TYPE'], 
+    @shpf_tps_def,
+    @PARAM_HASH['SHPF_TPS_HASH_TYPE']].join(''))
     return add_string_protected_status(shpf)
   end
 
@@ -462,13 +471,14 @@ class BluePay
       return @PARAM_HASH['REMOTE_URL']
     else
       return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' + @PARAM_HASH['RECEIPT_FORM_ID'] + 
-      '&SHPF_ACCOUNT_ID=' + ACCOUNT_ID + 
-      '&SHPF_TPS_DEF='    + url_encode(@receipt_tps_def) + 
-      '&SHPF_TPS='        + url_encode(@receipt_tamper_proof_seal) + 
-      '&RETURN_URL='      + url_encode(@PARAM_HASH['RETURN_URL']) + 
-      '&DBA='             + url_encode(@PARAM_HASH['DBA']) + 
-      '&AMEX_IMAGE='      + url_encode(@PARAM_HASH['AMEX_IMAGE']) + 
-      '&DISCOVER_IMAGE='  + url_encode(@PARAM_HASH['DISCOVER_IMAGE'])
+      '&SHPF_ACCOUNT_ID='     + @ACCOUNT_ID + 
+      '&SHPF_TPS_DEF='        + url_encode(@receipt_tps_def) + 
+      '&SHPF_TPS_HASH_TYPE='  + url_encode(@PARAM_HASH['RECEIPT_TPS_HASH_TYPE']) +
+      '&SHPF_TPS='            + url_encode(@receipt_tamper_proof_seal) + 
+      '&RETURN_URL='          + url_encode(@PARAM_HASH['RETURN_URL']) + 
+      '&DBA='                 + url_encode(@PARAM_HASH['DBA']) + 
+      '&AMEX_IMAGE='          + url_encode(@PARAM_HASH['AMEX_IMAGE']) + 
+      '&DISCOVER_IMAGE='      + url_encode(@PARAM_HASH['DISCOVER_IMAGE'])
     end
   end
 
@@ -511,6 +521,7 @@ class BluePay
     'SHPF_FORM_ID='       .concat(url_encode    (@PARAM_HASH['SHPF_FORM_ID'])       ) +
     '&SHPF_ACCOUNT_ID='   .concat(url_encode    (@ACCOUNT_ID)                       ) +
     '&SHPF_TPS_DEF='      .concat(url_encode    (@shpf_tps_def)                     ) +
+    '&SHPF_TPS_HASH_TYPE='.concat(url_encode    (@PARAM_HASH['SHPF_TPS_HASH_TYPE']) ) +
     '&SHPF_TPS='          .concat(url_encode    (@shpf_tamper_proof_seal)           ) +
     '&MODE='              .concat(url_encode    (@PARAM_HASH['MODE'])               ) +
     '&TRANSACTION_TYPE='  .concat(url_encode    (@PARAM_HASH['TRANSACTION_TYPE'])   ) +
@@ -528,6 +539,7 @@ class BluePay
     '&DISCOVER_IMAGE='    .concat(url_encode    (@PARAM_HASH['DISCOVER_IMAGE'])     ) +
     '&REDIRECT_URL='      .concat(url_encode    (@receipt_url)                      ) +
     '&TPS_DEF='           .concat(url_encode    (@bp10emu_tps_def)                  ) +
+    '&TPS_HASH_TYPE='     .concat(url_encode    (@PARAM_HASH['TPS_HASH_TYPE'])      ) +
     '&CARD_TYPES='        .concat(url_encode    (@card_types)                       )
   end
 end

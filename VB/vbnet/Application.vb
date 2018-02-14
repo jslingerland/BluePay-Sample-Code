@@ -1,6 +1,4 @@
-﻿
-
-Public Class Application
+﻿Public Class Application
 	Public Shared Sub Main()
     
         ''''''''''''''''''''''''''''''''''''''''''''''''
@@ -28,6 +26,8 @@ Public Class Application
 		' GetData.SingleTransactionQuery.run()
 		' GetData.RetrieveTransactionData.run()
 		' GetData.RetrieveSettlementData.run()
+        ' GetData.TransactionNotification.run()
+		' GetData.ValidateBPStamp.run()
 
 	End Sub
 End Class

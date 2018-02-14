@@ -34,35 +34,29 @@ public class Transaction_Notification extends HttpServlet {
     String TRANS_STATUS = request.getParameter("trans_status");
     String TRANS_TYPE = request.getParameter("trans_type");
     String AMOUNT = request.getParameter("amount");
-    String BATCH_ID = request.getParameter("batch_id");
-    String BATCH_STATUS = request.getParameter("batch_status");
-    String TOTAL_COUNT = request.getParameter("total_count");
-    String TOTAL_AMOUNT = request.getParameter("total_amount");
-    String BATCH_UPLOAD_ID = request.getParameter("batch_upload_id");
     String REBILL_ID = request.getParameter("rebill_id");
     String REBILL_AMOUNT = request.getParameter("reb_amount");
     String REBILL_STATUS = request.getParameter("status");
-
+    String TPS_HASH_TYPE = request.getParameter("TPS_HASH_TYPE");
+    String BP_STAMP = request.getParameter("BP_STAMP");
+    String BP_STAMP_DEF = request.getParameter("BP_STAMP_DEF");
+ 
     // calculate expected bp_stamp
-    String bpStamp;
+    String bpStampString = "";
+    String[] bpStampFields = BP_STAMP_DEF.split("%20");
+    for (String field : bpStampFields) {
+      bpStampString += request.getParameter(field);
+    }
+    bpStampString = java.net.URLDecoder.decode(bpStampString, "UTF-8");
+    String expectedStamp = "";
     try { 
-      bpStamp = tps.calcTransNotifyTPS(
-        SECRET_KEY,
-        TRANS_ID,
-        TRANS_STATUS,
-        TRANS_TYPE,
-        AMOUNT,
-        BATCH_ID,
-        BATCH_STATUS,
-        TOTAL_COUNT,
-        TOTAL_AMOUNT,
-        BATCH_UPLOAD_ID,
-        REBILL_ID,
-        REBILL_AMOUNT,
-        REBILL_STATUS);
-
+        expectedStamp = tps.generateTPS(bpStampString, TPS_HASH_TYPE).toUpperCase();
+    } catch (NoSuchAlgorithmException e) { 
+      e.printStackTrace(); 
+    }
+    
     // check if expected bp_stamp = actual bp_stamp
-    if (bpStamp == request.getParameter("bp_stamp")) {
+    if (expectedStamp == BP_STAMP) {
     // output response
       System.out.println("Transaction ID: " + TRANS_ID);
       System.out.println("Transaction Status: " + TRANS_STATUS);
@@ -74,8 +68,5 @@ public class Transaction_Notification extends HttpServlet {
     } else {
         System.out.println("ERROR IN RECEIVING DATA FROM BLUEPAY");
     }
-  } catch (NoSuchAlgorithmException e) { 
-      e.printStackTrace(); 
-  }
   }
 }
