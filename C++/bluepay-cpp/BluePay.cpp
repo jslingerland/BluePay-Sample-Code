@@ -806,32 +806,6 @@ void BluePay::calcReportTps()
 }
 
 /// <summary>
-/// Calculates BP_STAMP for trans notify post API
-/// </summary>
-/// <param name="secretKey"></param>
-/// <param name="transId"></param>
-/// <param name="transStatus"></param>
-/// <param name="transType"></param>
-/// <param name="amount"></param>
-/// <param name="batchId"></param>
-/// <param name="batchStatus"></param>
-/// <param name="totalCount"></param>
-/// <param name="totalAmount"></param>
-/// <param name="batchUploadId"></param>
-/// <param name="rebillId"></param>
-/// <param name="rebillAmount"></param>
-/// <param name="rebillStatus"></param>
-/// <returns></returns>
-std::string BluePay::calcTransNotifyTps(std::string secretKey, std::string transId, std::string transStatus, std::string transType,
-    std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
-    std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus)
-{
-  std::string tamper_proof_seal = secretKey + transId + transStatus + transType + amount + batchId + batchStatus +
-    totalCount + totalAmount + batchUploadId + rebillId + rebillAmount + rebillStatus;
-  return md5(tamper_proof_seal);
-}
-
-/// <summary>
 /// Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with GenerateURL.
 /// </summary>
 std::string BluePay::setCardTypes() 

@@ -220,9 +220,6 @@ public:
   void calcTps();
   void calcRebillTps();
   void calcReportTps();
-  static std::string calcTransNotifyTps(std::string secretKey, std::string transId, std::string transStatus, std::string transType,
-    std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
-    std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus);
 
   std::string setCardTypes();
   std::string setReceiptTpsString();
