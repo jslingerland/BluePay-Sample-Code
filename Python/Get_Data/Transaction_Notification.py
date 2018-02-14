@@ -30,34 +30,22 @@ try:
     trans_status = vars["trans_status"]
     trans_type = vars["trans_type"]
     amount = vars["amount"]
-    batch_id = vars["batch_id"]
-    batch_status = vars["batch_status"]
-    total_count = vars["total_count"]
-    total_amount = vars["total_amount"]
-    batch_upload_id = vars["batch_upload_id"]
     rebill_id = vars["rebill_id"]
     rebill_amount = vars["reb_amount"]
     rebill_status = vars["status"]
     tps_hash_type = vars["TPS_HASH_TYPE"]
+    bp_stamp = vars["BP_STAMP"]
+    bp_stamp_def = vars["BP_STAMP_DEF"]
 
     # Calculate expected bp_stamp
-    bp_stamp = tps.create_tps_hash(
-        trans_id +
-        trans_status +
-        trans_type +
-        amount +
-        batch_id +
-        batch_status +
-        total_count +
-        total_amount +
-        batch_upload_id +
-        rebill_id +
-        rebill_amount +
-        rebill_status,
-        tps_hash_type)
+    bp_stamp_string = ''
+    for field in bp_stamp_def.value.split(' '): 
+        bp_stamp_string += vars[field].value 
+
+    expected_stamp = tps.create_tps_hash(bp_stamp_string, tps_hash_type.value).upper()
 
     # check if expected bp_stamp = actual bp_stamp
-    if bp_stamp == vars["BP_STAMP"]:
+    if exepcted_stamp == bp_stamp:
 
         # Get response from BluePay
         print('Transaction ID: ' + trans_id)

@@ -74,34 +74,25 @@ namespace GetData
             string transStatus = vals["trans_stats"];
             string transType = vals["trans_type"];
             string amount = vals["amount"];
-            string batchID = vals["batch_id"];
-            string batchStatus = vals["batch_status"];
-            string totalCount = vals["total_count"];
-            string totalAmount = vals["total_amount"];
-            string batchUploadID = vals["batch_upload_id"];
             string rebillID = vals["rebill_id"];
             string rebillAmount = vals["rebill_amount"];
             string rebillStatus = vals["rebill_status"];
             string tpsHashType = vals["TPS_HASH_TYPE"];
+            string bpStamp = vals["BP_STAMP"];
+            string bpStampDef = vals["BP_STAMP_DEF"];
 
             // calculate the expected BP_STAMP
-            string bpStamp = tps.GenerateTPS(
-                vals["trans_id"] + 
-                vals["trans_stats"] + 
-                vals["trans_type"] + 
-                vals["amount"] + 
-                vals["batch_id"] + 
-                vals["batch_status"] + 
-                vals["total_count"] + 
-                vals["total_amount"] + 
-                vals["batch_upload_id"] + 
-                vals["rebill_id"] + 
-                vals["rebill_amount"] + 
-                vals["rebill_status"],
-                tpsHashType);
+            string bpStampString = "";
+            string[] defSeparator = new string[] { " " };
+            string[] bpStampFields = bpStampDef.Split(defSeparator, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string field in bpStampFields)
+            {
+                bpStampString += vals[field];
+            }
+            string expectedStamp = tps.GenerateTPS(bpStampString, tpsHashType);
 
             // Output data if the expected BP_STAMP matches the actual BP_STAMP
-            if (bpStamp == vals["BP_STAMP"]) {
+            if (expectedStamp == bpStamp) {
                 Console.Write("Transaction ID: " + transID);
                 Console.Write("Transaction Status: " + transStatus);
                 Console.Write("Transaction Type: " + transType);

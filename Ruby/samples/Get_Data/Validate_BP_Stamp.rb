@@ -20,22 +20,21 @@ SECRET_KEY = "Merchant's Secret Key Here"
 MODE = "TEST" 
 
 response = CGI.new
-responsePairs = response.params()
 
-if responsePairs["BP_STAMP"] # Check whether BP_STAMP is provided
+if response["BP_STAMP"] # Check whether BP_STAMP is provided
 
   bp = BluePay.new(account_id: ACCOUNT_ID, secret_key: SECRET_KEY, mode: MODE)
 
   bp_stamp_string = ''
-  responsePairs["BP_STAMP_DEF"][0].split(" ").each do |field| # Split BP_STAMP_DEF on whitespace
-    bp_stamp_string += responsePairs[field][0] # Concatenate values used to calculate expected BP_STAMP
+  response["BP_STAMP_DEF"].split(' ').each do |field| # Split BP_STAMP_DEF on whitespace
+    bp_stamp_string += response[field] # Concatenate values used to calculate expected BP_STAMP
   end
-  expected_stamp = bp.create_tps_hash(bp_stamp_string, responsePairs["TPS_HASH_TYPE"][0]).upcase # Calculate expected BP_STAMP using hash function specified in response
+  expected_stamp = bp.create_tps_hash(bp_stamp_string, response["TPS_HASH_TYPE"]).upcase # Calculate expected BP_STAMP using hash function specified in response
 
-  if expected_stamp == responsePairs["BP_STAMP"][0] # Compare expected BP_STAMP with received BP_STAMP
+  if expected_stamp == response["BP_STAMP"] # Compare expected BP_STAMP with received BP_STAMP
     # Validate BP_STAMP and reads the response results
     print "VALID BP_STAMP: TRUE<br/>"
-    responsePairs.each{|k,v| print "#{k}: #{v[0]}<br/>"}
+    response.params.each{|k,v| print "#{k}: #{v[0]}<br/>"}
   else
     print "ERROR: BP_STAMP VALUES DO NOT MATCH<br/>"
   end
