@@ -121,7 +121,7 @@ sub process {
         . "&TAMPER_PROOF_SEAL="
         . uri_escape( $TAMPER_PROOF_SEAL || '' )
         . "&RESPONSEVERSION="
-        . uri_escape("1");
+        . uri_escape("5");
     
     # converts the object's attributes into a query string for the api request
     while ( my ( $key, $value ) = each(%$self) ) {

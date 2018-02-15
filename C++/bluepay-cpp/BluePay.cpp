@@ -1202,7 +1202,7 @@ char* BluePay::process()
         "&STATUS=" + (this->rebillStatus);
     }
     // Add Response version to return
-    postData += "&RESPONSEVERSION=1";
+    postData += "&RESPONSEVERSION=5";
     
     // Add Level 2 data, if available.
     for( auto field : level2Info )

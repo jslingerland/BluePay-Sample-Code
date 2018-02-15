@@ -998,7 +998,7 @@ Namespace BPVB
 
         Public Function process() As String
             Dim postData As String = "MODE=" + HttpUtility.UrlEncode(Me.mode)
-            postData = postData + "&RESPONSEVERSION=1"
+            postData = postData + "&RESPONSEVERSION=5"
             'If (Me.transType <> "SET" And Me.transType <> "GET") Then
             If (Me.API = "bp10emu") Then
                 calcTPS()

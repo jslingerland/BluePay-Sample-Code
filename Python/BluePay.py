@@ -677,7 +677,7 @@ class BluePay:
         fields = {
             'MODE': self.mode,
             'RRNO': self.rrno,
-            'RESPONSEVERSION': '1' # Response version to be returned   
+            'RESPONSEVERSION': '5' # Response version to be returned   
         }
         if self.api == 'bpdailyreport2':
             self.url = 'https://secure.bluepay.com/interfaces/bpdailyreport2'

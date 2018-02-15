@@ -1084,7 +1084,7 @@ public class BluePay
   public HashMap<String,String> process() throws ClientProtocolException, IOException, NoSuchAlgorithmException {
     List <NameValuePair> nameValuePairs = new ArrayList <NameValuePair>();
 	  nameValuePairs.add(new BasicNameValuePair("MODE", BP_MODE));
-    nameValuePairs.add(new BasicNameValuePair("RESPONSEVERSION", "1")); 
+    nameValuePairs.add(new BasicNameValuePair("RESPONSEVERSION", "5")); 
 	  if (API.equals("bpdailyreport2")) {
   		  BP_URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
   		  nameValuePairs.add(new BasicNameValuePair("ACCOUNT_ID", BP_MERCHANT));

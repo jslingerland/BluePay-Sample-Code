@@ -742,7 +742,7 @@ class BluePay {
 
     public function process() {
         $post["MODE"] = $this->mode;
-        $post["RESPONSEVERSION"] = '1'; # Response version to be returned
+        $post["RESPONSEVERSION"] = '5'; # Response version to be returned
         // Case Statement based on which api is used
         switch ($this->api) {
             case "bp10emu":
