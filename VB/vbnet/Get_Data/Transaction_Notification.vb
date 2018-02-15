@@ -23,8 +23,17 @@
         End Sub
 
         Public Shared Sub run()
+            Dim accountID As String = "Merchant's Account ID Here"
+            Dim secretKey As String = "Merchant's Secret Key Here"
+            Dim mode As String = "TEST" 
+
+            Dim tps As BluePay = New BluePay(
+                accountID,
+                secretKey,
+                mode
+            )
+
             Dim listener As HttpListener = New HttpListener()
-            Dim secretKey As String = "MERCHANT'S SECRET KEY HERE"
             Dim prefix As String = "http://localhost:8080/" ' Change this to your listener URL (and optionally port)
             Dim responseString As String = ""
 
@@ -38,7 +47,7 @@
             While (listener.IsListening)
                 Dim context As HttpListenerContext = listener.GetContext()
                 Dim response As HttpListenerResponse = context.Response
-                Dim body = New StreamReader(context.Request.InputStream).ReadToEnd()
+                Dim body As String = New StreamReader(context.Request.InputStream).ReadToEnd()
 
                 ' Return HTTP Status of 200 to BluePay
                 context.Response.StatusCode = 200
@@ -50,13 +59,14 @@
                 response.ContentLength64 = buffer.Length
                 Dim output As System.IO.Stream = response.OutputStream
                 output.Write(buffer, 0, buffer.Length)
-                responseString = Encoding.ASCII.GetString(buffer)
+                responseString = System.Text.Encoding.ASCII.GetString(buffer)
                 context.Response.Close()
 
                 ' Parse data into a NVP collection
                 Dim vals As NameValueCollection = HttpUtility.ParseQueryString(responseString)
                 Dim bpStampDef As String = vals("BP_STAMP_DEF")
-                Dim bpStampVals As String = secretKey
+                Dim tpsHashType As String = vals("TPS_HASH_TYPE")
+                Dim bpStampVals As String
                 Dim strArr() As String
                 Dim i As Integer
                 strArr = bpStampDef.Split(" ")
@@ -65,7 +75,7 @@
                 Next
 
                 ' calculate the expected BP_STAMP
-                Dim bpStamp = BluePay.calcTransNotifyTPS(bpStampVals)
+                Dim bpStamp As String = tps.generateTPS(bpStampVals, tpsHashType)
 
                 ' Output data if the expected bp_stamp matches the actual BP_STAMP
                 If bpStamp = vals("BP_STAMP") Then
@@ -83,3 +93,4 @@
         End Sub
     End Class
  End Namespace
+''

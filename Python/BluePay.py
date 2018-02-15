@@ -97,7 +97,7 @@ class BluePay:
     # Processing fields
     url = ''
     api = ''
-    tps_hash_type = 'MD5'
+    tps_hash_type = 'HMAC_SHA512'
 
     # Level 2 Processing field
     level2_info = {}
@@ -404,19 +404,19 @@ class BluePay:
     ### API REQUEST ###
 
     # Functions for calculating the TAMPER_PROOF_SEAL
-    def create_tps_hash(self, string):
+    def create_tps_hash(self, string, hash_type):
         tps_hash = ""
-        if self.tps_hash_type == "HMAC_SHA256":
+        if hash_type == "HMAC_SHA256":
             tps_hash = hmac.new(self.secret_key, string, hashlib.sha256).hexdigest()
-        elif self.tps_hash_type == "SHA512":
+        elif hash_type == "SHA512":
             m = hashlib.sha512()
             m.update(self.secret_key + string)
             tps_hash = m.hexdigest()
-        elif self.tps_hash_type == "SHA256":
+        elif hash_type == "SHA256":
             m = hashlib.sha256()
             m.update(self.secret_key + string)
             tps_hash = m.hexdigest()
-        elif self.tps_hash_type == "MD5":
+        elif hash_type == "MD5":
             m = hashlib.md5()
             m.update(self.secret_key + string)
             tps_hash = m.hexdigest()
@@ -430,23 +430,17 @@ class BluePay:
         tps_string = (self.account_id + self.trans_type + self.amount + self.do_rebill + 
                         self.reb_first_date + self.reb_expr + self.reb_cycles + self.reb_amount + 
                         self.rrno + self.mode)
-        tps = self.create_tps_hash(tps_string)
+        tps = self.create_tps_hash(tps_string, self.tps_hash_type)
         return tps
 
     def calc_rebill_TPS(self):
         tps_string = (self.account_id + self.trans_type + self.rebill_id)
-        tps = self.create_tps_hash(tps_string)
+        tps = self.create_tps_hash(tps_string, self.tps_hash_type)
         return tps 
         
     def calc_report_TPS(self):
         tps_string = (self.account_id + self.report_start_date + self.report_end_date)
-        tps = self.create_tps_hash(tps_string)
-        return tps
-        
-    def calc_trans_notify_TPS(self):
-        tps_string = (trans_id, trans_status, trans_type, amount, batch_id, batch_status,
-                      total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
-        tps = self.create_tps_hash(tps_string)
+        tps = self.create_tps_hash(tps_string, self.tps_hash_type)
         return tps
 
     # Required arguments for generate_url:
@@ -533,19 +527,28 @@ class BluePay:
         else:
             self.receipt_form_id = "mobileresult01"
         if 'receipt_temp_remote_url' in params:
-            self.remote_url = params['receipt_temp_remote_url'] 
+            self.remote_url = params['receipt_temp_remote_url']
+        self.shpf_tps_hash_type = 'HMAC_SHA512'
+        self.receipt_tps_hash_type = self.shpf_tps_hash_type
+        self.tps_hash_type = self.set_hash_type(params.get('tps_hash_type', ''))
         self.card_types = self.set_card_types()
-        self.receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF'
+        self.receipt_tps_def = 'SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE'
         self.receipt_tps_string = self.set_receipt_tps_string()
-        self.receipt_tamper_proof_seal = self.calc_url_tps(self.receipt_tps_string)
+        self.receipt_tamper_proof_seal = self.create_tps_hash(self.receipt_tps_string, self.receipt_tps_hash_type)
         self.receipt_url = self.set_receipt_url()
-        self.bp10emu_tps_def = self.add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF')
+        self.bp10emu_tps_def = self.add_def_protected_status('MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE')
         self.bp10emu_tps_string = self.set_bp10emu_tps_string()
-        self.bp10emu_tamper_proof_seal = self.calc_url_tps(self.bp10emu_tps_string)
-        self.shpf_tps_def = self.add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF')
+        self.bp10emu_tamper_proof_seal = self.create_tps_hash(self.bp10emu_tps_string, self.tps_hash_type)
+        self.shpf_tps_def = self.add_def_protected_status('SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE')
         self.shpf_tps_string = self.set_shpf_tps_string()
-        self.shpf_tamper_proof_seal = self.calc_url_tps(self.shpf_tps_string)
+        self.shpf_tamper_proof_seal = self.create_tps_hash(self.shpf_tps_string, self.shpf_tps_hash_type)
         return self.calc_url_response()
+
+    # Validates hash type or uses default
+    def set_hash_type(self, chosen_hash):
+        default_hash = 'HMAC_SHA512'
+        result = chosen_hash.upper() if chosen_hash.upper() in ['MD5', 'SHA256', 'SHA512', 'HMAC_SHA256'] else default_hash
+        return result
 
     # Sets the types of credit card images to use on the Simple Hosted Payment Form. Must be used with generate_url.
     def set_card_types(self):
@@ -558,38 +561,39 @@ class BluePay:
 
     # Sets the receipt Tamperproof Seal string. Must be used with generate_url.
     def set_receipt_tps_string(self):
-        return ''.join(self.secret_key +
-            self.account_id +
+        return ''.join(self.account_id +
             self.receipt_form_id +
             self.return_url +
             self.dba +
             self.accept_amex +
             self.accept_discover +
-            self.receipt_tps_def)
+            self.receipt_tps_def + 
+            self.receipt_tps_hash_type)
 
     # Sets the bp10emu string that will be used to create a Tamperproof Seal. Must be used with generate_url.
     def set_bp10emu_tps_string(self):
-        bp10emu = ''.join(self.secret_key +
-            self.account_id + 
+        bp10emu = ''.join(self.account_id + 
             self.receipt_url + 
             self.receipt_url +
             self.receipt_url +
             self.mode +
             self.trans_type +
-            self.bp10emu_tps_def)
+            self.bp10emu_tps_def + 
+            self.tps_hash_type)
         return self.add_string_protected_status(bp10emu)
 
     # Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with generate_url.
     def set_shpf_tps_string(self):
-        shpf = ''.join(self.secret_key +
-            self.shpf_form_id +
+        shpf = ''.join(self.shpf_form_id +
             self.account_id + 
             self.dba + 
             self.bp10emu_tamper_proof_seal +
             self.accept_amex +
             self.accept_discover +
             self.bp10emu_tps_def +
-            self.shpf_tps_def)
+            self.tps_hash_type +
+            self.shpf_tps_def + 
+            self.shpf_tps_hash_type)
         return self.add_string_protected_status(shpf)
 
     # Sets the receipt url or uses the remote url provided. Must be used with generate_url.
@@ -601,6 +605,7 @@ class BluePay:
             'SHPF_FORM_ID=' + self.receipt_form_id + 
             '&SHPF_ACCOUNT_ID=' + self.account_id + 
             '&SHPF_TPS_DEF=' + self.url_encode(self.receipt_tps_def) + 
+            '&SHPF_TPS_HASH_TYPE=' + self.url_encode(self.receipt_tps_hash_type) +
             '&SHPF_TPS=' + self.url_encode(self.receipt_tamper_proof_seal) + 
             '&RETURN_URL=' + self.url_encode(self.return_url) + 
             '&DBA=' + self.url_encode(self.dba) + 
@@ -640,18 +645,13 @@ class BluePay:
             encoded_string += char
         return encoded_string
     
-    # Generates a Tamperproof Seal for a url. Must be used with generate_url.
-    def calc_url_tps(self, tps_type):
-        m = hashlib.md5()
-        m.update(tps_type)
-        return m.hexdigest()
-
     # Generates the final url for the Simple Hosted Payment Form. Must be used with generate_url.
     def calc_url_response(self):
         return ''.join('https://secure.bluepay.com/interfaces/shpf?' +
             'SHPF_FORM_ID='       + self.url_encode(self.shpf_form_id) +
             '&SHPF_ACCOUNT_ID='   + self.url_encode(self.account_id) +
             '&SHPF_TPS_DEF='      + self.url_encode(self.shpf_tps_def) +
+            '&SHPF_TPS_HASH_TYPE='+ self.url_encode(self.shpf_tps_hash_type) +
             '&SHPF_TPS='          + self.url_encode(self.shpf_tamper_proof_seal) +
             '&MODE='              + self.url_encode(self.mode) +
             '&TRANSACTION_TYPE='  + self.url_encode(self.trans_type) +
@@ -668,14 +668,16 @@ class BluePay:
             '&AMEX_IMAGE='        + self.url_encode(self.accept_amex) +
             '&DISCOVER_IMAGE='    + self.url_encode(self.accept_discover) +
             '&REDIRECT_URL='      + self.url_encode(self.receipt_url) +
-            '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def)+
+            '&TPS_DEF='           + self.url_encode(self.bp10emu_tps_def) +
+            '&TPS_HASH_TYPE='     + self.url_encode(self.tps_hash_type) +
             '&CARD_TYPES='        + self.url_encode(self.card_types))
 
     ### PROCESSES THE API REQUEST ####
     def process(self, card=None, customer=None, order=None):
         fields = {
             'MODE': self.mode,
-            'RRNO': self.rrno
+            'RRNO': self.rrno,
+            'RESPONSEVERSION': '5' # Response version to be returned   
         }
         if self.api == 'bpdailyreport2':
             self.url = 'https://secure.bluepay.com/interfaces/bpdailyreport2'
@@ -896,8 +898,12 @@ class BluePay:
         self.trans_type_response = self.response['trans_type'][0] if 'trans_type' in self.response else ''
         # Amount associated with the transaction
         self.amount_response = self.response['amount'][0] if 'amount' in self.response else ''
-
-    
+        # Returns the BP_STAMP used to authenticate response
+        self.bp_stamp_response = self.response['BP_STAMP'][0] if 'BP_STAMP' in self.response else ''
+        # Returns the fields used to calculate the BP_STAMP
+        self.bp_stamp_def_response = self.response['BP_STAMP_DEF'][0] if 'BP_STAMP_DEF' in self.response else ''
+        # Returns hash function used for transaction
+        self.tps_hash_type_response = self.response['TPS_HASH_TYPE'][0] if 'TPS_HASH_TYPE' in self.response else ''
 
 
  

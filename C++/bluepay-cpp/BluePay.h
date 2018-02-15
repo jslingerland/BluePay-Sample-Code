@@ -28,7 +28,7 @@ private:
   std::string secretKey;
   std::string mode;
 
-  std::string tpsHashType = "MD5";
+  std::string tpsHashType = "HMAC_SHA512";
 
   // required for auth or sale
   std::string paymentAccount;
@@ -106,6 +106,8 @@ private:
   std::string shpfFormID;
   std::string receiptFormID;
   std::string remoteURL;
+  std::string shpfTpsHashType;
+  std::string receiptTpsHashType;
   std::string cardTypes;
   std::string receiptTpsDef;
   std::string receiptTpsString;
@@ -122,6 +124,7 @@ private:
 
   char *queryResponse;
   std::string response;
+  std::map<std::string, std::string> responseFields;
   char result[128];
   char message[128];
   char transId[16];
@@ -213,29 +216,31 @@ public:
   void setPhone(std::string phone);
   void setEmail(std::string email);
 
-  std::string generateTps(std::string message);
+  std::string generateTps(std::string message, std::string hashType);
   void calcTps();
   void calcRebillTps();
   void calcReportTps();
-  static std::string calcTransNotifyTps(std::string transId, std::string transStatus, std::string transType,
-    std::string amount, std::string batchId, std::string batchStatus, std::string totalCount, std::string totalAmount,
-    std::string batchUploadId, std::string rebillId, std::string rebillAmount, std::string rebillStatus);
 
   std::string setCardTypes();
   std::string setReceiptTpsString();
   std::string calcURLTps(std::string);
   std::string setReceiptURL();
   std::string encodeURL(std::string);
+  std::string urlDecode(std::string);
   std::string addStringProtectedStatus(std::string);
   std::string addDefProtectedStatus(std::string);
   std::string setBp10emuTpsString();
   std::string setShpfTpsString();
   std::string calcURLResponse(); 
-  std::string generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate = "mobileform01", std::string receiptTemplate = "mobileresult01", std::string receiptTempRemoteURL = "", std::string rebilling = "No", std::string rebProtect = "Yes", std::string rebAmount = "", std::string rebCycles = "", std::string rebStartDate = "", std::string rebFrequency = "", std::string customID1 = "", std::string protectCustomID1 = "No", std::string customID2 = "", std::string protectCustomID2 = "No");
+  std::string generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate = "mobileform01", std::string receiptTemplate = "mobileresult01", std::string receiptTempRemoteURL = "", std::string rebilling = "No", std::string rebProtect = "Yes", std::string rebAmount = "", std::string rebCycles = "", std::string rebStartDate = "", std::string rebFrequency = "", std::string customID1 = "", std::string protectCustomID1 = "No", std::string customID2 = "", std::string protectCustomID2 = "No", std::string tpsHashType = "");
+  std::string setHashType(std::string chosenHash);
 
   void addHeader(const std::string& s);
   size_t rcvHeaders(void *buffer, size_t size, size_t nmemb, void *userp);
+  std::vector<std::string> split(const std::string &s, char delim);
+  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
   char* process();
+  std::map<std::string, std::string> mapResponsePairs(std::string responseString);
   std::string getResponse();
   char* getResult();
   char* getTransId();
@@ -260,4 +265,3 @@ public:
 
 
 };
-

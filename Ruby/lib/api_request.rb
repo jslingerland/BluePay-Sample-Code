@@ -9,8 +9,8 @@ class BluePay
   end
 
   # Generates TPS hash based on given hash type
-  def create_tps_hash(data)
-    case @PARAM_HASH['TPS_HASH_TYPE']   
+  def create_tps_hash(data, hash_type)
+    case hash_type   
     when 'HMAC_SHA256'
       OpenSSL::HMAC.hexdigest('sha256', @SECRET_KEY, data)
     when 'SHA512'
@@ -36,7 +36,8 @@ class BluePay
         (@PARAM_HASH["REB_CYCLES"] || '') + 
         (@PARAM_HASH["REB_AMOUNT"] || '') + 
         (@PARAM_HASH["RRNO"] || '') + 
-        @PARAM_HASH["MODE"]
+        @PARAM_HASH["MODE"], 
+        @PARAM_HASH['TPS_HASH_TYPE']
       )
   end
 
@@ -45,7 +46,8 @@ class BluePay
     @PARAM_HASH["TAMPER_PROOF_SEAL"] = create_tps_hash(
       @ACCOUNT_ID +
       @PARAM_HASH["TRANS_TYPE"] + 
-      @PARAM_HASH["REBILL_ID"]
+      @PARAM_HASH["REBILL_ID"], 
+      @PARAM_HASH['TPS_HASH_TYPE']
     )
   end
 
@@ -54,26 +56,9 @@ class BluePay
     @PARAM_HASH["TAMPER_PROOF_SEAL"] = create_tps_hash(
       @ACCOUNT_ID + 
       @PARAM_HASH["REPORT_START_DATE"] + 
-      @PARAM_HASH["REPORT_END_DATE"]
+      @PARAM_HASH["REPORT_END_DATE"],
+      @PARAM_HASH['TPS_HASH_TYPE']
       )
-  end
-
-  # Calculates TAMPER_PROOF_SEAL to be used with Trans Notify API 
-  def self.calc_trans_notify_tps(trans_id, trans_status, trans_type, amount, batch_id, batch_status, total_count, total_amount, batch_upload_id, rebill_id, rebill_amount, rebill_status)
-    create_tps_hash(
-      trans_id + 
-      trans_status + 
-      transtype + 
-      amount + 
-      batch_id + 
-      batch_status + 
-      total_count + 
-      total_amount + 
-      batch_upload_id + 
-      rebill_id + 
-      rebill_amount + 
-      rebill_status
-    )
   end
 
  # sends HTTPS POST to BluePay gateway for processing
@@ -83,7 +68,7 @@ class BluePay
     ua.use_ssl = true
     
     # Set default hash function to HMAC SHA-512
-    @PARAM_HASH['TPS_HASH_TYPE'] = 'MD5'
+    @PARAM_HASH['TPS_HASH_TYPE'] = 'HMAC_SHA512'
 
     # Checks presence of CA certificate
     if File.directory?(RootCA)
@@ -100,6 +85,9 @@ class BluePay
     	@PARAM_HASH["REMOTE_IP"] = request.env['REMOTE_ADDR']
       rescue Exception
     end
+
+    # Response version to be returned
+    @PARAM_HASH["RESPONSEVERSION"] = '5'
 
     # Generate the query string and headers.  Chooses which API to make request to.
     case @api
@@ -125,8 +113,6 @@ class BluePay
       'User-Agent' => 'Bluepay Ruby Client',
       'Content-Type' => 'application/x-www-form-urlencoded'
     }
-    # Response version to be returned
-    @PARAM_HASH["VERSION"] = '3'
     # Post parameters to BluePay gateway
     headers, body = ua.post(path, query, queryheaders)
     # Split the response into the response hash.

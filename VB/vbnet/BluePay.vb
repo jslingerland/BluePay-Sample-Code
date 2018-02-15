@@ -95,6 +95,8 @@ Namespace BPVB
         Private shpfFormID As String = ""
         Private receiptFormID As String = ""
         Private remoteURL As String = ""
+        Private shpfTpsHashType As String = ""
+        Private receiptTpsHashType As String = ""
         Private cardTypes As String = ""
         Private receiptTpsDef As String = ""
         Private receiptTpsString As String = ""
@@ -117,7 +119,7 @@ Namespace BPVB
         Private excludeErrors As String = ""
 
         Private TPS As String = ""
-        Private tpsHashType As String = "MD5"
+        Private tpsHashType As String = "HMAC_SHA512"
         Private api As String = ""
         Public response As String = ""
 
@@ -649,28 +651,28 @@ Namespace BPVB
         ''' Generates the TAMPER_PROOF_SEAL to used to validate each transaction
         ''' </summary>
         '''
-        Public Function generateTPS(ByVal message As String) As String
+        Public Function generateTPS(ByVal message As String, ByVal hashType As String) As String
             Dim result As String
             Dim encode As ASCIIEncoding = New ASCIIEncoding
-            If Me.tpsHashType = "HMAC_SHA256" Then
+            If hashType = "HMAC_SHA256" Then
                 Dim secretKeyBytes() As Byte = encode.GetBytes(Me.secretKey)
                 Dim messageBytes() As Byte = encode.GetBytes(message)
                 Dim hmac As HMACSHA256 = New HMACSHA256(secretKeyBytes)
                 Dim hashBytes() As Byte = hmac.ComputeHash(messageBytes)
                 result = ByteArrayToString(hashBytes)
-            Elseif Me.tpsHashType = "SHA512" Then
+            Elseif hashType = "SHA512" Then
                 Dim sha512 As SHA512 = New SHA512Managed()
                 Dim hash() As Byte
                 Dim buffer() As Byte = encode.GetBytes(Me.secretKey + message)
                 hash = sha512.ComputeHash(buffer)
                 result = ByteArrayToString(hash)
-            Elseif Me.tpsHashType = "SHA256" Then
+            Elseif hashType = "SHA256" Then
                 Dim sha256 As SHA256 = New SHA256Managed()
                 Dim hash() As Byte
                 Dim buffer() As Byte = encode.GetBytes(Me.secretKey + message)
                 hash = sha256.ComputeHash(buffer)
                 result = ByteArrayToString(hash)
-            Elseif Me.tpsHashType = "MD5" Then
+            Elseif hashType = "MD5" Then
                 Dim md5 As MD5 = New MD5CryptoServiceProvider
                 Dim hash() As Byte
                 Dim buffer() As Byte = encode.GetBytes(Me.secretKey + message)
@@ -701,7 +703,7 @@ Namespace BPVB
                         + Me.rebillAmount _
                         + Me.masterID _
                         + Me.mode
-            Me.TPS = generateTPS(tps)
+            Me.TPS = generateTPS(tps, Me.tpsHashType)
         End Sub
 
         ''' <summary>
@@ -712,7 +714,7 @@ Namespace BPVB
             Dim tps As String = Me.accountID _
                         + Me.reportStartDate _
                         + Me.reportEndDate
-            Me.TPS = generateTPS(tps)
+            Me.TPS = generateTPS(tps, Me.tpsHashType)
         End Sub
 
 
@@ -724,16 +726,8 @@ Namespace BPVB
             Dim tps As String = Me.accountID _
                         + Me.transType _
                         + Me.rebillID
-            Me.TPS = generateTPS(tps)
+            Me.TPS = generateTPS(tps, Me.tpsHashType)
         End Sub
-
-        ''' <summary>
-        ''' Calculates BP_STAMP for trans notify post API
-        ''' </summary>
-        '''
-        Public Shared Function calcTransNotifyTPS(ByVal bp_stamp As String)
-            Return generateTPS(bp_stamp)
-        End Function
 
         'This is used to convert a byte array to a hex string
         Private Shared Function ByteArrayToString(ByVal arrInput() As Byte) As String
@@ -808,7 +802,7 @@ Namespace BPVB
         ''' <param name="paymentTemplate"></param>
         ''' <param name="receiptTemplate"></param>
         ''' <param name="receiptTempRemoteURL"></param>
-        Public Function generateURL(Optional ByVal merchantName As String = "", Optional ByVal returnURL As String = "", Optional ByVal transactionType As String = "",  Optional ByVal acceptDiscover As String = "", Optional ByVal acceptAmex As String = "", Optional ByVal amount As String = "", Optional ByVal protectAmount As String = "No", Optional ByVal rebilling As String = "No", Optional ByVal rebProtect As String = "Yes", Optional ByVal rebAmount As String = "", Optional ByVal rebCycles As String = "", Optional ByVal rebStartDate As String = "", Optional ByVal rebFrequency As String = "", Optional ByVal customID1 As String = "", Optional ByVal protectCustomID1 = "No", Optional ByVal customID2 As String = "", Optional ByVal protectCustomID2 As String = "No", Optional ByVal paymentTemplate As String = "mobileform01", Optional ByVal receiptTemplate As String = "mobileresult01", Optional ByVal receiptTempRemoteURL As String = "") As String
+        Public Function generateURL(Optional ByVal merchantName As String = "", Optional ByVal returnURL As String = "", Optional ByVal transactionType As String = "",  Optional ByVal acceptDiscover As String = "", Optional ByVal acceptAmex As String = "", Optional ByVal amount As String = "", Optional ByVal protectAmount As String = "No", Optional ByVal rebilling As String = "No", Optional ByVal rebProtect As String = "Yes", Optional ByVal rebAmount As String = "", Optional ByVal rebCycles As String = "", Optional ByVal rebStartDate As String = "", Optional ByVal rebFrequency As String = "", Optional ByVal customID1 As String = "", Optional ByVal protectCustomID1 = "No", Optional ByVal customID2 As String = "", Optional ByVal protectCustomID2 As String = "No", Optional ByVal paymentTemplate As String = "mobileform01", Optional ByVal receiptTemplate As String = "mobileresult01", Optional ByVal receiptTempRemoteURL As String = "", Optional ByVal tpsHashType As String = "") As String
             Me.dba = merchantName
             Me.returnURL = returnURL
             Me.transType = transactionType
@@ -829,20 +823,43 @@ Namespace BPVB
             Me.shpfFormID = paymentTemplate
             Me.receiptFormID = receiptTemplate
             Me.remoteURL = receiptTempRemoteURL
+            Me.shpfTpsHashType = "HMAC_SHA512"
+            Me.receiptTpsHashType = Me.shpfTpsHashType
+            Me.tpsHashType = setHashType(tpsHashType)
             Me.cardTypes = setCardTypes()
-            Me.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF"
+            Me.receiptTpsDef = "SHPF_ACCOUNT_ID SHPF_FORM_ID RETURN_URL DBA AMEX_IMAGE DISCOVER_IMAGE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE"
             Me.receiptTpsString = setReceiptTpsString()
-            Me.receiptTamperProofSeal = calcURLTps(Me.receiptTpsString)
+            Me.receiptTamperProofSeal = generateTPS(Me.receiptTpsString, Me.receiptTpsHashType)
             Me.receiptURL = setReceiptURL()
-            Me.bp10emuTpsDef = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF")
+            Me.bp10emuTpsDef = addDefProtectedStatus("MERCHANT APPROVED_URL DECLINED_URL MISSING_URL MODE TRANSACTION_TYPE TPS_DEF TPS_HASH_TYPE")
             Me.bp10emuTpsString = setBp10emuTpsString()
-            Me.bp10emuTamperProofSeal = calcURLTps(Me.bp10emuTpsString)
-            Me.shpfTpsDef = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF SHPF_TPS_DEF")
+            Me.bp10emuTamperProofSeal = generateTPS(Me.bp10emuTpsString, Me.tpsHashType)
+            Me.shpfTpsDef = addDefProtectedStatus("SHPF_FORM_ID SHPF_ACCOUNT_ID DBA TAMPER_PROOF_SEAL AMEX_IMAGE DISCOVER_IMAGE TPS_DEF TPS_HASH_TYPE SHPF_TPS_DEF SHPF_TPS_HASH_TYPE")
             Me.shpfTpsString = setShpfTpsString()
-            Me.shpfTamperProofSeal = calcURLTps(Me.shpfTpsString)
+            Me.shpfTamperProofSeal = generateTPS(Me.shpfTpsString, Me.shpfTpsHashType)
             Return calcURLResponse()
         End Function
 
+        ''' <summary>
+        ''' Validates chosen hash type or returns default hash type
+        ''' </summary>
+        Public Function setHashType(ByVal chosenHash As String) As String
+            Dim defaultHash As String = "HMAC_SHA512"
+            chosenHash = chosenHash.ToUpper()
+            Dim result As String = ""
+            Dim hashes As ArrayList = New ArrayList(4)
+            hashes.Add("MD5")
+            hashes.Add("SHA256")
+            hashes.Add("SHA512")
+            hashes.Add("HMAC_SHA256")
+            If hashes.Contains(chosenHash) Then
+                result = chosenHash
+            Else
+                result = defaultHash
+            End If 
+            Return result
+        End Function
+        
         ''' <summary>
         ''' Sets the types of credit card images to use on the Simple Hosted Payment Form, used in public string GenerateURL()
         ''' </summary>
@@ -857,14 +874,14 @@ Namespace BPVB
         ''' Sets the receipt Tamperproof Seal string, used in public string GenerateURL()
         ''' </summary>
         Public Function setReceiptTpsString() As String
-            Return Me.secretKey + Me.accountID + Me.receiptFormID + Me.returnURL + Me.dba + Me.amexImage + Me.discoverImage + Me.receiptTpsDef
+            Return Me.accountID + Me.receiptFormID + Me.returnURL + Me.dba + Me.amexImage + Me.discoverImage + Me.receiptTpsDef + Me.receiptTpsHashType
         End Function
 
         ''' <summary>
         ''' Sets the bp10emu string that will be used to create a Tamperproof Seal, used in public string GenerateURL()
         ''' </summary>
         Public Function setBp10emuTpsString() As String
-            Dim bp10emu As String = Me.secretKey + Me.accountID + Me.receiptURL + Me.receiptURL + Me.receiptURL + Me.mode + Me.transType + Me.bp10emuTpsDef
+            Dim bp10emu As String = Me.accountID + Me.receiptURL + Me.receiptURL + Me.receiptURL + Me.mode + Me.transType + Me.bp10emuTpsDef + Me.tpsHashType
             Return addStringProtectedStatus(bp10emu)
         End Function
 
@@ -872,7 +889,7 @@ Namespace BPVB
         ''' Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal, used in public string GenerateURL()
         ''' </summary>
         Public Function setShpfTpsString() As String
-            Dim shpf As String = Me.secretKey + Me.shpfFormID + Me.accountID + Me.dba + Me.bp10emuTamperProofSeal + Me.amexImage + Me.discoverImage + Me.bp10emuTpsDef + Me.shpfTpsDef
+            Dim shpf As String = Me.shpfFormID + Me.accountID + Me.dba + Me.bp10emuTamperProofSeal + Me.amexImage + Me.discoverImage + Me.bp10emuTpsDef + Me.tpsHashType + Me.shpfTpsDef + Me.shpfTpsHashType
             Return addStringProtectedStatus(shpf)
         End Function
 
@@ -885,13 +902,14 @@ Namespace BPVB
                 output = Me.remoteURL
             Else 
                 output =  "https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=" + Me.receiptFormID + _
-                "&SHPF_ACCOUNT_ID=" + Me.accountID +  _
-                "&SHPF_TPS_DEF="    + encodeURL(Me.receiptTpsDef) +  _
-                "&SHPF_TPS="        + encodeURL(Me.receiptTamperProofSeal) +  _
-                "&RETURN_URL="      + encodeURL(Me.returnURL) + _
-                "&DBA="             + encodeURL(Me.dba) +  _
-                "&AMEX_IMAGE="      + encodeURL(Me.amexImage) +  _
-                "&DISCOVER_IMAGE="  + encodeURL(Me.discoverImage)
+                "&SHPF_ACCOUNT_ID="     + Me.accountID +  _
+                "&SHPF_TPS_DEF="        + encodeURL(Me.receiptTpsDef) +  _
+                "&SHPF_TPS_HASH_TYPE="  + encodeURL(Me.receiptTpsHashType) +  _
+                "&SHPF_TPS="            + encodeURL(Me.receiptTamperProofSeal) +  _
+                "&RETURN_URL="          + encodeURL(Me.returnURL) + _
+                "&DBA="                 + encodeURL(Me.dba) +  _
+                "&AMEX_IMAGE="          + encodeURL(Me.amexImage) +  _
+                "&DISCOVER_IMAGE="      + encodeURL(Me.discoverImage)
             End If
             Return output
         End Function
@@ -956,6 +974,7 @@ Namespace BPVB
             "SHPF_FORM_ID="         + encodeURL(Me.shpfFormID)               +  _
             "&SHPF_ACCOUNT_ID="     + encodeURL(Me.accountID)                +  _
             "&SHPF_TPS_DEF="        + encodeURL(Me.shpfTpsDef)               +  _
+            "&SHPF_TPS_HASH_TYPE="  + encodeURL(Me.shpfTpsHashType)          +  _
             "&SHPF_TPS="            + encodeURL(Me.shpfTamperProofSeal)      +  _
             "&MODE="                + encodeURL(Me.mode)                     +  _
             "&TRANSACTION_TYPE="    + encodeURL(Me.transType)                +  _
@@ -973,11 +992,13 @@ Namespace BPVB
             "&DISCOVER_IMAGE="      + encodeURL(Me.discoverImage)            +  _
             "&REDIRECT_URL="        + encodeURL(Me.receiptURL)               +  _
             "&TPS_DEF="             + encodeURL(Me.bp10emuTpsDef)            +  _
+            "&TPS_HASH_TYPE="       + encodeURL(Me.tpsHashType)              +  _
             "&CARD_TYPES="          + encodeURL(Me.cardTypes)
         End Function
 
         Public Function process() As String
             Dim postData As String = "MODE=" + HttpUtility.UrlEncode(Me.mode)
+            postData = postData + "&RESPONSEVERSION=5"
             'If (Me.transType <> "SET" And Me.transType <> "GET") Then
             If (Me.API = "bp10emu") Then
                 calcTPS()
@@ -1115,14 +1136,19 @@ Namespace BPVB
             Dim httpResponse As WebResponse = request.Response()
             responseParams(httpResponse)
         End Sub
-
-
+        
         Public Function responseParams(ByVal httpResponse As WebResponse) As String
-            Dim dataStream As Stream = httpResponse.GetResponseStream()
-            Dim reader As New StreamReader(dataStream)
-            Dim responseFromServer As String = reader.ReadToEnd()
-            Me.response = HttpUtility.UrlDecode(responseFromServer)
-            reader.Close()
+            Dim responseFromServer As String = ""
+            If (Me.api="bp10emu") Then
+                responseFromServer = httpResponse.Headers.Item("Location")
+                Me.response = responseFromServer
+            Else
+                Dim dataStream As Stream = httpResponse.GetResponseStream()
+                Dim reader As New StreamReader(dataStream)
+                responseFromServer = reader.ReadToEnd()
+                Me.response = HttpUtility.UrlDecode(responseFromServer)
+                reader.Close()
+            End If
             Return responseFromServer
         End Function
         

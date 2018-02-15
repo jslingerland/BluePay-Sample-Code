@@ -15,6 +15,8 @@ namespace bluepayc
 			// RetrieveSettlementData.Main();
 			// RetrieveTransactionData.Main();
 			// SingleTransactionQuery.Main();
+			// TransactionNotification.Main();
+            // ValidateBPStamp.Main();
 
 			// REBILL
 			// CancelRecurringPayment.Main();
