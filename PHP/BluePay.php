@@ -25,6 +25,7 @@ class BluePay {
     private $state;
     private $zip;
     private $email;
+    private $companyName;
     private $phone;
     private $country;
 
@@ -199,6 +200,9 @@ class BluePay {
         if(isset($params["email"])) {
             $this->email = $params["email"];
         }
+        if(isset($params["companyName"])) {
+            $this->companyName = $params["companyName"];
+        }
     }
 
     // Passes credit card information into the transaction
@@ -361,6 +365,11 @@ class BluePay {
     // Passes value into EMAIL field
     public function setEmail($email) {
         $this->email = $email;
+    }
+
+    // Passes value into COMPANY_NAME field
+    public function setCompanyName($companyName) {
+        $this->companyName = $companyName;
     }
 
     // Passes value into NEXT_DATE field
@@ -759,6 +768,7 @@ class BluePay {
                 $post["ZIPCODE"] = $this->zip;
                 $post["PHONE"] = $this->phone;
                 $post["EMAIL"] = $this->email;
+                $post["COMPANY_NAME"] = $this->companyName;
                 $post["COUNTRY"] = $this->country;
                 $post["RRNO"] = $this->masterID;
                 $post["CUSTOM_ID"] = $this->customID1;

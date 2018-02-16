@@ -229,6 +229,7 @@ sub set_customer_information{
     $self->{COUNTRY} = $params->{country};
     $self->{PHONE} = $params->{phone};
     $self->{EMAIL} = $params->{email};
+    $self->{COMPANY_NAME} = $params->{company_name};
 }
 
 # Set ACH Payment information 

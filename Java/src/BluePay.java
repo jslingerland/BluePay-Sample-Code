@@ -62,6 +62,7 @@ public class BluePay
   private String COUNTRY = "";
   private String PHONE = "";
   private String EMAIL = "";
+  private String COMPANY_NAME = "";
   private String SWIPE = "";
   
   // optional parameters
@@ -312,6 +313,7 @@ public class BluePay
     COUNTRY = params.get("country");
     PHONE = params.get("phone");
     EMAIL = params.get("email");
+    COMPANY_NAME = params.get("companyName");
   }
 
   /**
@@ -490,6 +492,16 @@ public class BluePay
    */
   public void setEmail(String email) {
     EMAIL = email;
+  }
+  
+  /**
+   * Sets the customer's company name.
+   *
+   * @param companyName A string containing the companyName.  
+   *
+   */
+  public void setCompanyName(String companyName) {
+    COMPANY_NAME = companyName;
   }
   
   /**
@@ -1121,6 +1133,7 @@ public class BluePay
         nameValuePairs.add(new BasicNameValuePair("ZIPCODE", ZIP));
         nameValuePairs.add(new BasicNameValuePair("PHONE", PHONE));
         nameValuePairs.add(new BasicNameValuePair("EMAIL", EMAIL));
+        nameValuePairs.add(new BasicNameValuePair("COMPANY_NAME", COMPANY_NAME));
         nameValuePairs.add(new BasicNameValuePair("COUNTRY", COUNTRY));
         nameValuePairs.add(new BasicNameValuePair("RRNO", RRNO));
         nameValuePairs.add(new BasicNameValuePair("CUSTOM_ID", CUSTOM_ID1));
