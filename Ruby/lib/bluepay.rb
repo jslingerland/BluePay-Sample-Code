@@ -109,6 +109,7 @@ class BluePay
     @PARAM_HASH['COUNTRY'] = params[:country]
     @PARAM_HASH['PHONE'] = params[:phone]
     @PARAM_HASH['EMAIL'] = params[:email]
+    @PARAM_HASH['COMPANY_NAME'] = params[:company_name]
   end
 
   # Set customer Phone
@@ -119,6 +120,11 @@ class BluePay
   # Set customer E-mail address
   def email=(email)
     @PARAM_HASH['EMAIL'] = email
+  end
+
+  # Set COMPANY_NAME field
+  def company_name=(company_name)
+    @PARAM_HASH['COMPANY_NAME'] = company_name
   end
 
   # Set MEMO field

@@ -57,6 +57,7 @@ namespace BluePayLibrary
         public string phone = "";
         public string email = "";
         public string country = "";
+        public string companyName = "";
 
         // transaction variables
         public string amount = "";
@@ -153,8 +154,9 @@ namespace BluePayLibrary
         /// <param name="country"></param>
         /// <param name="phone"></param>
         /// <param name="email"></param>
+        /// <param name="companyName"></param>
 
-        public void SetCustomerInformation(string firstName, string lastName, string address1 = null, string address2 = null, string city = null, string state = null, string zip = null, string country = null, string phone = null, string email = null)
+        public void SetCustomerInformation(string firstName, string lastName, string address1 = null, string address2 = null, string city = null, string state = null, string zip = null, string country = null, string phone = null, string email = null, string companyName = null)
         {
             this.name1 = firstName;
             this.name2 = lastName;
@@ -166,6 +168,7 @@ namespace BluePayLibrary
             this.country = country;
             this.phone = phone;
             this.email = email;
+            this.companyName = companyName;
         }
 
         /// <summary>
@@ -641,6 +644,15 @@ namespace BluePayLibrary
         }
 
         /// <summary>
+        /// Sets Company_Name Field
+        /// </summary>
+        /// <param name="companyName"></param>
+        public void SetCompanyName(string companyName)
+        {
+            this.companyName = companyName;
+        }
+
+        /// <summary>
         /// Calculates TAMPER_PROOF_SEAL for bp20post API
         /// </summary>
         public void CalcTPS()
@@ -1048,6 +1060,7 @@ namespace BluePayLibrary
                     "&TAMPER_PROOF_SEAL=" + HttpUtility.UrlEncode(this.TPS) +
                     "&NAME1=" + HttpUtility.UrlEncode(this.name1) +
                     "&NAME2=" + HttpUtility.UrlEncode(this.name2) +
+                    "&COMPANY_NAME=" + HttpUtility.UrlEncode(this.companyName) +
                     "&AMOUNT=" + HttpUtility.UrlEncode(this.amount) +
                     "&ADDR1=" + HttpUtility.UrlEncode(this.addr1) +
                     "&ADDR2=" + HttpUtility.UrlEncode(this.addr2) +

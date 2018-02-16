@@ -45,6 +45,7 @@ class BluePay:
     country = ''
     phone = ''
     email = ''
+    company_name = ''
 
     # Optional fields
     memo = ''
@@ -197,6 +198,8 @@ class BluePay:
             self.phone = params['phone']
         if 'email' in params:
             self.email = params['email']
+        if 'company_name' in params:
+            self.company_name = params['company_name']
         
     # Sets payment type. Needed if using ACH tokens
     def set_payment_type(self, pay_type):
@@ -726,6 +729,7 @@ class BluePay:
                 'ZIPCODE': self.zipcode,
                 'COUNTRY': self.country,
                 'EMAIL': self.email,
+                'COMPANY_NAME': self.company_name,
                 'PHONE': self.phone,
                 'CUSTOM_ID': self.custom_id1,
                 'CUSTOM_ID2': self.custom_id2,

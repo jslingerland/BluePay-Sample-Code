@@ -48,6 +48,7 @@ Namespace BPVB
         ' Optional for auth or sale
         Private phone As String = ""
         Private email As String = ""
+        Private companyName As String = ""
         Private country As String = ""
 
         ' Transaction variables
@@ -143,7 +144,7 @@ Namespace BPVB
         ''' <param name="phone"></param>
         ''' <param name="email"></param>
         ''' 
-        Public Sub setCustomerInformation(Optional ByVal firstName As String = "", Optional ByVal lastName As String = "", Optional ByVal address1 As String = "", Optional ByVal address2 As String = "", Optional ByVal city As String = "", Optional ByVal state As String = "", Optional ByVal zipCode As String = "", Optional ByVal country As String = "", Optional ByVal phone As String = "", Optional ByVal email As String = "")
+        Public Sub setCustomerInformation(Optional ByVal firstName As String = "", Optional ByVal lastName As String = "", Optional ByVal address1 As String = "", Optional ByVal address2 As String = "", Optional ByVal city As String = "", Optional ByVal state As String = "", Optional ByVal zipCode As String = "", Optional ByVal country As String = "", Optional ByVal phone As String = "", Optional ByVal email As String = "", Optional ByVal companyName As String = "")
             Me.name1 = firstName
             Me.name2 = lastName
             Me.addr1 = address1
@@ -154,6 +155,7 @@ Namespace BPVB
             Me.country = country
             Me.phone = phone
             Me.email = email
+            Me.companyName = companyName
         End Sub
 
         ''' <summary>
@@ -569,6 +571,15 @@ Namespace BPVB
         ''' 
         Public Sub setEmail(ByVal email As String)
             Me.email = email
+        End Sub
+
+        ''' <summary>
+        ''' Sets Company_Name Field
+        ''' </summary>
+        ''' <param name="companyName"></param>
+        ''' 
+        Public Sub setCompanyName(ByVal companyName As String)
+            Me.companyName = companyName
         End Sub
 
         Public Sub set_Param(ByVal Name As String, ByVal Value As String)
@@ -1017,6 +1028,7 @@ Namespace BPVB
                 "&COMMENT=" + HttpUtility.UrlEncode(Me.memo) + _
                 "&PHONE=" + HttpUtility.UrlEncode(Me.phone) + _
                 "&EMAIL=" + HttpUtility.UrlEncode(Me.email) + _
+                "&COMPANY_NAME=" + HttpUtility.UrlEncode(Me.companyName) + _
                 "&REBILLING=" + HttpUtility.UrlEncode(Me.doRebill) + _
                 "&REB_FIRST_DATE=" + HttpUtility.UrlEncode(Me.rebillFirstDate) + _
                 "&REB_EXPR=" + HttpUtility.UrlEncode(Me.rebillExpr) + _

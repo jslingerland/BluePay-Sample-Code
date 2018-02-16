@@ -102,6 +102,34 @@ void BluePay::setCustomerInformation(std::string name1, std::string name2, std::
 /// <param name="email"></param>
 void BluePay::setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country, std::string phone, std::string email)
 {
+    this->name1 = name1;
+    this->name2 = name2;
+    this->addr1 = addr1;
+    this->addr2 = addr2;
+    this->city = city;
+    this->state = state;
+    this->zip = zip;
+    this->country = country;
+    this->phone = phone;
+    this->email = email;
+}
+
+/// <summary>
+/// Sets Customer Information
+/// </summary>
+/// <param name="name1"></param>
+/// <param name="name2"></param>
+/// <param name="addr1"></param>
+/// <param name="addr2"></param>
+/// <param name="city"></param>
+/// <param name="state"></param>
+/// <param name="zip"></param>
+/// <param name="country"></param>
+/// <param name="phone"></param>
+/// <param name="email"></param>
+/// <param name="companyName"></param>
+void BluePay::setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country, std::string phone, std::string email, std::string companyName)
+{
   this->name1 = name1;
   this->name2 = name2;
   this->addr1 = addr1;
@@ -112,6 +140,7 @@ void BluePay::setCustomerInformation(std::string name1, std::string name2, std::
   this->country = country;
   this->phone = phone;
   this->email = email;
+  this->companyName = companyName;
 }
 
 
@@ -756,6 +785,15 @@ void BluePay::setEmail(std::string Email)
 }
 
 /// <summary>
+/// Sets Company_Name Field
+/// </summary>
+/// <param name="Email"></param>
+void BluePay::setCompanyName(std::string companyName)
+{
+  this->companyName = companyName;
+}
+
+/// <summary>
 /// Generates the TAMPER_PROOF_SEAL to used to validate each transaction
 /// </summary>
 std::string BluePay::generateTps(std::string message, std::string hashType)
@@ -1158,6 +1196,7 @@ char* BluePay::process()
         "&COMMENT=" + (this->memo) +
         "&PHONE=" + (this->phone) +
         "&EMAIL=" + (this->email) +
+        "&COMPANY_NAME=" + (this->companyName) +
         "&REBILLING=" + (this->doRebill) +
         "&REB_FIRST_DATE=" + (this->rebillFirstDate) +
         "&REB_EXPR=" + (this->rebillExpr) +

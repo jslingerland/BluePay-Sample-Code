@@ -49,6 +49,7 @@ private:
   std::string addr2;
   std::string phone;
   std::string email;
+  std::string companyName;
   std::string country;
 
   // transaction variables
@@ -155,12 +156,10 @@ public:
   BluePay(std::string, std::string, std::string);
 
   void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string city, std::string state, std::string zip);
-  void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state,
-    std::string zip);
-  void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state,
-    std::string zip, std::string country);
-  void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, 
-    std::string state, std::string zip, std::string country, std::string phone, std::string email);
+  void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip);
+  void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country);
+  void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country, std::string phone, std::string email);
+  void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country, std::string phone, std::string email, std::string companyName);
   void setCCInformation(std::string cardNum, std::string cardExpire);
   void setCCInformation(std::string cardNum, std::string cardExpire, std::string cvv2);
   void setACHInformation(std::string routingNum, std::string accountNum, std::string accountType);
@@ -215,6 +214,7 @@ public:
   void setMemo(std::string memo);
   void setPhone(std::string phone);
   void setEmail(std::string email);
+  void setCompanyName(std::string companyName);
 
   std::string generateTps(std::string message, std::string hashType);
   void calcTps();
