@@ -109,7 +109,7 @@ class BluePay
     @PARAM_HASH['COUNTRY'] = params[:country]
     @PARAM_HASH['PHONE'] = params[:phone]
     @PARAM_HASH['EMAIL'] = params[:email]
-    @PARAM_HASH['COMPANY_NAME'] = params[:company_name]
+    @PARAM_HASH['COMPANY_NAME'] = params[:company_name] || ''
   end
 
   # Set customer Phone
