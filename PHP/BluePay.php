@@ -885,42 +885,42 @@ class BluePay {
         } // end Process function
 
     protected function parseResponse() {
-        parse_str($this->response);
-        $this->status = isset($Result) ? $Result : null;
-        $this->message = isset($MESSAGE) ? $MESSAGE : null;
-        $this->transID = isset($RRNO) ? $RRNO : null;
-        $this->maskedAccount = isset($PAYMENT_ACCOUNT) ? $PAYMENT_ACCOUNT : null;
-        $this->cardType = isset($CARD_TYPE) ? $CARD_TYPE : null;
-        $this->customerBank = isset($BANK_NAME) ? $BANK_NAME : null;
-        $this->avsResp = isset($AVS) ? $AVS : null;
-        $this->cvv2Resp = isset($CVV2) ? $CVV2 : null;
-        $this->authCode = isset($AUTH_CODE) ? $AUTH_CODE : null;
-        $this->rebid = isset($REBID) ? $REBID : null;
+        parse_str($this->response, $output);
+        $this->status = isset($output['Result']) ? $output['Result'] : null;
+        $this->message = isset($output['MESSAGE']) ? $output['MESSAGE'] : null;
+        $this->transID = isset($output['RRNO']) ? $output['RRNO'] : null;
+        $this->maskedAccount = isset($output['PAYMENT_ACCOUNT']) ? $output['PAYMENT_ACCOUNT'] : null;
+        $this->cardType = isset($output['CARD_TYPE']) ? $output['CARD_TYPE'] : null;
+        $this->customerBank = isset($output['BANK_NAME']) ? $output['BANK_NAME'] : null;
+        $this->avsResp = isset($output['AVS']) ? $output['AVS'] : null;
+        $this->cvv2Resp = isset($output['CVV2']) ? $output['CVV2'] : null;
+        $this->authCode = isset($output['AUTH_CODE']) ? $output['AUTH_CODE'] : null;
+        $this->rebid = isset($output['REBID']) ? $output['REBID'] : null;
 
         /* Rebilling response parameters */
-        $this->rebillID = isset($rebill_id) ? $rebill_id : null;
-        $this->templateID = isset($template_id) ? $template_id : null;
-        $this->rebillStatus = isset($status) ? $status : null;
-        $this->creationDate = isset($creation_date) ? $creation_date : null;
-        $this->nextDate = isset($next_date) ? $next_date : null;
-        $this->lastDate = isset($last_date) ? $last_date : null;
-        $this->scheduleExpression = isset($sched_expr) ? $sched_expr : null;
-        $this->cyclesRemaining = isset($cycles_remain) ? $cycles_remain : null;
-        $this->rebAmount = isset($reb_amount) ? $reb_amount : null;
-        $this->nextAmount = isset($next_amount) ? $next_amount : null;
+        $this->rebillID = isset($output['rebill_id']) ? $output['rebill_id'] : null;
+        $this->templateID = isset($output['template_id']) ? $output['template_id'] : null;
+        $this->rebillStatus = isset($output['status']) ? $output['status'] : null;
+        $this->creationDate = isset($output['creation_date']) ? $output['creation_date'] : null;
+        $this->nextDate = isset($output['next_date']) ? $output['next_date'] : null;
+        $this->lastDate = isset($output['last_date']) ? $output['last_date'] : null;
+        $this->scheduleExpression = isset($output['sched_expr']) ? $output['sched_expr'] : null;
+        $this->cyclesRemaining = isset($output['cycles_remain']) ? $output['cycles_remain'] : null;
+        $this->rebAmount = isset($output['reb_amount']) ? $output['reb_amount'] : null;
+        $this->nextAmount = isset($output['next_amount']) ? $output['next_amount'] : null;
 
         /* Reporting response parameters */
-        $this->masterID = isset($id) ? $id : null;
-        $this->name1 = isset($name1) ? $name1 : null;
-        $this->name2 = isset($name2) ? $name2 : null;
-        $this->paymentType = isset($payment_type) ? $payment_type : null;
-        $this->transType = isset($trans_type) ? $trans_type : null;
-        $this->amount = isset($amount) ? $amount : null;
+        $this->masterID = isset($output['id']) ? $output['id'] : null;
+        $this->name1 = isset($output['name1']) ? $output['name1'] : null;
+        $this->name2 = isset($output['name2']) ? $output['name2'] : null;
+        $this->paymentType = isset($output['payment_type']) ? $output['payment_type'] : null;
+        $this->transType = isset($output['trans_type']) ? $output['trans_type'] : null;
+        $this->amount = isset($output['amount']) ? $output['amount'] : null;
 
         /* BP Stamp response parameters */
-        $this->bpStamp = isset($BP_STAMP) ? $BP_STAMP : null;
-        $this->bpStampDef = isset($BP_STAMP_DEF) ? $BP_STAMP_DEF : null;
-        $this->tpsHashType = isset($TPS_HASH_TYPE) ? $TPS_HASH_TYPE : null;
+        $this->bpStamp = isset($output['BP_STAMP']) ? $output['BP_STAMP'] : null;
+        $this->bpStampDef = isset($output['BP_STAMP_DEF']) ? $output['BP_STAMP_DEF'] : null;
+        $this->tpsHashType = isset($output['TPS_HASH_TYPE']) ? $output['TPS_HASH_TYPE'] : null;
     }
 
     public function getResponse() { return $this->response; }
