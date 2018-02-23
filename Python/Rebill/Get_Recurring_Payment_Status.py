@@ -80,4 +80,4 @@ if rebill.is_successful_response():
     print('Rebill Amount: ' + rebill_status.rebill_amount_response)
     print('Rebill Next Amount: ' + rebill_status.next_amount_response)
 else:
-    print(payment.message_response)
+    print(rebill.message_response)
