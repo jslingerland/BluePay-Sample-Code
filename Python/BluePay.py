@@ -811,10 +811,7 @@ class BluePay:
         try:
             r = urlopen(self.url, data)
             response = ""
-            if self.api == 'bp10emu':
-                response = r.geturl()
-            else: 
-                response = r.read()  
+            response = r.geturl() if self.api == 'bp10emu' else r.read()  
             return response
         except HTTPError as e:
             if re.match("https://secure.bluepay.com/interfaces/wlcatch", e.geturl()):
