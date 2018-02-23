@@ -22,7 +22,7 @@ report = BluePay(
 )
 
 report.get_single_trans_query(
-    transaction_id = '100532208235', # Transaction ID
+    transaction_id = 'ID of previous transaction', # Transaction ID
     report_start = "2015-01-01", # Query Start Date: Jan. 1, 2013
     report_end = "2018-12-31", # Query End Date: Jan. 15, 2015
     exclude_errors =  "1" # Do not include errored transactions? Yes
