@@ -491,7 +491,7 @@ class BluePay {
 
     // Queries transactions by a specific Payment Type. Must be used with getSingleTransQuery
     public function queryByPaymentType($payType) {
-        $this->paymentType = $paymentType;
+        $this->paymentType = $payType;
     }
  
     // Queries transactions by a specific Transaction Type. Must be used with getSingleTransQuery
