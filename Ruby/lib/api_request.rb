@@ -117,7 +117,7 @@ class BluePay
     # Resuce SSL error and retry with ca_file absolute path.
     begin
       headers, body = ua.post(path, query, queryheaders)
-    rescue
+    rescue OpenSSL::SSL::SSLError
       ua.ca_file = File.expand_path(File.dirname(__FILE__)) + "/" + RootCAFile
       headers, body = ua.post(path, query, queryheaders)
     end
