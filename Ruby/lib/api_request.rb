@@ -114,7 +114,14 @@ class BluePay
       'Content-Type' => 'application/x-www-form-urlencoded'
     }
     # Post parameters to BluePay gateway
-    headers, body = ua.post(path, query, queryheaders)
+    # Resuce SSL error and retry with ca_file absolute path.
+    begin
+      headers, body = ua.post(path, query, queryheaders)
+    rescue OpenSSL::SSL::SSLError
+      ua.ca_file = File.expand_path(File.dirname(__FILE__)) + "/" + RootCAFile
+      headers, body = ua.post(path, query, queryheaders)
+    end
+
     # Split the response into the response hash.
     @RESPONSE_HASH = {}
     if path == "/interfaces/bp10emu"

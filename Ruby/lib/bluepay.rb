@@ -11,6 +11,7 @@ class BluePay
   SERVER = "secure.bluepay.com"
   # Make sure this is the correct path to your CA certificates directory
   RootCA = "/"
+  RootCAFile = "cacert.pem"
 
   def initialize(params = {})
     @ACCOUNT_ID = params[:account_id]
