@@ -750,7 +750,7 @@ class BluePay:
             })
             try:
                 fields.update({
-                    'REMOTE_IP' : cgi.escape(os.environ["REMOTE_ADDR"])
+                    'CUSTOMER_IP' : cgi.escape(os.environ["REMOTE_ADDR"])
                 })
             except KeyError:
                 pass

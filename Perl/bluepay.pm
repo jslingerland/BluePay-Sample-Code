@@ -83,7 +83,7 @@ sub calc_tps {
     elsif ($self->{API} eq 'bp10emu' ) {
         #returns the remote host IP address
         my $q = CGI->new;
-        $self->{REMOTE_IP} = $q->remote_addr(); 
+        $self->{CUSTOMER_IP} = $q->remote_addr(); 
         $self->{URL} = 'https://secure.bluepay.com/interfaces/bp10emu';
         $self->{MERCHANT} = $self->{ACCOUNT_ID};
         $TAMPER_PROOF_DATA =

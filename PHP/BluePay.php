@@ -796,7 +796,7 @@ class BluePay {
                 $post["TAMPER_PROOF_SEAL"] = $this->calcTPS();  
                 $post["TPS_HASH_TYPE"] = $this->tpsHashType;
                 if(isset($_SERVER["REMOTE_ADDR"])){
-                    $post["REMOTE_IP"] = $_SERVER["REMOTE_ADDR"];
+                    $post["CUSTOMER_IP"] = $_SERVER["REMOTE_ADDR"];
                 }
                 $this->postURL = "https://secure.bluepay.com/interfaces/bp10emu";
                 break;

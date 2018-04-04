@@ -80,9 +80,9 @@ class BluePay
       exit
     end
     
-    # Sets REMOTE_IP parameter
+    # Sets CUSTOMER_IP parameter
     begin
-    	@PARAM_HASH["REMOTE_IP"] = request.env['REMOTE_ADDR']
+    	@PARAM_HASH["CUSTOMER_IP"] = request.env['REMOTE_ADDR']
       rescue Exception
     end
 
