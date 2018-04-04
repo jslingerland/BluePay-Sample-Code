@@ -1085,7 +1085,7 @@ namespace BluePayLibrary
                     "&AMOUNT_TAX=" + HttpUtility.UrlEncode(this.amountTax) +
                     "&AMOUNT_FOOD=" + HttpUtility.UrlEncode(this.amountFood) +
                     "&AMOUNT_MISC=" + HttpUtility.UrlEncode(this.amountMisc) +
-                    "&REMOTE_IP=" + System.Net.Dns.GetHostEntry("").AddressList[0].ToString() +
+                    "&CUSTOMER_IP=" + System.Net.Dns.GetHostEntry("").AddressList[0].ToString() +
                     "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
                     "&RESPONSEVERSION=5";
                     if (this.swipeData != "")
