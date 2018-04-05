@@ -875,7 +875,7 @@ class BluePay:
         # Template ID of rebilling
         self.get_template_id = self.response['template_id'][0] if 'template_id' in self.response else ''
         # Status of rebilling
-        self.rebill_status_response = self.response['status'][0] if 'status' in self.response else ''
+        self.rebill_status_response = self.response['STATUS'][0] if 'STATUS' in self.response else ''
         # Creation date of rebilling
         self.creation_date_response = self.response['creation_date'][0] if 'creation_date' in self.response else ''
         # Next date that the rebilling is set to fire off on
@@ -891,17 +891,17 @@ class BluePay:
         # Next amount to charge when rebilling fires off
         self.next_amount_response = self.response['next_amount'][0] if 'next_amount' in self.response else ''
         # Transaction ID used with stq API
-        self.id_response = self.response['id'][0] if 'id' in self.response else ''
+        self.id_response = self.response['ID'][0] if 'ID' in self.response else ''
         # First name associated with the transaction
-        self.name1_response = self.response['name1'][0] if 'name1' in self.response else ''
+        self.name1_response = self.response['NAME1'][0] if 'NAME1' in self.response else ''
         # Last name associated with the transaction
-        self.name2_response = self.response['name2'][0] if 'name2' in self.response else ''
+        self.name2_response = self.response['NAME2'][0] if 'NAME2' in self.response else ''
         # Payment type associated with the transaction
-        self.payment_type_response = self.response['payment_type'][0] if 'payment_type' in self.response else ''
+        self.payment_type_response = self.response['PAYMENT_TYPE'][0] if 'PAYMENT_TYPE' in self.response else ''
         # Transaction type associated with the transaction
-        self.trans_type_response = self.response['trans_type'][0] if 'trans_type' in self.response else ''
+        self.trans_type_response = self.response['TRANS_TYPE'][0] if 'TRANS_TYPE' in self.response else ''
         # Amount associated with the transaction
-        self.amount_response = self.response['amount'][0] if 'amount' in self.response else ''
+        self.amount_response = self.response['AMOUNT'][0] if 'AMOUNT' in self.response else ''
         # Returns the BP_STAMP used to authenticate response
         self.bp_stamp_response = self.response['BP_STAMP'][0] if 'BP_STAMP' in self.response else ''
         # Returns the fields used to calculate the BP_STAMP
