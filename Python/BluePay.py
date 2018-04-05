@@ -846,7 +846,7 @@ class BluePay:
         #######  RESPONSE VALUES ####
         # assigns values to an empty string if value does not exist
     def assign_response_values(self):
-        print self.response
+        # print self.response
         # print ''
         self.status_response = self.response['Result'][0] if 'Result' in self.response else ''
         # Returns the human-readable response from Bluepay.
