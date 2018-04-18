@@ -110,7 +110,7 @@ class BluePay
       query = "ACCOUNT_ID=#{@ACCOUNT_ID}&" + uri_query(@PARAM_HASH)
     end
     queryheaders = {
-      'User-Agent' => 'BluePay Ruby Library/' + RUBY_VERSION,
+      'User-Agent' => 'BluePay Ruby Library/' + RELEASE_VERSION,
       'Content-Type' => 'application/x-www-form-urlencoded'
     }
     # Post parameters to BluePay gateway

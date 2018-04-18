@@ -15,6 +15,7 @@ import sys # PG: added this
 
 class BluePay:
 
+    RELEASE_VERSION = '3.0.0'
     # Sets all the attributes to default to empty strings if not defined
     
     # Merchant fields
@@ -811,7 +812,7 @@ class BluePay:
         """
         try:
             headers = {
-                'User-Agent': 'BluepPay Python Library/' + sys.version[0:5],
+                'User-Agent': 'BluepPay Python Library/' + self.RELEASE_VERSION,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
             req = Request(self.url, data, headers=headers)

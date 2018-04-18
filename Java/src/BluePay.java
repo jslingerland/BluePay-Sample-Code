@@ -31,6 +31,8 @@ import java.nio.charset.Charset;
 
 public class BluePay
 {
+  public static final String RELEASE_VERSION = "3.0.0";
+
   // required parameters
   private String BP_URL = "";
   private String BP_MERCHANT = "";
@@ -1192,7 +1194,7 @@ public class BluePay
 		
     HttpClient httpclient = HttpClientBuilder.create().build();
     HttpPost httpost = new HttpPost(BP_URL);
-    httpost.addHeader("User-Agent", "BluePay Java Library/" + System.getProperty("java.version"));
+    httpost.addHeader("User-Agent", "BluePay Java Library/" + RELEASE_VERSION);
     httpost.addHeader("Content-Type", "application/x-www-form-urlencoded");
     httpost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
     HttpResponse responseString = httpclient.execute(httpost);

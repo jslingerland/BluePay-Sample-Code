@@ -19,6 +19,7 @@ Namespace BPVB
     ''' This is the BluePayPayment object.
     ''' </summary>
     Public Class BluePay
+        Public Const RELEASE_VERSION = "3.0.0"
 
         ' Required for every transaction
         Private accountID As String = ""
@@ -1121,7 +1122,7 @@ Namespace BPVB
                 httpRequest.Method = "POST"
                 httpRequest.AllowAutoRedirect = False
                 Dim byteArray As Byte() = Text.Encoding.UTF8.GetBytes(postData)
-                httpRequest.UserAgent= "BluePay Visual Basic Library/" + Environment.Version.ToString()    
+                httpRequest.UserAgent= "BluePay Visual Basic Library/" + RELEASE_VERSION    
                 httpRequest.ContentType = "application/x-www-form-urlencoded"
                 httpRequest.ContentLength = byteArray.Length
                 Dim dataStream As Stream = httpRequest.GetRequestStream()

@@ -1270,7 +1270,7 @@ char* BluePay::process()
         curl_easy_setopt(curl, CURLOPT_URL, this->URL.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postToBp);
         std::stringstream ss;
-        ss << "BluePay C++ Library/" << __cplusplus;
+        ss << "BluePay C++ Library/" << RELEASE_VERSION;
         curl_easy_setopt(curl, CURLOPT_USERAGENT, ss.str().c_str());
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0);

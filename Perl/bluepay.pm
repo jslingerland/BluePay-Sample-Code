@@ -1,6 +1,6 @@
 package BluePay;
 
-$VERSION = '1.10';
+use constant RELEASE_VERSION => '3.0.0';
 use strict;
 use warnings;
 # Required modules
@@ -135,7 +135,7 @@ sub process {
 
     # Create Agent
     my $ua = new LWP::UserAgent;
-    $ua->agent('BluePay Perl Library/' . $^V);
+    $ua->agent('BluePay Perl Library/' . RELEASE_VERSION);
     my $content;
     if ($self->{API} eq 'bp10emu' ) {
         my $req = new HTTP::Request 'POST', $self->{URL};
