@@ -12,6 +12,7 @@ class BluePay
   # Make sure this is the correct path to your CA certificates directory
   RootCA = "/"
   RootCAFile = "cacert.pem"
+  RELEASE_VERSION = "3.0.0"
 
   def initialize(params = {})
     @ACCOUNT_ID = params[:account_id]

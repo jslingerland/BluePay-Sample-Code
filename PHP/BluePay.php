@@ -6,7 +6,6 @@
 * gateway account is used, make sure the MODE is set to TEST.
 *
 */
-
 class BluePay { 
     
     private $api;
@@ -859,7 +858,7 @@ class BluePay {
             /* perform the transaction */
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $this->postURL); // Set the URL
-            curl_setopt($ch, CURLOPT_USERAGENT, "Bluepay Payment");
+            curl_setopt($ch, CURLOPT_USERAGENT, "BluePay PHP Library/".RELEASE_VERSION);
             curl_setopt($ch, CURLOPT_POST, 1); // Perform a POST
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Required for query strings greater than 1024 characters.
@@ -961,4 +960,6 @@ class BluePay {
         return ($this->getStatus() == "APPROVED" && $this->getMessage() != "DUPLICATE"); 
     }
 }
+
+define("RELEASE_VERSION", '3.0.0');
 ?>

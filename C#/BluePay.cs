@@ -27,6 +27,8 @@ namespace BluePayLibrary
     /// </summary>
     public class BluePay
     {
+        public const string RELEASE_VERSION = "3.0.0";
+                
         // required for every transaction
         public string accountID = "";
         public string URL = "";
@@ -1161,6 +1163,7 @@ namespace BluePayLibrary
 
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
+            request.UserAgent= "BluePay C# Library/" + RELEASE_VERSION;
             request.ContentLength = data.Length;
 
             try
