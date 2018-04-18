@@ -1121,6 +1121,7 @@ Namespace BPVB
                 httpRequest.Method = "POST"
                 httpRequest.AllowAutoRedirect = False
                 Dim byteArray As Byte() = Text.Encoding.UTF8.GetBytes(postData)
+                httpRequest.UserAgent= "BluePay Visual Basic Library/" + Environment.Version.ToString()    
                 httpRequest.ContentType = "application/x-www-form-urlencoded"
                 httpRequest.ContentLength = byteArray.Length
                 Dim dataStream As Stream = httpRequest.GetRequestStream()

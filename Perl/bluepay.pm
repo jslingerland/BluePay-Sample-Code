@@ -135,6 +135,7 @@ sub process {
 
     # Create Agent
     my $ua = new LWP::UserAgent;
+    $ua->agent('BluePay Perl Library/' . $^V);
     my $content;
     if ($self->{API} eq 'bp10emu' ) {
         my $req = new HTTP::Request 'POST', $self->{URL};

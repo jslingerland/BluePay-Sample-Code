@@ -1161,6 +1161,7 @@ namespace BluePayLibrary
 
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
+            request.UserAgent= "BluePay C# Library/" + Environment.Version.ToString();    
             request.ContentLength = data.Length;
 
             try

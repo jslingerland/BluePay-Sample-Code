@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 import six
 from six.moves import urllib
 from six.moves.urllib.request import Request, urlopen
@@ -788,7 +789,7 @@ class BluePay:
             
         for item in self.line_items: # Update fields dictionary with line item information, if available.
             fields.update(item)
-        
+
         response = self.request(self.url, self.create_post_string(fields).encode())
         parsed_response = self.parse_response(response)
         return parsed_response
@@ -809,7 +810,12 @@ class BluePay:
         Send an https request.
         """
         try:
-            r = urlopen(self.url, data)
+            headers = {
+                'User-Agent': 'BluepPay Python Library/' + sys.version[0:5],
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            req = Request(self.url, data, headers=headers)
+            r = urlopen(req)
             response = ""
             response = r.geturl() if self.api == 'bp10emu' else r.read()  
             return response

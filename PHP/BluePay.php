@@ -859,7 +859,7 @@ class BluePay {
             /* perform the transaction */
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $this->postURL); // Set the URL
-            curl_setopt($ch, CURLOPT_USERAGENT, "Bluepay Payment");
+            curl_setopt($ch, CURLOPT_USERAGENT, "BluePay PHP Library/".phpversion());
             curl_setopt($ch, CURLOPT_POST, 1); // Perform a POST
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Required for query strings greater than 1024 characters.

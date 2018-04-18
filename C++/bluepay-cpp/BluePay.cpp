@@ -1269,6 +1269,9 @@ char* BluePay::process()
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, this->URL.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postToBp);
+        std::stringstream ss;
+        ss << "BluePay C++ Library/" << __cplusplus;
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, ss.str().c_str());
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0);
         if (this->URL == "https://secure.bluepay.com/interfaces/bp10emu") {

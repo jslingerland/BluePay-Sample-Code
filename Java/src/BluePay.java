@@ -1192,6 +1192,8 @@ public class BluePay
 		
     HttpClient httpclient = HttpClientBuilder.create().build();
     HttpPost httpost = new HttpPost(BP_URL);
+    httpost.addHeader("User-Agent", "BluePay Java Library/" + System.getProperty("java.version"));
+    httpost.addHeader("Content-Type", "application/x-www-form-urlencoded");
     httpost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
     HttpResponse responseString = httpclient.execute(httpost);
     if (BP_URL.equals("https://secure.bluepay.com/interfaces/bp10emu")) {
