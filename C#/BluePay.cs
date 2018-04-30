@@ -27,7 +27,7 @@ namespace BluePayLibrary
     /// </summary>
     public class BluePay
     {
-        public const string RELEASE_VERSION = "3.0.0";
+        public const string RELEASE_VERSION = "3.0.1";
                 
         // required for every transaction
         public string accountID = "";

@@ -1,6 +1,6 @@
 package BluePay;
 
-use constant RELEASE_VERSION => '3.0.0';
+use constant RELEASE_VERSION => '3.0.1';
 use strict;
 use warnings;
 # Required modules
@@ -36,6 +36,11 @@ sub generate_tps {
     my $self = shift;
     my $str  = shift;
     my $hashType = shift;
+    
+    if (!defined $self->{SECRET_KEY}){
+        return 'SECRET KEY NOT PROVIDED';
+    }
+    
     my $hash = '';
 
     if ($hashType eq 'HMAC_SHA256')

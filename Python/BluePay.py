@@ -15,7 +15,7 @@ import sys # PG: added this
 
 class BluePay:
 
-    RELEASE_VERSION = '3.0.0'
+    RELEASE_VERSION = '3.0.1'
     # Sets all the attributes to default to empty strings if not defined
     
     # Merchant fields
@@ -410,6 +410,11 @@ class BluePay:
 
     # Functions for calculating the TAMPER_PROOF_SEAL
     def create_tps_hash(self, string, hash_type):
+        try:
+            self.secret_key
+        except AttributeError:
+            return "SECRET KEY NOT PROVIDED"
+
         tps_hash = ""
         if hash_type == "HMAC_SHA256":
             tps_hash = hmac.new(self.secret_key, string, hashlib.sha256).hexdigest()

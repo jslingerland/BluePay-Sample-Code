@@ -19,7 +19,7 @@ Namespace BPVB
     ''' This is the BluePayPayment object.
     ''' </summary>
     Public Class BluePay
-        Public Const RELEASE_VERSION = "3.0.0"
+        Public Const RELEASE_VERSION = "3.0.1"
 
         ' Required for every transaction
         Private accountID As String = ""

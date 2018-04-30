@@ -10,6 +10,7 @@ class BluePay
 
   # Generates TPS hash based on given hash type
   def create_tps_hash(data, hash_type)
+    return "SECRET KEY  NOT PROVIDED" if !defined? @SECRET_KEY
     case hash_type   
     when 'HMAC_SHA256'
       OpenSSL::HMAC.hexdigest('sha256', @SECRET_KEY, data)
