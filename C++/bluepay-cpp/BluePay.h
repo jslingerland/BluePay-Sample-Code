@@ -22,7 +22,7 @@
 
 class BluePay {
 private:
-  const char* RELEASE_VERSION = "3.0.0";
+  const char* RELEASE_VERSION = "3.0.1";
   // required for every transaction
   std::string accountId;
   std::string URL;
