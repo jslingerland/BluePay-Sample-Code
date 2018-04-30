@@ -515,6 +515,10 @@ class BluePay {
 
     // Functions for calculating the TAMPER_PROOF_SEAL
     public final function createTPSHash($string, $hashType) {
+        if (!isset($this->secretKey)) {
+            return "SECRET KEY NOT PROVIDED";
+        }
+
         $hash = "";
 
         switch ($hashType) {
@@ -961,5 +965,5 @@ class BluePay {
     }
 }
 
-define("RELEASE_VERSION", '3.0.0');
+define("RELEASE_VERSION", '3.0.1');
 ?>

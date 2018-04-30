@@ -31,7 +31,7 @@ import java.nio.charset.Charset;
 
 public class BluePay
 {
-  public static final String RELEASE_VERSION = "3.0.0";
+  public static final String RELEASE_VERSION = "3.0.1";
 
   // required parameters
   private String BP_URL = "";
@@ -776,20 +776,23 @@ public class BluePay
    */
 
   public String generateTPS(String message, String hashType) throws java.security.NoSuchAlgorithmException {
+    if (BP_SECRET_KEY == null) {
+      return "SECRET KEY NOT PROVIDED";
+    }
     String tpsHash = "";
-      if(hashType.equals("HMAC_SHA256")) {
-        HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-256");
-        tpsHash = h.getHMAC();
-      } else if (hashType.equals("SHA512")) {
-        tpsHash = sha512(BP_SECRET_KEY + message);
-      } else if (hashType.equals("SHA256")) {
-          tpsHash = sha256(BP_SECRET_KEY + message);
-      } else if (hashType.equals("MD5")) {
-        tpsHash = md5(BP_SECRET_KEY + message);
-      } else {
-        HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-512");
-        tpsHash = h.getHMAC();
-      }
+    if(hashType.equals("HMAC_SHA256")) {
+      HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-256");
+      tpsHash = h.getHMAC();
+    } else if (hashType.equals("SHA512")) {
+      tpsHash = sha512(BP_SECRET_KEY + message);
+    } else if (hashType.equals("SHA256")) {
+        tpsHash = sha256(BP_SECRET_KEY + message);
+    } else if (hashType.equals("MD5")) {
+      tpsHash = md5(BP_SECRET_KEY + message);
+    } else {
+      HMAC h = new HMAC(BP_SECRET_KEY, message, "SHA-512");
+      tpsHash = h.getHMAC();
+    }
     return tpsHash;
   }
 
