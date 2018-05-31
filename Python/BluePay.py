@@ -226,10 +226,14 @@ class BluePay:
     # Passes ACH information into the transaction
     def set_ach_information(self, **params):
         self.payment_type = 'ACH'
-        self.routing_number = params['routing_number']
-        self.account_number = params['account_number']
-        self.account_type = params['account_type']
-        self.doc_type = params['doc_type']
+        if 'routing_number' in params:    
+            self.routing_number = params['routing_number']
+        if 'account_number' in params:    
+            self.account_number = params['account_number']
+        if 'account_type' in params:    
+            self.account_type = params['account_type']
+        if 'doc_type' in params:    
+            self.doc_type = params['doc_type']
          
     # Adds information required for level 2 processing.
     def add_level2_information(self, **params):
