@@ -51,7 +51,9 @@ Namespace BPVB
         Private email As String = ""
         Private companyName As String = ""
         Private country As String = ""
-
+        Private newCustToken As String = ""
+        Private custToken As String = ""
+        
         ' Transaction variables
         Private amount As String = ""
         Private transType As String = ""
@@ -369,6 +371,19 @@ Namespace BPVB
         End Sub
 
         ''' <summary>
+        ''' Runs a Sale Transaction
+        ''' </summary>
+        ''' <param name="amount"></param>
+        ''' <param name="customerToken"></param>
+        ''' 
+        Public Sub sale(ByVal amount As String, ByVal customerToken As String)
+            Me.transType = "SALE"
+            Me.amount = amount
+            Me.custToken = customerToken
+            Me.api = "bp10emu"
+        End Sub
+
+        ''' <summary>
         ''' Runs an Auth Transaction
         ''' </summary>
         ''' <param name="amount"></param>
@@ -392,6 +407,55 @@ Namespace BPVB
             Me.api = "bp10emu"
         End Sub
 
+        ''' <summary>
+        ''' Runs an Auth Transaction
+        ''' </summary>
+        ''' <param name="amount"></param>
+        ''' <param name="newCustomerToken"></param>
+        ''' 
+        Public Sub auth(ByVal amount As String, ByVal newCustomerToken As String)
+            Me.transType = "AUTH"
+            Me.amount = amount
+            If newCustomerToken.ToLower() = "true" Then
+                Me.newCustToken = GetRandomString(16)
+            Elseif newCustomerToken.ToLower() <> "false" Then
+                Me.newCustToken = newCustomerToken
+            End If 
+            Me.api = "bp10emu"
+        End Sub
+
+        ''' <summary>
+        ''' Creates a random alphanumeric string
+        ''' </summary>
+        ''' <param name="length"></param>
+        ''' <param name="newCustomerToken"></param>
+        ''' 
+        Public Function GetRandomString(ByVal iLength As Integer) As String
+            Dim sResult As String = ""
+            Dim rdm As New Random()
+
+            Dim characters() As String = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","0"}
+
+            For i As Integer = 1 To iLength
+                sResult &= characters(rdm.Next(0, characters.length - 1 ))
+            Next
+
+            Return sResult
+        End Function
+
+        ''' <summary>
+        ''' Runs an Auth Transaction
+        ''' </summary>
+        ''' <param name="amount"></param>
+        ''' <param name="customerToken"></param>
+        ''' 
+        Public Sub auth(ByVal amount As String, ByVal customerToken As String)
+            Me.transType = "AUTH"
+            Me.amount = amount
+            Me.custToken = customerToken
+            Me.api = "bp10emu"
+        End Sub
+       
         ''' <summary>
         ''' Updates a Transaction
         ''' </summary>
@@ -1117,6 +1181,11 @@ Namespace BPVB
                 Next
             Next
 
+            'Add customer token data, if available
+            If (Me.custToken <> "") Then postData = postData & "&CUST_TOKEN=" & Me.custToken
+
+            If (Me.newCustToken <> "") Then postData = postData & "&NEW_CUST_TOKEN=" & Me.newCustToken
+
             ' Create HTTPS POST object and send to BluePay
                 Dim httpRequest As HttpWebRequest = HttpWebRequest.Create(Me.URL)
                 httpRequest.Method = "POST"
@@ -1414,8 +1483,19 @@ Namespace BPVB
             End If
         End Function
 
+        ''' <summary>
+        ''' Returns cust_token from response
+        ''' </summary>
+        '''
+        Public Function getCustomerToken() As String
+            Dim r As Regex = New Regex("CUST_TOKEN=([^&$]+)")
+            Dim m As Match = r.Match(Me.response)
+            If m.Success Then
+                Return m.Value.Substring(11)
+            Else
+                Return ""
+            End If
+        End Function
 
     End Class
 End Namespace
-
-

@@ -39,7 +39,9 @@ $payment->setCCInformation(array(
     'cvv2' => '123' // Card CVV2: 123
 ));
 
-$payment->auth('0.00'); // Card Authorization amount: $0.00
+$payment->auth(array(
+    'amount' => '0.00' // Card Authorization amount: $0.00
+));
 
 // Makes the API request with BluePay
 $payment->process();

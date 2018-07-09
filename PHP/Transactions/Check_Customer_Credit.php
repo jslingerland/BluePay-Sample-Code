@@ -40,7 +40,9 @@ $payment->setCCInformation(array(
 ));
 
 
-$payment->auth('3.00'); // Card authorization amount: $3.00
+$payment->auth(array(
+    'amount' => '3.00' // Card authorization amount: $3.00
+)); 
 
 // Makes the API Request for a credit card authorization
 $payment->process(); 

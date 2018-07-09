@@ -31,6 +31,7 @@ namespace bluepayc
 			// ChargeCustomerCC.Main();
             // ChargeCustomerCCLv2Lv3.Main();
 			// CheckCustomerCredit.Main();
+			// CreateCustomerToken.Main();
 			// CustomerDefinedData.Main();
 			// HowToUseToken.Main();
 			// UpdateTransaction.Main();

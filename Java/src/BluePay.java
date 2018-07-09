@@ -25,13 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Random;
 import java.io.*;
 
 import java.nio.charset.Charset;
 
 public class BluePay
 {
-  public static final String RELEASE_VERSION = "3.0.1";
+  public static final String RELEASE_VERSION = "3.0.2";
 
   // required parameters
   private String BP_URL = "";
@@ -74,6 +75,8 @@ public class BluePay
   private String ORDER_ID = "";
   private String INVOICE_ID = "";
   private String TPS_HASH_TYPE = "HMAC_SHA512";
+  private String NEW_CUST_TOKEN = "";
+  private String CUST_TOKEN = "";
   
   // rebilling parameters
   private String REBILLING = "0";
@@ -166,6 +169,9 @@ public class BluePay
     if (params.containsKey("transactionID")) {
       RRNO = params.get("transactionID");
     }
+    if (params.containsKey("customerToken")) {
+        CUST_TOKEN = params.get("customerToken");
+    }
   }
   
   /**
@@ -183,6 +189,12 @@ public class BluePay
     AMOUNT = params.get("amount");
     if (params.containsKey("transactionID")) {
       RRNO = params.get("transactionID");
+    }
+    if (params.containsKey("newCustomerToken") && params.get("newCustomerToken").toLowerCase() != "false") {
+        NEW_CUST_TOKEN = params.get("newCustomerToken").toLowerCase().equals("true") ? randomString(16) : params.get("newCustomerToken");
+    }
+    if (params.containsKey("customerToken")) {
+      CUST_TOKEN = params.get("customerToken");
     }
   }
   
@@ -240,6 +252,21 @@ public class BluePay
     TRANSACTION_TYPE = "CAPTURE";
     AMOUNT = params.get("amount");
     RRNO = params.get("transactionID");
+  }
+
+  /**
+   * Creates a random alphanumeric string.
+   * @param length The length of the desired random alphanumeric string.
+   * 
+   */
+  
+  public String randomString(int length) {
+    Random r = new Random();
+    StringBuffer sb = new StringBuffer();
+    while(sb.length() < length) {
+      sb.append(Integer.toHexString(r.nextInt()));
+    }
+    return sb.toString().substring(0, length);
   }
 
   /**
@@ -1183,18 +1210,27 @@ public class BluePay
         nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", TPS_HASH_TYPE));
     }
 	
-	// Add Level 2 data, if available.
-	if (level2Info.size() > 0) {
-		nameValuePairs.addAll(level2Info);
-	}
-	
-	// Add Level 3 item data, if available.
-	if (lineItems.size() > 0) {
-		for (List<NameValuePair> item: lineItems) {
-			nameValuePairs.addAll(item);
-		}
-	}
+  	// Add Level 2 data, if available.
+  	if (level2Info.size() > 0) {
+  		nameValuePairs.addAll(level2Info);
+  	}
+  	
+  	// Add Level 3 item data, if available.
+  	if (lineItems.size() > 0) {
+  		for (List<NameValuePair> item: lineItems) {
+  			nameValuePairs.addAll(item);
+  		}
+  	}
 		
+    // Add customer token values, if available.
+    if (NEW_CUST_TOKEN != "") {
+      nameValuePairs.add(new BasicNameValuePair("NEW_CUST_TOKEN", NEW_CUST_TOKEN));
+    }
+    
+    if (CUST_TOKEN != "") {
+      nameValuePairs.add(new BasicNameValuePair("CUST_TOKEN", CUST_TOKEN));
+    }
+
     HttpClient httpclient = HttpClientBuilder.create().build();
     HttpPost httpost = new HttpPost(BP_URL);
     httpost.addHeader("User-Agent", "BluePay Java Library/" + RELEASE_VERSION);
@@ -1577,6 +1613,21 @@ public class BluePay
   	  return response.get("next_amount");
     } else {
     return null;
+    }
+  }
+
+  /**
+   * Returns the customer token response.
+   *
+   * @return String containing the CVV2 response or null if none.
+   *
+   */
+  public String getCustomerToken()
+  {
+    if(response.containsKey("CUST_TOKEN")) {
+        return response.get("CUST_TOKEN");
+    } else {
+        return null;
     }
   }
 

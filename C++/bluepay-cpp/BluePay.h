@@ -22,7 +22,7 @@
 
 class BluePay {
 private:
-  const char* RELEASE_VERSION = "3.0.1";
+  const char* RELEASE_VERSION = "3.0.2";
   // required for every transaction
   std::string accountId;
   std::string URL;
@@ -52,7 +52,9 @@ private:
   std::string email;
   std::string companyName;
   std::string country;
-
+  std::string newCustToken;
+  std::string custToken;
+    
   // transaction variables
   std::string amount;
   std::string transType;
@@ -193,8 +195,10 @@ public:
   void queryByName2(std::string name2);
   void sale(std::string amount);
   void sale(std::string amount, std::string masterId);
+  void sale(std::map<std::string, std::string> params);
   void auth(std::string amount);
   void auth(std::string amount, std::string masterId);
+  void auth(std::map<std::string, std::string> params);
   void refund(std::string masterID);
   void refund(std::string masterID, std::string amount);
   void update(std::string masterID);
@@ -235,6 +239,7 @@ public:
   std::string calcURLResponse(); 
   std::string generateURL(std::string merchantName, std::string returnURL, std::string transactionType, std::string acceptDiscover, std::string acceptAmex, std::string amount, std::string protectAmount , std::string paymentTemplate = "mobileform01", std::string receiptTemplate = "mobileresult01", std::string receiptTempRemoteURL = "", std::string rebilling = "No", std::string rebProtect = "Yes", std::string rebAmount = "", std::string rebCycles = "", std::string rebStartDate = "", std::string rebFrequency = "", std::string customID1 = "", std::string protectCustomID1 = "No", std::string customID2 = "", std::string protectCustomID2 = "No", std::string tpsHashType = "");
   std::string setHashType(std::string chosenHash);
+  std::string genRandomString(const int len);
 
   void addHeader(const std::string& s);
   size_t rcvHeaders(void *buffer, size_t size, size_t nmemb, void *userp);
@@ -261,6 +266,7 @@ public:
   char* getCyclesRemain();
   char* getRebillAmount();
   char* getNextAmount();
+  std::string getCustToken();
 
   bool isSuccessfulTransaction();
 

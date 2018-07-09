@@ -51,7 +51,9 @@ $payment->setAmountTax("3.50"); // Tax Amount: $3.50
 $payment->setAmountFood("3.11"); // Food Amount: $3.11
 $payment->setAmountMisc("5.00"); // Miscellaneous Amount: $5.00
 
-$payment->sale('15.00'); // Sale Amount: $25.00
+$payment->sale(array(
+    'amount' => '15.00' // Sale Amount: $15.00
+));
 
 // Makes the API request with BluePay
 $payment->process();

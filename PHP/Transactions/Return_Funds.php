@@ -42,7 +42,9 @@ $payment->setCCInformation(array(
     'cvv2' => '123' // Card CVV2: 123
 ));
 
-$payment->sale('3.00');
+$payment->sale(array(
+    'amount' => '3.00'
+));
 
 $payment->process();
 
@@ -55,10 +57,10 @@ if ($payment->isSuccessfulResponse()) {
         $mode
     );
 
-    $paymentRefund->refund(
-        $payment->getTransID(), 
-        '1.75' // partial refund of $1.75
-    );
+    $paymentRefund->refund(array(
+        'masterID' => $payment->getTransID(), 
+        'amount' => '1.75' // partial refund of $1.75
+    ));
 
     // Makes the API Request to process refund
     $paymentRefund->process();

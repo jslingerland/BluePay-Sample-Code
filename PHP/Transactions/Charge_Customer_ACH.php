@@ -38,7 +38,9 @@ $payment->setACHInformation(array(
     'documentType' => 'WEB' // ACH Document Type: WEB
 ));
 
-$payment->sale('3.00'); // Sale Amount: $3.00
+$payment->sale(array(
+    'amount' => '3.00' // Sale Amount: $3.00
+)); 
 
 // Makes the API Request with BluePay
 $payment->process();
