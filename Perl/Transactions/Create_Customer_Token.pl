@@ -2,11 +2,8 @@
 # BluePay Perl Sample code.
 #
 # This code sample runs a $0.00 AUTH transaction
-# against a customer using test payment information.
-# This stores the customer's payment information securely in
-# BluePay to be used for further transactions.
-# Note: THIS DOES NOT ENSURE THAT THE CREDIT CARD OR ACH
-# ACCOUNT IS VALID.
+# and creates a customer token using test payment information,
+# which is then used to run a separate $3.99 sale.
 ##
 
 use strict;

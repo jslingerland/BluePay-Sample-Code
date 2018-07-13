@@ -2,10 +2,9 @@
 /**
 * BluePay PHP Sample Code
 *
-* This code sample runs a $0.00 Credit Card Auth transaction
-* against a customer using test payment information.
-* This stores the customer's payment information securely in
-* BluePay to be used for further transactions.
+* This code sample runs a $0.00 AUTH transaction
+* and creates a customer token using test payment information,
+* which is then used to run a separate $3.99 sale.
 */
 
 include('../BluePay.php');
