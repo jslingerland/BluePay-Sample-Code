@@ -497,7 +497,7 @@ namespace BluePayLibrary
             this.masterID = masterID;
             if (newCustomerToken != "" && newCustomerToken.ToLower() != "false")
             {
-                this.newCustToken = newCustomerToken.ToLower() == "true" ? randomString() : newCustToken;
+                this.newCustToken = newCustomerToken.ToLower() == "true" ? randomString() : newCustomerToken;
             }
             this.custToken = customerToken;
         }

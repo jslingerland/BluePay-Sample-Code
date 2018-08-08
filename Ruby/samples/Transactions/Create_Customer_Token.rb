@@ -8,8 +8,8 @@
 
 require_relative "../../lib/bluepay.rb"
 
-ACCOUNT_ID = "Merchant's Account ID Here"
-SECRET_KEY = "Merchant's Secret Key Here"
+ACCOUNT_ID = "Merchant's Account ID here"
+SECRET_KEY = "Merchant's Secret Key here"
 MODE = "TEST"  
 
 auth = BluePay.new(
@@ -44,6 +44,15 @@ auth.auth(
 
 # Makes the API request with BluePay
 auth.process
+
+# Try again if we accidentally create a non-unique token
+if auth.get_message.include?("Customer Tokens must be unique")
+  auth.auth(
+    amount: "0.00",
+    new_customer_token: true
+  ) 
+  auth.process
+end
 
 # If transaction was successful reads the responses from BluePay
 if auth.successful_transaction?  

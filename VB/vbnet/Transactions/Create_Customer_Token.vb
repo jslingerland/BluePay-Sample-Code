@@ -47,13 +47,21 @@ Namespace Transactions
 
             token.auth(
                 amount:="0.00",
-                newCustomerToken:="true"
+                newCustomerToken:="true" ' "true" generates random string. Other values will be used literally
             )
             
             token.process()
 
-            If token.isSuccessfulTransaction() Then
+            ' Try again if we accidentally create a non-unique token
+            If token.getMessage().Contains("Customer%20Tokens%20must%20be%20unique") Then
+                token.auth(
+                    amount:="0.00",
+                    newCustomerToken:="true"
+                )
+                token.process()
+            End If
 
+            If token.isSuccessfulTransaction() Then
                 Dim payment As BluePay = New BluePay(
                     accountID,
                     secretKey,
@@ -61,8 +69,8 @@ Namespace Transactions
                 )
 
                 payment.sale(
-                amount:="3.99",
-                customerToken:= token.getCustomerToken()
+                    amount:="3.99",
+                    customerToken:= token.getCustomerToken()
                 )
 
                 payment.process()

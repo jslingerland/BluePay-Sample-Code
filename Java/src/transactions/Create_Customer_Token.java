@@ -18,7 +18,7 @@ public class Store_Payment_Information {
     String SECRET_KEY = "Merchant's Secret Key Here";
     String MODE = "TEST";
 
-    BluePay payment = new BluePay(
+    BluePay auth = new BluePay(
         ACCOUNT_ID,
         SECRET_KEY,
         MODE
@@ -36,60 +36,77 @@ public class Store_Payment_Information {
     customerParams.put("country", "USA");
     customerParams.put("phone", "123-123-12345");
     customerParams.put("email", "test@bluepay.com");
-    payment.setCustomerInformation(customerParams);
+    auth.setCustomerInformation(customerParams);
 
     // Set Credit Card Information
     HashMap<String, String> ccParams = new HashMap<>();
     ccParams.put("cardNumber", "4111111111111111");
     ccParams.put("expirationDate", "1225");
     ccParams.put("cvv2", "123");
-    payment.setCCInformation(ccParams);
+    auth.setCCInformation(ccParams);
 
     // Sets a Card Authorization at $0.00
     HashMap<String, String> authParams = new HashMap<>();
     authParams.put("amount", "0.00");
-    authParams.put("newCustomerToken", "true");
-    payment.auth(authParams);
+    authParams.put("newCustomerToken", "TRUE"); // "TRUE" generates random string. Other values will be used literally
+    auth.auth(authParams);
 
     // Makes the API Request with BluePay
     try {
-      payment.process();
+      auth.process();
     } catch (Exception ex) {
       System.out.println("Exception: " + ex.toString());
       System.exit(1);
     }
-
-    BluePay payment2 = new BluePay(
+    
+    // Try again if we accidentally create a non-unique token
+    if (auth.getMessage().contains("Customer%20Tokens%20must%20be%20unique")) {
+        HashMap<String, String> newAuthParams = new HashMap<>();
+        newAuthParams.put("amount", "0.00");
+        newAuthParams.put("newCustomerToken", "TRUE");
+        auth.auth(newAuthParams);
+        try {
+            auth.process();
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex.toString());
+            System.exit(1);
+        }
+    }
+    
+    if (auth.isSuccessful()) {
+      BluePay payment = new BluePay(
             ACCOUNT_ID, 
             SECRET_KEY, 
             MODE
         );
-
-    HashMap<String,String> saleParams = new HashMap<>();
-    saleParams.put("customerToken", payment.getCustomerToken());
-    saleParams.put("amount", "3.99");
-    payment2.sale(saleParams);
-    
-    try {
-        payment2.process();
+  
+      HashMap<String,String> saleParams = new HashMap<>();
+      saleParams.put("customerToken", auth.getCustomerToken());
+      saleParams.put("amount", "3.99");
+      payment.sale(saleParams);
+      
+      try {
+          payment.process();
       } catch (Exception ex) {
-        System.out.println("Exception: " + ex.toString());
-        System.exit(1);
+          System.out.println("Exception: " + ex.toString());
+          System.exit(1);
       }   
-    
-    // If transaction was successful reads the responses from BluePay
-    System.out.println(payment2.getResponse());
-    if (payment2.isSuccessful()) {
-      System.out.println("Transaction Status: " + payment2.getStatus());
-      System.out.println("Transaction ID: " + payment2.getTransID());
-      System.out.println("Transaction Message: " + payment2.getMessage());
-      System.out.println("AVS Result: " + payment2.getAVS());
-      System.out.println("CVV2: " + payment2.getCVV2());
-      System.out.println("Masked Payment Account: " + payment2.getMaskedPaymentAccount());
-      System.out.println("Card Type: " + payment2.getCardType());    
-      System.out.println("Authorization Code: " + payment2.getAuthCode());
+      
+      // If transaction was successful reads the responses from BluePay
+      if (payment.isSuccessful()) {
+        System.out.println("Transaction Status: " + payment.getStatus());
+        System.out.println("Transaction ID: " + payment.getTransID());
+        System.out.println("Transaction Message: " + payment.getMessage());
+        System.out.println("AVS Result: " + payment.getAVS());
+        System.out.println("CVV2: " + payment.getCVV2());
+        System.out.println("Masked Payment Account: " + payment.getMaskedPaymentAccount());
+        System.out.println("Card Type: " + payment.getCardType());    
+        System.out.println("Authorization Code: " + payment.getAuthCode());
+      } else {
+        System.out.println("Error: " + payment.getMessage());
+      }
     } else {
-      System.out.println("Error: " + payment2.getMessage());
+      System.out.println("Error: " + auth.getMessage());
     }
   }
 }

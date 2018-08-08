@@ -23,27 +23,27 @@ void createCustomerToken(){
     );
     
     token.setCustomerInformation(
-         "Bob", // First Name
-         "Tester", // Last Name
-         "123 Test St.", // Address1
-         "Apt #500", // Address2
-         "Testville", // City
-         "IL", // State
-         "54321", // Zip
-         "USA", // Country
-         "1231231234", // Phone Number
-         "test@bluepay.com" // Email Address
-     );
+        "Bob", // First Name
+        "Tester", // Last Name
+        "123 Test St.", // Address1
+        "Apt #500", // Address2
+        "Testville", // City
+        "IL", // State
+        "54321", // Zip
+        "USA", // Country
+        "1231231234", // Phone Number
+        "test@bluepay.com" // Email Address
+        );
     
     token.setCCInformation(
-       "4111111111111111", // Card Number
-       "1225", // Card Expire
-       "123" // Card CVV2
+        "4111111111111111", // Card Number
+        "1225", // Card Expire
+        "123" // Card CVV2
    );
     
     std::map<std::string, std::string> authParams = {
         { "amount", "0.00" },
-        { "newCustToken", "true" }
+        { "newCustToken", "true" } // "true" generates random string. Other values will be used literally
     };
     
     // Auth Amount: $0.00
@@ -52,9 +52,19 @@ void createCustomerToken(){
     // Makes the API request with BluePay
     token.process();
     
+    // Try again if we accidentally create a non-unique token
+    std::string tokenResult = token.getMessage();
+    if (tokenResult.find("Customer Tokens must be unique") != std::string::npos) {
+        std::map<std::string, std::string> newAuthParams = {
+            { "amount", "0.00" },
+            { "newCustToken", "true" }
+        };
+        token.auth(newAuthParams);
+        token.process();
+    }
+
     // Reads the responses from BluePay if transaction was approved
     if (token.isSuccessfulTransaction()){
-        
         BluePay payment(
             accountId,
             secretKey,

@@ -41,11 +41,20 @@ $auth->set_cc_information({
 
 $auth->auth({
 	amount => '0.00', # Card authorization at $0.00
-	new_customer_token => 'true' # Create new customer token
+	new_customer_token => 'true' # 'true' generates random string. Other values will be used literally
 }); 
 
 # Makes the API request with BluePay
 $auth->process();
+
+# Try again if we accidentally create a non-unique token
+if (index($auth->{MESSAGE}, "Customer Tokens must be unique") != -1){
+	$auth->auth({
+		amount => '0.00',
+		new_customer_token => 'true'
+	});
+	$auth->process();
+}
 
 # Reads the response from BluePay
 if ($auth->is_successful_response()){

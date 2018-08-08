@@ -49,12 +49,22 @@ namespace Transactions
 
             // Card Authorization Amount: $0.00
             token.Auth(
-                amount: "0.00", 
-                newCustomerToken: "true" // "True" generates random string. Other values will be used literally.
+                amount: "0.00",
+                newCustomerToken: "029384230984" // "true" generates random string. Other values will be used literally
             );
 
             // Makes the API Request with BluePay
             token.Process();
+
+            // Try again if we accidentally create a non-unique token
+            if (token.GetMessage().Contains("Customer%20Tokens%20must%20be%20unique"))
+            {
+                token.Auth(
+                    amount: "0.00",
+                    newCustomerToken: "true"
+                );
+                token.Process();
+            }
 
             // If transaction was successful reads the responses from BluePay
             if (token.IsSuccessfulTransaction())
@@ -66,6 +76,7 @@ namespace Transactions
                     mode
                 );
 
+                Console.WriteLine(token.GetCustomerToken());
                 payment.Sale(
                     amount: "3.99",
                     customerToken: token.GetCustomerToken()

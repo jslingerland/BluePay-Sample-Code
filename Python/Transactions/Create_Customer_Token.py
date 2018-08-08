@@ -46,6 +46,15 @@ store_payment.auth(
 # Makes the API Request
 store_payment.process()
 
+# Try again if we accidentally create a non-unique token
+if "Customer Tokens must be unique" in store_payment.message_response:
+    store_payment.auth(
+        amount = "0.00",
+        new_customer_token = True
+    )
+
+    store_payment.process()
+
 # Read response from BluePay
 if store_payment.is_successful_response():
     payment = BluePay(

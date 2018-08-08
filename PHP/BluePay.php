@@ -147,7 +147,7 @@ class BluePay {
             $this->custToken = $params["customerToken"];
         }
         if(isset($params["newCustomerToken"]) && $params["newCustomerToken"] != FALSE) {
-            if ($params["newCustomerToken"] == TRUE){
+            if ($params["newCustomerToken"] === TRUE){
                 $this->newCustToken = $this->randomString();
             }
             else {
