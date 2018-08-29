@@ -1,6 +1,6 @@
 package BluePay;
 
-use constant RELEASE_VERSION => '3.0.1';
+use constant RELEASE_VERSION => '3.0.2';
 use strict;
 use warnings;
 # Required modules
@@ -344,6 +344,7 @@ sub sale {
     $self->{API} = 'bp10emu'; 
     $self->{AMOUNT} = $params->{amount};
     $self->{RRNO} = $params->{trans_id}; #optional
+    $self->{cust_token} = $params->{customer_token}; #optional
 }
 
 # Set up an Auth
@@ -353,8 +354,20 @@ sub auth{
     $self->{TRANSACTION_TYPE} = 'AUTH';
     $self->{AMOUNT} = $params->{amount};
     $self->{RRNO} = $params->{trans_id}; # optional
-    $self->{API} = 'bp10emu'; 
+    $self->{API} = 'bp10emu';
+    $self->{cust_token} = $params->{customer_token}; #optional
+    if (defined $params->{new_customer_token} && lc($params->{new_customer_token}) ne 'false') {
+        $self->{new_cust_token} = (lc($params->{new_customer_token}) eq 'true' ? $self->randomString() : $params->{new_customer_token});
+    }
  } 
+
+sub randomString{
+    my $self = shift;
+    my @set = ('0'..'9', '0'..'9', 'A'..'Z', 'a'..'z');  
+    my $str = join '' => map $set[rand @set], 1 .. 16;
+    return $str
+}
+
 # Capture an Auth
 sub capture{
     my $self = shift;
@@ -362,7 +375,7 @@ sub capture{
     $self->{TRANSACTION_TYPE} = 'CAPTURE';
     $self->{AMOUNT} = $params->{amount};
     $self->{RRNO} = $params->{trans_id}; # optional
-    $self->{API} = 'bp10emu'; 
+    $self->{API} = 'bp10emu';
 }
 
 # Refund

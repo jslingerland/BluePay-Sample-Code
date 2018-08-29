@@ -38,6 +38,8 @@ class BluePay {
     private $amountFood;
     private $amountMisc;
     private $memo;
+    private $newCustToken;
+    private $custToken;
 
     // Credit card fields
     private $ccNum;
@@ -121,50 +123,82 @@ class BluePay {
     }
 
     // Performs a SALE
-    public function sale($amount, $masterID=null) {
+    public function sale($params) {
         $this->api = 'bp10emu';
         $this->transType = "SALE";
-        $this->amount = $amount;
-        $this->masterID = $masterID;
+        $this->amount = $params["amount"];
+        if(isset($params["masterID"])) {
+            $this->masterID = $params["masterID"];
         }
+        if(isset($params["customerToken"])){
+            $this->custToken = $params["customerToken"];
+        }
+    }
 
     // Performs an AUTH
-    public function auth($amount, $masterID=null) {
+    public function auth($params) {
         $this->api = 'bp10emu';
         $this->transType = "AUTH";
-        $this->amount = $amount;
-        $this->masterID = $masterID;
+        $this->amount = $params["amount"];
+        if(isset($params["masterID"])) {
+            $this->masterID = $params["masterID"];
+        }
+        if(isset($params["customerToken"])){
+            $this->custToken = $params["customerToken"];
+        }
+        if(isset($params["newCustomerToken"]) && $params["newCustomerToken"] != FALSE) {
+            if ($params["newCustomerToken"] === TRUE){
+                $this->newCustToken = $this->randomString();
+            }
+            else {
+                $this->newCustToken = $params["newCustomerToken"];
+            }
+        }
     }
 
     // Performs a CAPTURE
-    public function capture($masterID, $amount=null) {
+    public function capture($params) {
         $this->api = 'bp10emu';
         $this->transType = "CAPTURE";
-        $this->masterID = $masterID;
-        $this->amount = $amount;
+        if(isset($params["masterID"])) {
+            $this->masterID = $params["masterID"];
+        }
+        if(isset($params["amount"])) {
+            $this->amount = $params["amount"];
+        }
     }
 
     // performs a REFUND
-    public function refund($masterID, $amount=null) {
+    public function refund($params) {
         $this->api = 'bp10emu';
         $this->transType = "REFUND";
-        $this->masterID = $masterID;
-        $this->amount = $amount;
+        if(isset($params["masterID"])) {
+            $this->masterID = $params["masterID"];
+        }
+        if(isset($params["amount"])) {
+            $this->amount = $params["amount"];
+        }
     }
     
     // performs an UPDATE
-    public function update($masterID, $amount=null) {
+    public function update($params) {
         $this->api = 'bp10emu';
         $this->transType = "UPDATE";
-        $this->masterID = $masterID;
-        $this->amount = $amount;
+        if(isset($params["masterID"])) {
+            $this->masterID = $params["masterID"];
+        }
+        if(isset($params["amount"])) {
+            $this->amount = $params["amount"];
+        }
     }
 
     // performs a VOID
-    public function void($masterID) {
+    public function void($params) {
         $this->api = 'bp10emu';
         $this->transType = "VOID";
-        $this->masterID = $masterID;
+        if(isset($params["masterID"])) {
+            $this->masterID = $params["masterID"];
+        }
     }
 
     // Passes customer information into the transaction
@@ -424,6 +458,18 @@ class BluePay {
         if(isset($params["templateID"])) {
                 $this->templateID = $params["templateID"];
         }
+    }
+
+    // Creates a random alphanumeric string for token identification
+    function randomString($length = 16) {
+        $str = "";
+        $characters = array_merge(range('A','Z'), range('a','z'), range('0','9'));
+        $max = count($characters) - 1;
+        for ($i = 0; $i < $length; $i++) {
+            $rand = mt_rand(0, $max);
+            $str .= $characters[$rand];
+        }
+        return $str;
     }
 
     // Updates an existing rebilling cycle's payment information.   
@@ -755,6 +801,12 @@ class BluePay {
     public function process() {
         $post["MODE"] = $this->mode;
         $post["RESPONSEVERSION"] = '5'; # Response version to be returned
+        if (!empty($this->custToken)){
+            $post["CUST_TOKEN"] = $this->custToken;
+        }
+        if (!empty($this->newCustToken)){
+            $post["NEW_CUST_TOKEN"] = $this->newCustToken;
+        }
         // Case Statement based on which api is used
         switch ($this->api) {
             case "bp10emu":
@@ -924,6 +976,8 @@ class BluePay {
         $this->bpStamp = isset($output['BP_STAMP']) ? $output['BP_STAMP'] : null;
         $this->bpStampDef = isset($output['BP_STAMP_DEF']) ? $output['BP_STAMP_DEF'] : null;
         $this->tpsHashType = isset($output['TPS_HASH_TYPE']) ? $output['TPS_HASH_TYPE'] : null;
+
+        $this->custToken = isset($output['CUST_TOKEN']) ? $output['CUST_TOKEN'] : null;
     }
 
     public function getResponse() { return $this->response; }
@@ -957,6 +1011,7 @@ class BluePay {
     public function getTransType() { return $this->transType; }
     public function getAmount() { return $this->amount; }
 
+    public function getCustToken() { return $this->custToken; }
 
     // Returns true if the transaction was approved and not a duplicate
     public function isSuccessfulResponse() {
@@ -965,5 +1020,5 @@ class BluePay {
     }
 }
 
-define("RELEASE_VERSION", '3.0.1');
+define("RELEASE_VERSION", '3.0.2');
 ?>

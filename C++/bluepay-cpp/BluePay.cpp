@@ -581,6 +581,19 @@ void BluePay::sale(std::string amount, std::string masterId)
 }
 
 /// <summary>
+/// Runs a Sale Transaction
+/// </summary>
+/// <param name="params"></param>
+void BluePay::sale(std::map<std::string, std::string> params)
+{
+    this->transType = "SALE";
+    this->amount = params["amount"];
+    this->masterId = params["masterId"];
+    this->custToken = params["custToken"];
+    this->api = "bp10emu";
+}
+
+/// <summary>
 /// Runs an Auth Transaction
 /// </summary>
 /// <param name="amount"></param>
@@ -603,6 +616,48 @@ void BluePay::auth(std::string amount, std::string masterId)
   this->api = "bp10emu";
   this->amount = amount;
   this->masterId = masterId;
+}
+
+/// <summary>
+/// Runs an Auth Transaction
+/// </summary>
+/// <param name="params"></param>
+void BluePay::auth(std::map<std::string, std::string> params)
+{
+    this->transType = "AUTH";
+    this->api = "bp10emu";
+    this->amount = params["amount"];
+    this->custToken = params["custToken"];
+    if (!params["newCustToken"].empty() && params["newCustToken"] != "false") {
+        if (params["newCustToken"] == "true") {
+            this->newCustToken = genRandomString(16);
+        } else {
+            this->newCustToken = params["newCustToken"];
+        }
+    }
+    
+}
+
+/// <summary>
+/// Generate random alphanumeric string
+/// </summary>
+/// <param name="s"></param>
+/// <param name="len"></param>
+std::string BluePay::genRandomString(const int len) {
+    static const char alphanum[] =
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+    
+    char * s = new char[len];
+
+    srand(time(NULL));
+    for (int i = 0; i < len; ++i) {
+        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+    s[len] = 0;
+    std::string result = s;
+    return s;
 }
 
 /// <summary>
@@ -1258,6 +1313,14 @@ char* BluePay::process()
         }
     }
     
+    // Add customer token, if available.
+    if (!this->custToken.empty()) {
+        postData += "&CUST_TOKEN=" + this->custToken;
+    }
+    if (!this->newCustToken.empty()) {
+        postData += "&NEW_CUST_TOKEN=" + this->newCustToken;
+    }
+
     //Create HTTPS POST object and send to BluePay
     CURL *curl;
     CURLcode res;
@@ -1309,6 +1372,7 @@ char* BluePay::process()
             std::strcpy(bank, responseFields["BANK_NAME"].c_str());
             std::strcpy(authCode, responseFields["AUTH_CODE"].c_str());
             std::strcpy(rebId, responseFields["REBID"].c_str());
+            custToken = responseFields["CUST_TOKEN"];
             break;
         } else if (this->URL != "https://secure.bluepay.com/interfaces/bp10emu") {
             queryResponse = (char*)line.c_str();
@@ -1523,6 +1587,15 @@ char* BluePay::getRebillAmount()
 char* BluePay::getNextAmount()
 {
   return this->rebNextAmount;
+}
+
+/// <summary>
+/// Returns custToken from Response
+/// </summary>
+/// <returns></returns>
+std::string BluePay::getCustToken()
+{
+    return this->custToken;
 }
 
 /// <summary>

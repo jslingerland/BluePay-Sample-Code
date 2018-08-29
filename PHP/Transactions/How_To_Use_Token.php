@@ -20,10 +20,10 @@ $payment = new BluePay(
     $mode
 );
 
-$payment->sale(
-	'3.00', 
-	$token 
-);
+$payment->sale(array(
+	'amount' => '3.00', 
+	'masterID' => $token 
+));
 
 $payment->process();
 

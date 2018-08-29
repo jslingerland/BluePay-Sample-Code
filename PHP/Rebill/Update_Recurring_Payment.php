@@ -49,7 +49,9 @@ $rebill->setRebillingInformation(array(
    'rebillAmount' => '3.50' // Rebill Amount: $3.50
 ));
 
-$rebill->auth('0.00');
+$rebill->auth(array(
+    'amount' => '0.00'
+));
 
 $rebill->process();
 
@@ -68,10 +70,10 @@ if ($rebill->isSuccessfulResponse()) {
     ));
 
     // Stores new card expiration date
-    $updateRebillPaymentInformation->auth(
-        "0.00", 
-        $rebill->getTransID() // the id of the rebill to update
-    );
+    $updateRebillPaymentInformation->auth(array(
+        'amount' => "0.00", 
+        'masterID' =>$rebill->getTransID() // the id of the rebill to update
+    ));
 
     // Makes the API Request to update the payment information
     $updateRebillPaymentInformation->process();

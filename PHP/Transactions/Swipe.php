@@ -34,7 +34,9 @@ $payment->setCustomerInformation(array(
 # Set payment information for a swiped credit card transaction 
 $payment->swipe("%B4111111111111111^TEST/BLUEPAY^2511101100001100000000667000000?;4111111111111111=251110110000667?");
  
-$payment->sale('3.00'); // Sale Amount: $3.00
+$payment->sale(array(
+    'amount' => '3.00' // Sale Amount: $3.00
+));
  
  // Makes the API request with BluePAy
 $payment->process();

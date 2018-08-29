@@ -42,7 +42,9 @@ $payment->setCCInformation(array(
     'cvv2' => '123' // Card CVV2: 123
 ));
 
-$payment->sale('3.00');
+$payment->sale(array(
+    'amount' => '3.00'
+));
 
 $payment->process();
 
@@ -55,10 +57,10 @@ if ($payment->isSuccessfulResponse()) {
         $mode
     );
 
-    $paymentUpdate->update(
-        $payment->getTransID(), 
-        '5.75' // add $2.75 to previous amount
-    );
+    $paymentUpdate->update(array(
+        'masterID' => $payment->getTransID(), 
+        'amount' => '5.75' // add $2.75 to previous amount
+    ));
 
     // Makes the API Request to process update
     $paymentUpdate->process();

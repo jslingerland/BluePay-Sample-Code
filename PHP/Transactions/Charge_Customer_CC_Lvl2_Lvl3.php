@@ -72,8 +72,10 @@ $payment->addLineItem(array(
   'lineItemTotal' => '10.70'
 ));
 
-$payment->sale('13.91'); // Sale Amount: $13.91
- 
+$payment->sale(array(
+  'amount' => '13.91' // Sale Amount: $13.91
+));
+
  // Makes the API request with BluePAy
 $payment->process();
  

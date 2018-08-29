@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import six
+import random
 from six.moves import urllib
 from six.moves.urllib.request import Request, urlopen
 from six.moves.urllib.error import URLError, HTTPError
@@ -15,7 +16,7 @@ import sys # PG: added this
 
 class BluePay:
 
-    RELEASE_VERSION = '3.0.1'
+    RELEASE_VERSION = '3.0.2'
     # Sets all the attributes to default to empty strings if not defined
     
     # Merchant fields
@@ -59,6 +60,8 @@ class BluePay:
     amount_tip = ''
     amount_food = ''
     amount_misc = ''
+    new_cust_token = ''
+    cust_token = ''
 
     # Rebilling fields
     do_rebill = ''
@@ -117,8 +120,6 @@ class BluePay:
         self.secret_key = params['secret_key']
         self.mode = params['mode']
 
-
-
     # Performs a SALE
     def sale(self, **params):
         """ 
@@ -131,6 +132,8 @@ class BluePay:
         # self.rrno = params['rrno']
         if 'transaction_id' in params:
             self.rrno = params['transaction_id']
+        if 'customer_token' in params:
+            self.cust_token = params['customer_token']
  
     # Performs an AUTH
     def auth(self, **params):
@@ -140,8 +143,12 @@ class BluePay:
         self.trans_type = 'AUTH'
         self.amount = params['amount']
         self.api = 'bp10emu'
+        if 'new_customer_token' in params and params['new_customer_token'] is not False:
+            self.new_cust_token = '%016x' % random.randrange(16**16) if params['new_customer_token'] == True else params['new_customer_token']
         if 'rrno' in params:
             self.rrno = params['rrno']
+        if 'customer_token' in params:
+            self.cust_token = params['customer_token']
     
     # Performs a CAPTURE
     def capture(self, **params):
@@ -207,8 +214,6 @@ class BluePay:
     def set_payment_type(self, pay_type):
         self.payment_type = pay_type
 
-
-        
     # Passes credit card information into the transaction
     def set_cc_information(self, **params):
         self.payment_type = 'CREDIT'
@@ -693,6 +698,17 @@ class BluePay:
             'RRNO': self.rrno,
             'RESPONSEVERSION': '5' # Response version to be returned   
         }
+
+        if self.new_cust_token != '':
+            fields.update({
+                'NEW_CUST_TOKEN' : self.new_cust_token
+            })
+
+        if self.cust_token != '':
+            fields.update({
+                'CUST_TOKEN' : self.cust_token
+            })
+
         if self.api == 'bpdailyreport2':
             self.url = 'https://secure.bluepay.com/interfaces/bpdailyreport2'
             fields.update({
@@ -924,6 +940,8 @@ class BluePay:
         self.bp_stamp_def_response = self.response['BP_STAMP_DEF'][0] if 'BP_STAMP_DEF' in self.response else ''
         # Returns hash function used for transaction
         self.tps_hash_type_response = self.response['TPS_HASH_TYPE'][0] if 'TPS_HASH_TYPE' in self.response else ''
+        # Returns customer token used or established by transaction
+        self.cust_token_response = self.response['CUST_TOKEN'][0] if 'CUST_TOKEN' in self.response else ''
 
 
  

@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BluePayLibrary
 {
@@ -27,7 +28,7 @@ namespace BluePayLibrary
     /// </summary>
     public class BluePay
     {
-        public const string RELEASE_VERSION = "3.0.1";
+        public const string RELEASE_VERSION = "3.0.2";
                 
         // required for every transaction
         public string accountID = "";
@@ -67,6 +68,8 @@ namespace BluePayLibrary
         public string paymentType = "";
         public string masterID = "";
         public string rebillID = "";
+        public string newCustToken = "";
+        public string custToken = "";
 
         // rebill variables
         public string doRebill = "";
@@ -471,12 +474,13 @@ namespace BluePayLibrary
         /// </summary>
         /// <param name="amount"></param>
         /// <param name="masterID"></param>
-        public void Sale(string amount, string masterID = null)
+        public void Sale(string amount, string masterID = null, string customerToken = "")
         {
             this.transType = "SALE";
             this.api = "bp10emu";
             this.amount = amount;
             this.masterID = masterID;
+            this.custToken = customerToken;
         }
 
         /// <summary>
@@ -485,12 +489,31 @@ namespace BluePayLibrary
         /// <param name="amount"></param>
         /// <param name="masterID"></param>
 
-        public void Auth(string amount, string masterID = null)
+        public void Auth(string amount, string masterID = null, string newCustomerToken = "", string customerToken = "")
         {
             this.transType = "AUTH";
             this.api = "bp10emu";
             this.amount = amount;
             this.masterID = masterID;
+            if (newCustomerToken != "" && newCustomerToken.ToLower() != "false")
+            {
+                this.newCustToken = newCustomerToken.ToLower() == "true" ? randomString() : newCustomerToken;
+            }
+            this.custToken = customerToken;
+        }
+
+        /// <summary>
+        /// Creates a random alphanumeric string
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="masterID"></param>
+
+        public string randomString(int length = 16)
+        {
+            Random random = new Random();
+            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmopqrstuv0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         /// <summary>
@@ -695,6 +718,11 @@ namespace BluePayLibrary
         /// </summary>
         public string GenerateTPS(string Message, string HashType)
         {
+            if (this.secretKey == null)
+            {
+                return "SECRET KEY NOT PROVIDED";
+            }
+
             string tpsHash = "";
             ASCIIEncoding encode = new ASCIIEncoding();
 
@@ -1147,6 +1175,16 @@ namespace BluePayLibrary
                 }
             }
 
+            // Add customer token data, if available.
+            if (this.newCustToken != "")
+            {
+                postData += "&" + "NEW_CUST_TOKEN=" + this.newCustToken;
+            }
+            if (this.custToken != "")
+            {
+                postData += "&" + "CUST_TOKEN=" + this.custToken;
+            }
+
             PerformPost(postData);
             return GetStatus();
         }
@@ -1483,6 +1521,20 @@ namespace BluePayLibrary
             Match m = r.Match(response);
             if (m.Success)
                 return (m.Value.Substring(12));
+            else
+                return "";
+        }
+
+        /// <summary>
+        /// Returns customer token from response
+        /// </summary>
+        /// <returns></returns>
+        public string GetCustomerToken()
+        {
+            Regex r = new Regex(@"CUST_TOKEN=([^&$]+)");
+            Match m = r.Match(response);
+            if (m.Success)
+                return (m.Value.Substring(11));
             else
                 return "";
         }

@@ -46,7 +46,9 @@ $rebill->setRebillingInformation(array(
    'rebillAmount' => '3.50' // Rebill Amount: $3.50
 ));
 
-$rebill->auth('0.00');
+$rebill->auth(array(
+    'amount' => '0.00'
+));
 
 // Makes the API Request with BluePay
 $rebill->process();

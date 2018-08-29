@@ -31,6 +31,7 @@
 // #include "../Transactions/Return_Funds.h"
 // #include "../Transactions/Update_Transaction.h"
 // #include "../Transactions/Store_Payment_Information.h"
+// #include "../Transactions/Create_Customer_Token.h"
 // #include "../Transactions/Swipe.h"
 
 ///////////////////////////////////////////////
@@ -60,6 +61,7 @@ int main(int argc, const char * argv[]) {
 	// returnFunds();
     // updateTransaction();
 	// storePaymentInformation();
+    // createCustomerToken();
 	// swipe();
 
 	return 0;

@@ -40,7 +40,9 @@ $payment->setCCInformation(array(
     'cvv2' => '123' // Card CVV2: 123
 ));
  
-$payment->sale('3.00'); // Sale Amount: $3.00
+$payment->sale(array(
+    'amount' => '3.00' // Sale Amount: $3.00
+)); 
  
  // Makes the API request with BluePAy
 $payment->process();

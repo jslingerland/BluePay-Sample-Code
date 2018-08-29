@@ -146,6 +146,11 @@ class BluePay
   def get_name2
     @RESPONSE_HASH['name2']
   end
+
+  # Customer token associated with the transaction. Only available in response version 5+
+  def get_cust_token
+    @RESPONSE_HASH['CUST_TOKEN']
+  end
   
   # Payment type associated with the transaction
   def get_payment_type

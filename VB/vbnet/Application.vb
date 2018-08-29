@@ -10,6 +10,7 @@
 		' Transactions.ChargeCustomerACH.run()
 		' Transactions.CancelTransaction.run()
 		' Transactions.CheckCustomerCredit.run()
+		' Transactions.CreateCustomerToken.run()
 		' Transactions.CustomerDefinedData.run()
 		' Transactions.HowToUseToken.run()
         ' Transactions.UpdateTransaction.run()

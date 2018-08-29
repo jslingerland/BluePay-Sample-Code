@@ -41,7 +41,9 @@ $payment->setCCInformation(array(
     )
 );
 
-$payment->sale('3.00');
+$payment->sale(array(
+    'amount' => '3.00'
+)); 
 
 $payment->process();
 
@@ -54,7 +56,9 @@ if ($payment->isSuccessfulResponse()) {
         $mode
     );
 
-    $cancelPayment->void($payment->getTransID());
+    $cancelPayment->void(array(
+        'masterID' => $payment->getTransID()
+    ));
 
     $cancelPayment->process();
 

@@ -1,5 +1,6 @@
 require "net/http"
 require "net/https"
+require "SecureRandom"
 require "uri"
 require "digest/sha2"
 require "cgi"
@@ -13,7 +14,7 @@ class BluePay
   # Make sure this is the correct path to your CA certificates directory
   RootCA = "/"
   RootCAFile = "cacert.pem"
-  RELEASE_VERSION = "3.0.1"
+  RELEASE_VERSION = "3.0.2"
 
   def initialize(params = {})
     @ACCOUNT_ID = params[:account_id]
@@ -49,6 +50,7 @@ class BluePay
     @PARAM_HASH['TRANSACTION_TYPE'] = 'SALE'
     @PARAM_HASH['AMOUNT'] = params[:amount]
     @PARAM_HASH['RRNO'] = params[:trans_id] || ''
+    @PARAM_HASH['CUST_TOKEN'] = params[:customer_token] if params[:customer_token]
     @api = "bp10emu"
   end
 
@@ -57,7 +59,12 @@ class BluePay
     @PARAM_HASH['TRANSACTION_TYPE'] = 'AUTH'
     @PARAM_HASH['AMOUNT'] = params[:amount]
     @PARAM_HASH['RRNO'] = params[:trans_id] || ''
+    @PARAM_HASH['CUST_TOKEN'] = params[:customer_token] if params[:customer_token]
     @api = "bp10emu"
+    
+    if params[:new_customer_token] && params[:new_customer_token] != false
+      @PARAM_HASH['NEW_CUST_TOKEN'] = params[:new_customer_token] == true ? SecureRandom.hex(8) : params[:new_customer_token]
+    end
   end
   
   # Capture an Auth
