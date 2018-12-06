@@ -928,7 +928,7 @@ class BluePay {
                 $headers = explode("\n", $headers);
                 foreach($headers as $header) {
                     if (stripos($header, 'Location:') !== false) {
-                        $this->response = $header;
+                        $this->response = substr($header, strpos($header, "?")+ 1);
                     }
                 }
             } else {
@@ -1020,5 +1020,5 @@ class BluePay {
     }
 }
 
-define("RELEASE_VERSION", '3.0.2');
+define("RELEASE_VERSION", '3.0.3');
 ?>
