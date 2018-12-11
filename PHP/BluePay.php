@@ -941,8 +941,8 @@ class BluePay {
 
     protected function parseResponse() {
         parse_str($this->response, $output);
-        $this->status = isset($output['Result']) ? $output['Result'] : null;
-        $this->message = isset($output['MESSAGE']) ? $output['MESSAGE'] : null;
+        $this->status = isset($output['Result']) ? trim($output['Result']) : null;
+        $this->message = isset($output['MESSAGE']) ? trim($output['MESSAGE']) : null;
         $this->transID = isset($output['RRNO']) ? $output['RRNO'] : null;
         $this->maskedAccount = isset($output['PAYMENT_ACCOUNT']) ? $output['PAYMENT_ACCOUNT'] : null;
         $this->cardType = isset($output['CARD_TYPE']) ? $output['CARD_TYPE'] : null;
