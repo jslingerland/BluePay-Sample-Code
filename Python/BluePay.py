@@ -426,21 +426,22 @@ class BluePay:
 
         tps_hash = ""
         if hash_type == "HMAC_SHA256":
-            tps_hash = hmac.new(self.secret_key, string, hashlib.sha256).hexdigest()
+
+            tps_hash = hmac.new(str.encode(self.secret_key, 'utf-8'), str.encode(string, 'utf-8'), hashlib.sha256).hexdigest()
         elif hash_type == "SHA512":
             m = hashlib.sha512()
-            m.update(self.secret_key + string)
+            m.update(str.encode(self.secret_key + string, 'utf-8'))
             tps_hash = m.hexdigest()
         elif hash_type == "SHA256":
             m = hashlib.sha256()
-            m.update(self.secret_key + string)
+            m.update(str.encode(self.secret_key + string, 'utf-8'))
             tps_hash = m.hexdigest()
         elif hash_type == "MD5":
             m = hashlib.md5()
-            m.update(self.secret_key + string)
+            m.update(str.encode(self.secret_key + string, 'utf-8'))
             tps_hash = m.hexdigest()
         else:
-            tps_hash = hmac.new(self.secret_key, string, hashlib.sha512).hexdigest()
+            tps_hash = hmac.new(str.encode(self.secret_key, 'utf-8'), str.encode(string, 'utf-8'), hashlib.sha512).hexdigest()
 
         return tps_hash
 
