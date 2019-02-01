@@ -940,7 +940,7 @@ class BluePay {
         } // end Process function
 
     protected function parseResponse() {
-        parse_str($this->response, $output);
+        parse_str(trim($this->response), $output);
         $this->status = isset($output['Result']) ? $output['Result'] : null;
         $this->message = isset($output['MESSAGE']) ? $output['MESSAGE'] : null;
         $this->transID = isset($output['RRNO']) ? $output['RRNO'] : null;
