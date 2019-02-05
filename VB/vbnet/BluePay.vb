@@ -1121,7 +1121,7 @@ Namespace BPVB
                 ElseIf (Me.paymentType = "CREDIT") Then
                     postData = postData + "&CC_NUM=" + HttpUtility.UrlEncode(Me.paymentAccount) + _
                     "&CC_EXPIRES=" + HttpUtility.UrlEncode(Me.cardExpire) + _
-                    "&CVCVV2=" + HttpUtility.UrlEncode(Me.cvv2)
+                    "&CVCCVV2=" + HttpUtility.UrlEncode(Me.cvv2)
                 ElseIf (Me.paymentType = "ACH")
                     postData = postData + "&ACH_ROUTING=" + HttpUtility.UrlEncode(Me.routingNum) + _
                     "&ACH_ACCOUNT=" + HttpUtility.UrlEncode(Me.accountNum) + _
