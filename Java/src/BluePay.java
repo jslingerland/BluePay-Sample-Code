@@ -44,7 +44,7 @@ public class BluePay
   private String TRANSACTION_TYPE = "";
   private String PAYMENT_TYPE = "";
   private String CARD_NUM = "";
-  private String CVCVV2 = "";
+  private String CVCCVV2 = "";
   private String CARD_EXPIRE = "";
   private String ACH_ROUTING = "";
   private String ACH_ACCOUNT = "";
@@ -282,7 +282,7 @@ public class BluePay
     PAYMENT_TYPE = "CREDIT";
     CARD_NUM = params.get("cardNumber");
     CARD_EXPIRE = params.get("expirationDate");
-    CVCVV2 = params.get("cvv2");
+    CVCCVV2 = params.get("cvv2");
   }
 
   /**
@@ -1187,7 +1187,7 @@ public class BluePay
         if (PAYMENT_TYPE.equals("CREDIT")) {
         	  nameValuePairs.add(new BasicNameValuePair("CC_NUM", CARD_NUM));  
         	  nameValuePairs.add(new BasicNameValuePair("CC_EXPIRES", CARD_EXPIRE));
-        	  nameValuePairs.add(new BasicNameValuePair("CVCVV2", CVCVV2));
+        	  nameValuePairs.add(new BasicNameValuePair("CVCCVV2", CVCCVV2));
         } else if (PAYMENT_TYPE.equals("ACH")) {
       	  nameValuePairs.add(new BasicNameValuePair("ACH_ROUTING", ACH_ROUTING));
       	  nameValuePairs.add(new BasicNameValuePair("ACH_ACCOUNT", ACH_ACCOUNT));

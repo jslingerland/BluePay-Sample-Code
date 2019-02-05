@@ -1129,7 +1129,7 @@ namespace BluePayLibrary
                     {
                         postData = postData + "&CC_NUM=" + HttpUtility.UrlEncode(this.paymentAccount) +
                         "&CC_EXPIRES=" + HttpUtility.UrlEncode(this.cardExpire) +
-                        "&CVCVV2=" + HttpUtility.UrlEncode(this.cvv2);
+                        "&CVCCVV2=" + HttpUtility.UrlEncode(this.cvv2);
                     }
                     else
                     {

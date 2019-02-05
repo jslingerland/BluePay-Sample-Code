@@ -786,7 +786,7 @@ class BluePay:
                     fields.update({
                         'CC_NUM': self.card_number, 
                         'CC_EXPIRES': self.card_expire,
-                        'CVCVV2': self.cvv2
+                        'CVCCVV2': self.cvv2
                     })
                 else:
                     fields.update({

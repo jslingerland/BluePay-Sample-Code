@@ -837,7 +837,7 @@ class BluePay {
                 $post["COMMENT"] = $this->memo;
                 $post["CC_NUM"] = $this->ccNum;
                 $post["CC_EXPIRES"] = $this->cardExpire;
-                $post["CVCVV2"] = $this->cvv2;
+                $post["CVCCVV2"] = $this->cvv2;
                 $post["ACH_ROUTING"] = $this->routingNum;
                 $post["ACH_ACCOUNT"] = $this->accountNum;
                 $post["ACH_ACCOUNT_TYPE"] = $this->accountType;

@@ -27,7 +27,7 @@ class BluePay
     @PARAM_HASH['PAYMENT_TYPE'] = 'CREDIT'
     @PARAM_HASH['CC_NUM'] = params[:cc_number] || ''
     @PARAM_HASH['CC_EXPIRES'] = params[:cc_expiration] || ''
-    @PARAM_HASH['CVCVV2'] = params[:cvv2] || ''
+    @PARAM_HASH['CVCCVV2'] = params[:cvv2] || ''
   end
 
   # Set up an ACH transaction.  Expects:

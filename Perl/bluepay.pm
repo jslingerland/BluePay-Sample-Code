@@ -211,7 +211,7 @@ sub set_cc_information {
     $self->{PAYMENT_TYPE} = 'CREDIT'; 
     $self->{CC_NUM} = $params->{cc_number};
     $self->{CC_EXPIRES} = $params->{cc_expiration};
-    $self->{CVCVV2} = $params->{cvv2}; 
+    $self->{CVCCVV2} = $params->{cvv2}; 
 }
 
 # Sets payment information for a swiped credit card transaction

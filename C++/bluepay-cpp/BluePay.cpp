@@ -1273,7 +1273,7 @@ char* BluePay::process()
         if (this->paymentType == "CREDIT") {
             postData = postData + "&CC_NUM=" + (this->paymentAccount) +
             "&CC_EXPIRES=" + (this->cardExpire) +
-            "&CVCVV2=" + (this->cvv2);
+            "&CVCCVV2=" + (this->cvv2);
         } else {
             postData = postData + "&ACH_ROUTING=" + (this->routingNum) +
             "&ACH_ACCOUNT=" + (this->accountNum) +
