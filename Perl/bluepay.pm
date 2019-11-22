@@ -143,6 +143,7 @@ sub process {
     $ua->agent('BluePay Perl Library/' . RELEASE_VERSION);
     my $content;
     if ($self->{API} eq 'bp10emu' ) {
+        $ua->max_redirect( 0 );
         my $req = new HTTP::Request 'POST', $self->{URL};
         $req->content($request);
         my $raw_response = $ua->request($req);
