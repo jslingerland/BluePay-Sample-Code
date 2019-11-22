@@ -1,6 +1,6 @@
 package BluePay;
 
-use constant RELEASE_VERSION => '3.0.2';
+use constant RELEASE_VERSION => '3.0.3';
 use strict;
 use warnings;
 # Required modules
