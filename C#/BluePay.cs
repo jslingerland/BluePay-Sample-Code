@@ -1197,6 +1197,10 @@ namespace BluePayLibrary
 
             ServicePointManager.CheckCertificateRevocationList = true;
 
+            // If having HTTPS connection issues uncomment these two lines to force the use of TLS 1.2.
+            // ServicePointManager.Expect100Continue = true;
+            // ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             byte[] data = Encoding.ASCII.GetBytes(post);
 
             request.Method = "POST";
