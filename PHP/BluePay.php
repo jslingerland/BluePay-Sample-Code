@@ -110,7 +110,7 @@ class BluePay {
     private $level2Info;
     
     // Level 3 processing field
-    private $lineItems;
+    private $lineItems = array();
 
     // Class constructor. Accepts:
     // $accID : Merchant's Account ID
@@ -304,34 +304,35 @@ class BluePay {
     // Adds a line item for level 3 processing. Repeat method for each item up to 99 items.
     // For Canadian and AMEX processors, ensure required Level 2 information is present.
     public function addLineItem($params) {
+        
         $i = count($this->lineItems) + 1;
         $prefix = "LV3_ITEM${i}_";                                                 //  VALUE REQUIRED IN:
         $this->lineItems[] = array(                                                //  USA | CANADA
-            "${prefix}UNIT_COST" => $params['unitCost'],                          //   *      *
+            "${prefix}UNIT_COST" => $params['unitCost'],                           //   *      *
             "${prefix}QUANTITY" => $params['quantity'],                            //   *      *
-            "${prefix}ITEM_SKU" => $params['itemSKU'] ?? '',                      //          *
+            "${prefix}ITEM_SKU" => $params['itemSKU'] ?? '',                       //          *
             "${prefix}ITEM_DESCRIPTOR" => $params['descriptor'] ?? '',             //   *      *
-            "${prefix}COMMODITY_CODE" => $params['commodityCode'] ?? '',          //   *      *
-            "${prefix}PRODUCT_CODE" => $params['productCode'] ?? '',              //   *
-            "${prefix}MEASURE_UNITS" => $params['measureUnits'] ?? '',            //   *      *
-            "${prefix}ITEM_DISCOUNT" => $params['itemDiscount'] ?? '',            //          *
-            "${prefix}TAX_RATE" => $params['taxRate'] ?? '',                      //   *
-            "${prefix}GOODS_TAX_RATE" => $params['goodsTaxRate'] ?? '',          //          *
-            "${prefix}TAX_AMOUNT" => $params['taxAmount'] ?? '',                  //   *
-            "${prefix}GOODS_TAX_AMOUNT" => $params['goodsTaxAmount'] ?? '',      //   *
-            "${prefix}CITY_TAX_RATE" => $params['cityTaxRate'] ?? '',            //
-            "${prefix}CITY_TAX_AMOUNT" => $params['cityTaxAmount'] ?? '',        //
-            "${prefix}COUNTY_TAX_RATE" => $params['countyTaxRate'] ?? '',        //
-            "${prefix}COUNTY_TAX_AMOUNT" => $params['countyTaxAmount'] ?? '',    //
-            "${prefix}STATE_TAX_RATE" => $params['stateTaxRate'] ?? '',          //
-            "${prefix}STATE_TAX_AMOUNT" => $params['stateTaxAmount'] ?? '',      //
-            "${prefix}CUST_SKU" => $params['custSKU'] ?? '',                      //
-            "${prefix}CUST_PO" => $params['custPO'] ?? '',                        //
-            "${prefix}SUPPLEMENTAL_DATA" => $params['supplementalData'] ?? '',    //
-            "${prefix}GL_ACCOUNT_NUMBER" => $params['glAccountNumber'] ?? '',    //
-            "${prefix}DIVISION_NUMBER" => $params['divisionNumber'] ?? '',        //
-            "${prefix}PO_LINE_NUMBER" => $params['poLineNumber'] ?? '',          //
-            "${prefix}LINE_ITEM_TOTAL" => $params['lineItemTotal'] ?? ''         //   *
+            "${prefix}COMMODITY_CODE" => $params['commodityCode'] ?? '',           //   *      *
+            "${prefix}PRODUCT_CODE" => $params['productCode'] ?? '',               //   *
+            "${prefix}MEASURE_UNITS" => $params['measureUnits'] ?? '',             //   *      *
+            "${prefix}ITEM_DISCOUNT" => $params['itemDiscount'] ?? '',             //          *
+            "${prefix}TAX_RATE" => $params['taxRate'] ?? '',                       //   *
+            "${prefix}GOODS_TAX_RATE" => $params['goodsTaxRate'] ?? '',            //          *
+            "${prefix}TAX_AMOUNT" => $params['taxAmount'] ?? '',                   //   *
+            "${prefix}GOODS_TAX_AMOUNT" => $params['goodsTaxAmount'] ?? '',        //   *
+            "${prefix}CITY_TAX_RATE" => $params['cityTaxRate'] ?? '',            
+            "${prefix}CITY_TAX_AMOUNT" => $params['cityTaxAmount'] ?? '',        
+            "${prefix}COUNTY_TAX_RATE" => $params['countyTaxRate'] ?? '',        
+            "${prefix}COUNTY_TAX_AMOUNT" => $params['countyTaxAmount'] ?? '',    
+            "${prefix}STATE_TAX_RATE" => $params['stateTaxRate'] ?? '',          
+            "${prefix}STATE_TAX_AMOUNT" => $params['stateTaxAmount'] ?? '',      
+            "${prefix}CUST_SKU" => $params['custSKU'] ?? '',                      
+            "${prefix}CUST_PO" => $params['custPO'] ?? '',                        
+            "${prefix}SUPPLEMENTAL_DATA" => $params['supplementalData'] ?? '',    
+            "${prefix}GL_ACCOUNT_NUMBER" => $params['glAccountNumber'] ?? '',    
+            "${prefix}DIVISION_NUMBER" => $params['divisionNumber'] ?? '',        
+            "${prefix}PO_LINE_NUMBER" => $params['poLineNumber'] ?? '',          
+            "${prefix}LINE_ITEM_TOTAL" => $params['lineItemTotal'] ?? ''          //   *
         );
     }
 
@@ -1020,5 +1021,5 @@ class BluePay {
     }
 }
 
-define("RELEASE_VERSION", '3.0.3');
+define("RELEASE_VERSION", '3.0.4');
 ?>
