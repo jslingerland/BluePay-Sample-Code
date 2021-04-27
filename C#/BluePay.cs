@@ -1,14 +1,14 @@
 /*
- * Bluepay C#.NET Sample code.
+ * BluePay C#.NET Sample code.
  *
- * Updated: 2017-01-19
+ * Updated: 2021-03-30
  *
  * This code is Free.  You may use it, modify it and redistribute it.
  * If you do make modifications that are useful, Bluepay would love it if you donated
  * them back to us!
  *
- *
  */
+ 
 using System;
 using System.Text;
 using System.Security.Cryptography;
@@ -28,7 +28,7 @@ namespace BluePayLibrary
     /// </summary>
     public class BluePay
     {
-        public const string RELEASE_VERSION = "3.0.2";
+        public const string RELEASE_VERSION = "3.0.5";
                 
         // required for every transaction
         public string accountID = "";
@@ -119,13 +119,15 @@ namespace BluePayLibrary
         public string shpfTpsString = "";
         public string shpfTamperProofSeal = "";
 
-        // rebill fields
+        // report fields
         public string reportStartDate = "";
         public string reportEndDate = "";
         public string doNotEscape = "";
         public string queryBySettlement = "";
         public string queryByHierarchy = "";
         public string excludeErrors = "";
+        public string backendID = "";
+        public string origin = "";
 
         public string response = "";
         public string TPS = "";
@@ -368,13 +370,17 @@ namespace BluePayLibrary
         /// <param name="subaccountsSearched"></param>
         /// <param name="doNotEscape"></param>
         /// <param name="errors"></param>
+        /// <param name="backendID"></param>
+        /// <param name="origin"></param>
         public void GetTransactionReport(string reportStartDate, string reportEndDate, string subaccountsSearched,
-                string doNotEscape = null, string excludeErrors = null)
+                string doNotEscape = null, string excludeErrors = null, string backendID, string origin)
         {
             this.queryBySettlement = "0";
             this.reportStartDate = reportStartDate;
             this.reportEndDate = reportEndDate;
             this.queryByHierarchy = subaccountsSearched;
+            this.backendID = backendID;
+            this.origin = origin;
             this.doNotEscape = doNotEscape;
             this.excludeErrors = excludeErrors;
             this.api = "bpdailyreport2";
@@ -1063,6 +1069,12 @@ namespace BluePayLibrary
                     "&QUERY_BY_HIERARCHY=" + HttpUtility.UrlEncode(this.queryByHierarchy) +
                     "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
                     "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(this.excludeErrors);
+                    if(this.backendID != null) {
+                        postData += "&BACKEND_ID=" + HttpUtility.UrlEncode(this.backendID);
+                    }
+                    if(this.origin != null) {
+                        postData += "&ORIGIN=" + HttpUtility.UrlEncode(this.origin);
+                    }
                     break;
                 case "stq":
                     CalcReportTPS();
