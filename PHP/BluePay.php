@@ -1,11 +1,15 @@
 <?php
-/**
-*
-* BluePay PHP sample code.
-* This sample code is meant to be used with a BluePay gateway account. If a demo
-* gateway account is used, make sure the MODE is set to TEST.
-*
-*/
+/*
+ * BluePay PHP Sample code.
+ *
+ * Updated: 2021-03-30
+ *
+ * This code is Free.  You may use it, modify it and redistribute it.
+ * If you do make modifications that are useful, Bluepay would love it if you donated
+ * them back to us!
+ *
+ */
+
 class BluePay { 
     
     private $api;
@@ -76,6 +80,8 @@ class BluePay {
     private $queryBySettlement; 
     private $subaccountsSearched;
     private $doNotEscape;
+    private $backendID;
+    private $origin;
     private $excludeErrors;
  
     // Generating Simple Hosted Payment Form URL fields
@@ -501,7 +507,13 @@ class BluePay {
         $this->reportStartDate = $params['reportStart'];
         $this->reportEndDate = $params['reportEnd'];
         $this->subaccountsSearched = $params['subaccountsSearched'];
-        if(isset($params["doNotEscape"])) {
+        if(isset($params["backendID"])) {
+                $this->backendID = $params["backendID"];
+        }
+        if(isset($params["origin"])) {
+                $this->origin = $params["origin"];
+        }
+		if(isset($params["doNotEscape"])) {
                 $this->doNotEscape = $params["doNotEscape"];
         }
         if(isset($params["errors"])) {
@@ -864,6 +876,8 @@ class BluePay {
                 $post["DO_NOT_ESCAPE"] = $this->doNotEscape;
                 $post["QUERY_BY_SETTLEMENT"] = $this->queryBySettlement;
                 $post["QUERY_BY_HIERARCHY"] = $this->subaccountsSearched;
+                $post["BACKEND_ID"] = $this->backendID;
+                $post["ORIGIN"] = $this->origin;
                 $post["EXCLUDE_ERRORS"] = $this->excludeErrors;
                 $post["TPS_HASH_TYPE"] = $this->tpsHashType;
                 $this->postURL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
@@ -941,7 +955,8 @@ class BluePay {
         } // end Process function
 
     protected function parseResponse() {
-        parse_str(trim($this->response), $output);
+		$str = explode('?', trim($this->response))[1];
+        parse_str($str, $output);
         $this->status = isset($output['Result']) ? $output['Result'] : null;
         $this->message = isset($output['MESSAGE']) ? $output['MESSAGE'] : null;
         $this->transID = isset($output['RRNO']) ? $output['RRNO'] : null;
@@ -1021,5 +1036,5 @@ class BluePay {
     }
 }
 
-define("RELEASE_VERSION", '3.0.4');
+define("RELEASE_VERSION", '3.0.5');
 ?>
