@@ -1,5 +1,12 @@
 ' *
-' * Bluepay VB.NET Sample code.
+' * BluePay Visual Basic.NET Sample code.
+' *
+' * Updated: 2021-03-30
+' *
+' * This code is Free.  You may use it, modify it and redistribute it.
+' * If you do make modifications that are useful, Bluepay would love it if you donated
+' * them back to us!
+' *
 ' *
 
 Imports System
@@ -19,7 +26,7 @@ Namespace BPVB
     ''' This is the BluePayPayment object.
     ''' </summary>
     Public Class BluePay
-        Public Const RELEASE_VERSION = "3.0.1"
+        Public Const RELEASE_VERSION = "3.0.5"
 
         ' Required for every transaction
         Private accountID As String = ""
@@ -117,6 +124,8 @@ Namespace BPVB
         Private id As String = ""
         Private reportStartDate As String = ""
         Private reportEndDate As String = ""
+        Private backendID As String = ""
+        Private origin As String = ""
         Private doNotEscape As String = ""
         Private queryBySettlement As String = ""
         Private queryByHierarchy As String = ""
@@ -681,11 +690,15 @@ Namespace BPVB
         ''' <param name="queryByHierarchy"></param>
         ''' <param name="doNotEscape"></param>
         ''' <param name="excludeErrors"></param>
+        ''' <param name="backendID"></param>
+        ''' <param name="origin"></param>
         ''' 
         Public Sub getTransactionReport(
             ByVal reportStartDate As String,
             ByVal reportEndDate As String, 
-            Optional ByVal queryByHierarchy As String="", 
+            Optional ByVal queryByHierarchy As String="",
+            Optional ByVal backendID As String="",
+            Optional ByVal origin As String="",			
             Optional ByVal doNotEscape As String="", 
             Optional ByVal excludeErrors As String = "" 
             )
@@ -694,6 +707,8 @@ Namespace BPVB
             Me.reportStartDate = reportStartDate
             Me.reportEndDate = reportEndDate
             Me.queryByHierarchy = queryByHierarchy
+            Me.backendID = backendID
+            Me.origin = origin
             Me.doNotEscape = doNotEscape
             Me.excludeErrors = excludeErrors
         End Sub
@@ -1154,7 +1169,7 @@ Namespace BPVB
                 "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(Me.excludeErrors) + _
                 "&QUERY_BY_HIERARCHY=" + HttpUtility.UrlEncode(Me.queryByHierarchy) + _
                 "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(Me.doNotEscape) + _
-                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)
+                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)				
             ElseIf (Me.api="bpdailyreport2")
                 calcReportTPS()
                 Me.URL = "https://secure.bluepay.com/interfaces/bpdailyreport2"
@@ -1166,7 +1181,11 @@ Namespace BPVB
                 "&QUERY_BY_HIERARCHY=" + HttpUtility.UrlEncode(Me.queryByHierarchy) + _
                 "&DO_NOT_ESCAPE=" + HttpUtility.UrlEncode(Me.doNotEscape) + _
                 "&EXCLUDE_ERRORS=" + HttpUtility.UrlEncode(Me.excludeErrors) + _
-                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)
+                "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(Me.tpsHashType)				
+                If Not (Me.backendID) Is Nothing Then
+                postData = postData + _ "&BACKEND_ID=" + HttpUtility.UrlEncode(Me.backendID)
+                If Not (Me.origin) Is Nothing Then
+                postData = postData + _ "&ORIGIN=" + HttpUtility.UrlEncode(Me.origin)
             End If
 
             ' Add Level 2 data, if available
