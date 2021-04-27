@@ -1,6 +1,12 @@
-/**
- * BluePayPayment is an interface to Bluepay's payment gateway. Included are functions to call
- * numerous BluePay APIs for doing transactions, getting report data, etc.                           
+/*
+ * BluePay Java Sample code.
+ *
+ * Updated: 2021-03-30
+ *
+ * This code is Free.  You may use it, modify it and redistribute it.
+ * If you do make modifications that are useful, Bluepay would love it if you donated
+ * them back to us!
+ *
  */
 
 package bluepay;
@@ -32,7 +38,7 @@ import java.nio.charset.Charset;
 
 public class BluePay
 {
-  public static final String RELEASE_VERSION = "3.0.2";
+  public static final String RELEASE_VERSION = "3.0.5";
 
   // required parameters
   private String BP_URL = "";
@@ -94,6 +100,8 @@ public class BluePay
   private String REPORT_START = "";
   private String REPORT_END = "";
   private String DO_NOT_ESCAPE = "";
+  private String BACKEND_ID = "";
+  private String ORIGIN = "";
   private String QUERY_BY_SETTLEMENT = "";
   private String QUERY_BY_HIERARCHY = "";
   private String EXCLUDE_ERRORS = "";
@@ -619,18 +627,23 @@ public class BluePay
    * @param reportStart A string containing the date to start the report
    * @param reportEnd A string containing the date to stop the report
    * @param subaccountsSearched Either a 1 or a 0 to indicate whether to search subaccounts as well as the main account
+   * @param backendID 12 digit funding transaction ID
+   * @param origin A string spcifying the source of a transaction. Valid values are bp10emu bp20post asbyemu anet-aim 
+   *               VTERM REJECT FIXER PAYOUT AGG BATCH CAPQUEUE FRAUDSCRUB REBILL IVR
    * @param doNotEscape Either a 1 or a 0 to indicate whether the report should take off quotes around the data
    * @param errors Either a 1 or a 0 to indicate whether the report should exclude errored transactions
    *
    */
   public void getTransactionReport(HashMap<String, String> params) {
-	  QUERY_BY_SETTLEMENT = "0";
-	  REPORT_START = params.get("reportStart");
-	  REPORT_END = params.get("reportEnd");
-	  QUERY_BY_HIERARCHY = params.get("subaccountsSearched");
-    DO_NOT_ESCAPE = params.get("doNotEscape");
-    EXCLUDE_ERRORS = params.get("excludeErrors");
-    API = "bpdailyreport2";
+      QUERY_BY_SETTLEMENT = "0";
+      REPORT_START = params.get("reportStart");
+      REPORT_END = params.get("reportEnd");
+      QUERY_BY_HIERARCHY = params.get("subaccountsSearched");
+      BACKEND_ID = params.get("backendID");
+      ORIGIN = params.get("origin");     
+      DO_NOT_ESCAPE = params.get("doNotEscape");
+      EXCLUDE_ERRORS = params.get("excludeErrors");
+      API = "bpdailyreport2";
   }
   
   /**
@@ -1135,7 +1148,13 @@ public class BluePay
   		  nameValuePairs.add(new BasicNameValuePair("TAMPER_PROOF_SEAL", calcReportTPS()));
   		  nameValuePairs.add(new BasicNameValuePair("REPORT_START_DATE", REPORT_START));
   		  nameValuePairs.add(new BasicNameValuePair("REPORT_END_DATE", REPORT_END));
-  		  nameValuePairs.add(new BasicNameValuePair("DO_NOT_ESCAPE", DO_NOT_ESCAPE));
+		  nameValuePairs.add(new BasicNameValuePair("DO_NOT_ESCAPE", DO_NOT_ESCAPE));
+		  if(null != BACKEND_ID) {
+		  nameValuePairs.add(new BasicNameValuePair("BACKEND_ID", BACKEND_ID));
+		  }
+		  if(null != ORIGIN) {
+		  nameValuePairs.add(new BasicNameValuePair("ORIGIN", ORIGIN));
+		  }
   		  nameValuePairs.add(new BasicNameValuePair("QUERY_BY_SETTLEMENT", QUERY_BY_SETTLEMENT));
   		  nameValuePairs.add(new BasicNameValuePair("QUERY_BY_HIERARCHY", QUERY_BY_HIERARCHY));
   		  nameValuePairs.add(new BasicNameValuePair("EXCLUDE_ERRORS", EXCLUDE_ERRORS));
