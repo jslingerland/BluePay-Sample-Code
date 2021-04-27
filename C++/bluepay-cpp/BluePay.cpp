@@ -1,3 +1,13 @@
+//
+// BluePay C++ Sample code.
+//
+// Updated: 2021-03-30
+//
+// This code is Free.  You may use it, modify it and redistribute it.
+// If you do make modifications that are useful, Bluepay would love it if you donated
+// them back to us!
+//
+
 #include "BluePay.h"
 #include <curl/curl.h>
 #include <iostream>
@@ -7,6 +17,8 @@
 #include <algorithm>
 #include <cctype>
 #include <cstring>
+
+const std::string RELEASE_VERSION = "3.0.5";
 
 /// <summary>
 /// BluePay constructor
@@ -404,6 +416,74 @@ void BluePay::getTransactionReport(std::string reportStart, std::string reportEn
   this->queryByHierarchy = subaccountsSearched;
   this->doNotEscape = doNotEscape;
   this->excludeErrors = errors;
+}
+
+/// <summary>
+/// Gets Report of Transaction Data
+/// </summary>
+/// <param name="reportStart"></param>
+/// <param name="reportEnd"></param>
+/// <param name="subaccountsSearched"></param>
+/// <param name="doNotEscape"></param>
+/// <param name="errors"></param>
+/// <param name="backendID"></param>
+void BluePay::getTransactionReport(std::string reportStart, std::string reportEnd, std::string subaccountsSearched,
+    std::string doNotEscape, std::string errors, std::string backendID)
+{
+  this->queryBySettlement = "0";
+  this->api = "bpdailyreport2";
+  this->reportStartDate = reportStart;
+  this->reportEndDate = reportEnd;
+  this->queryByHierarchy = subaccountsSearched;
+  this->doNotEscape = doNotEscape;
+  this->excludeErrors = errors;
+  this->backendID = backendID;
+}
+
+/// <summary>
+/// Gets Report of Transaction Data
+/// </summary>
+/// <param name="reportStart"></param>
+/// <param name="reportEnd"></param>
+/// <param name="subaccountsSearched"></param>
+/// <param name="doNotEscape"></param>
+/// <param name="errors"></param>
+/// <param name="origin"></param>
+void BluePay::getTransactionReport(std::string reportStart, std::string reportEnd, std::string subaccountsSearched,
+    std::string doNotEscape, std::string errors, std::string origin)
+{
+  this->queryBySettlement = "0";
+  this->api = "bpdailyreport2";
+  this->reportStartDate = reportStart;
+  this->reportEndDate = reportEnd;
+  this->queryByHierarchy = subaccountsSearched;
+  this->doNotEscape = doNotEscape;
+  this->excludeErrors = errors;
+  this->origin = origin;
+}
+
+/// <summary>
+/// Gets Report of Transaction Data
+/// </summary>
+/// <param name="reportStart"></param>
+/// <param name="reportEnd"></param>
+/// <param name="subaccountsSearched"></param>
+/// <param name="doNotEscape"></param>
+/// <param name="errors"></param>
+/// <param name="backendID"></param>
+/// <param name="origin"></param>
+void BluePay::getTransactionReport(std::string reportStart, std::string reportEnd, std::string subaccountsSearched,
+    std::string doNotEscape, std::string errors, std::string backendID, std::string origin)
+{
+  this->queryBySettlement = "0";
+  this->api = "bpdailyreport2";
+  this->reportStartDate = reportStart;
+  this->reportEndDate = reportEnd;
+  this->queryByHierarchy = subaccountsSearched;
+  this->doNotEscape = doNotEscape;
+  this->excludeErrors = errors;
+  this->backendID = backendID;
+  this->origin = origin;
 }
 
 /// <summary>
@@ -1216,6 +1296,12 @@ char* BluePay::process()
         "&QUERY_BY_HIERARCHY=" + (this->queryByHierarchy) +
         "&TPS_HASH_TYPE=" + (this->tpsHashType) +
         "&EXCLUDE_ERRORS=" + (this->excludeErrors);
+        if(this->backendID) {
+           postData += "&BACKEND_ID=" + (this->backendID);
+        }
+        if(this->origin) {
+           postData += "&ORIGIN=" + (this->origin);
+        }
         // } else if (this->reportStartDate != "") {
     } else if (this->api == "stq") {
         calcReportTps();
