@@ -1,4 +1,15 @@
 # -*- coding: utf-8 -*-
+#
+# BluePay Python Sample code.
+#
+# Updated: 2021-03-30
+#
+# This code is Free.  You may use it, modify it and redistribute it.
+# If you do make modifications that are useful, Bluepay would love it if you donated
+# them back to us!
+#
+#
+
 import sys
 import six
 import random
@@ -16,7 +27,7 @@ import sys # PG: added this
 
 class BluePay:
 
-    RELEASE_VERSION = '3.0.2'
+    RELEASE_VERSION = '3.0.5'
     # Sets all the attributes to default to empty strings if not defined
     
     # Merchant fields
@@ -78,6 +89,8 @@ class BluePay:
     report_end_date = ''
     query_by_settlement = ''
     subaccounts_searched = ''
+	backend_id = ''
+	origin = ''
     do_not_escape = ''
     excludeErrors = ''
 
@@ -358,6 +371,10 @@ class BluePay:
         self.report_start_date = params['report_start']
         self.report_end_date = params['report_end']
         self.subaccounts_searched = params['subaccounts_searched']
+        if ('backend_id' in params):
+			self.backend_id = params['backend_id']
+        if ('origin' in params):
+			self.origin = params['origin']
         if ('do_not_escape' in params):
             self.do_not_escape = params['do_not_escape'] 
         if ('exclude_errors' in params):
@@ -697,7 +714,7 @@ class BluePay:
         fields = {
             'MODE': self.mode,
             'RRNO': self.rrno,
-            'RESPONSEVERSION': '5' # Response version to be returned   
+            'RESPONSEVERSION': '20' # Response version to be returned   
         }
 
         if self.new_cust_token != '':
@@ -720,6 +737,8 @@ class BluePay:
                 'DO_NOT_ESCAPE' : self.do_not_escape,
                 'QUERY_BY_SETTLEMENT' : self.query_by_settlement,
                 'QUERY_BY_HIERARCHY' : self.subaccounts_searched,
+                'BACKEND_ID' : self.backend_id,
+                'ORIGIN' : self.origin,
                 'EXCLUDE_ERRORS' : self.excludeErrors,
                 'TPS_HASH_TYPE': self.tps_hash_type
             })
