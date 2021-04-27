@@ -1,3 +1,14 @@
+#
+# BluePay Ruby Sample code.
+#
+# Updated: 2021-03-30
+#
+# This code is Free.  You may use it, modify it and redistribute it.
+# If you do make modifications that are useful, Bluepay would love it if you donated
+# them back to us!
+#
+#
+
 require "net/http"
 require "net/https"
 require "SecureRandom"
@@ -14,7 +25,7 @@ class BluePay
   # Make sure this is the correct path to your CA certificates directory
   RootCA = "/"
   RootCAFile = "cacert.pem"
-  RELEASE_VERSION = "3.0.2"
+  RELEASE_VERSION = "3.0.5"
 
   def initialize(params = {})
     @ACCOUNT_ID = params[:account_id]
@@ -295,6 +306,8 @@ class BluePay
     @PARAM_HASH["REPORT_START_DATE"] = params[:report_start_date]
     @PARAM_HASH["REPORT_END_DATE"] = params[:report_end_date]
     @PARAM_HASH["QUERY_BY_HIERARCHY"] = params[:query_by_hierarchy]
+	@PARAM_HASH["BACKEND_ID"] = params[:backend_id] if params[:backend_id]
+	@PARAM_HASH["ORIGIN"] = params[:origin] if params[:origin]
     @PARAM_HASH["DO_NOT_ESCAPE"] = params[:do_not_escape] || ''
     @PARAM_HASH["EXCLUDE_ERRORS"] = params[:exclude_errors] || ''
     @api = "bpdailyreport2"
