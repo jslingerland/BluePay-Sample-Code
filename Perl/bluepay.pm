@@ -1,6 +1,17 @@
+#
+# BluePay Perl Sample code.
+#
+# Updated: 2021-03-30
+#
+# This code is Free.  You may use it, modify it and redistribute it.
+# If you do make modifications that are useful, Bluepay would love it if you donated
+# them back to us!
+#
+#
+
 package BluePay;
 
-use constant RELEASE_VERSION => '3.0.3';
+use constant RELEASE_VERSION => '3.0.5';
 use strict;
 use warnings;
 # Required modules
@@ -459,6 +470,8 @@ sub get_transaction_report{
     $self->{REPORT_START_DATE} = $params->{report_start_date};
     $self->{REPORT_END_DATE} = $params->{report_end_date};
     $self->{QUERY_BY_HIERARCHY} = $params->{query_by_hierarchy};
+    $self->{BACKEND_ID} = $params->{backend_id} if $params->{backend_id}; # optional	
+    $self->{ORIGIN} = $params->{origin} if $params->{origin}; # optional
     $self->{DO_NOT_ESCAPE} = $params->{do_not_escape}; # optional
     $self->{EXCLUDE_ERRORS} = $params->{exclude_errors}; # optional
     $self->{API} = "bpdailyreport2";
