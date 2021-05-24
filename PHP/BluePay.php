@@ -935,6 +935,7 @@ class BluePay {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Required for query strings greater than 1024 characters.
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); // Turns on verification of the SSL certificate.
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // Validate SSL host match
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // If not set, curl prints output to the browser
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
             if ($this->postURL == "https://secure.bluepay.com/interfaces/bp10emu") {
