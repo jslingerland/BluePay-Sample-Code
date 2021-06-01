@@ -54,6 +54,9 @@ private:
   std::string country;
   std::string newCustToken;
   std::string custToken;
+  std::string storedIndicator;
+  std::string storedType;
+  std::string storedId;
     
   // transaction variables
   std::string amount;
@@ -163,6 +166,7 @@ public:
   void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country);
   void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country, std::string phone, std::string email);
   void setCustomerInformation(std::string name1, std::string name2, std::string addr1, std::string addr2, std::string city, std::string state, std::string zip, std::string country, std::string phone, std::string email, std::string companyName);
+  void setStoredParameters(std::string storedIndicator, std::string storedType, std::string storedId);
   void setCCInformation(std::string cardNum, std::string cardExpire);
   void setCCInformation(std::string cardNum, std::string cardExpire, std::string cvv2);
   void setACHInformation(std::string routingNum, std::string accountNum, std::string accountType);
@@ -257,6 +261,7 @@ public:
   char* getCardType();
   char* getBank();
   char* getAuthCode();
+  char* getStoredId();
   char* getRebillId();
   char* getStatus();
   char* getCreationDate();

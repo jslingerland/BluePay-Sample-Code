@@ -1,7 +1,7 @@
 //
 // BluePay C++ Sample code.
 //
-// Updated: 2021-03-30
+// Updated: 2021-06-01
 //
 // This code is Free.  You may use it, modify it and redistribute it.
 // If you do make modifications that are useful, Bluepay would love it if you donated
@@ -18,7 +18,7 @@
 #include <cctype>
 #include <cstring>
 
-const std::string RELEASE_VERSION = "3.0.5";
+const std::string RELEASE_VERSION = "3.0.6";
 
 /// <summary>
 /// BluePay constructor
@@ -155,7 +155,12 @@ void BluePay::setCustomerInformation(std::string name1, std::string name2, std::
   this->companyName = companyName;
 }
 
-
+void BluePay::setStoredParameters(std::string storedIndicator, std::string storedType, std::string storedId)
+{
+  this->storedIndicator = storedIndicator;
+  this->storedType = storedType;
+  this->storedId = storedId;
+}
 /// <summary>
 /// Sets Credit Card Information
 /// </summary>
@@ -1338,6 +1343,9 @@ char* BluePay::process()
         "&PHONE=" + (this->phone) +
         "&EMAIL=" + (this->email) +
         "&COMPANY_NAME=" + (this->companyName) +
+        "&STORED_INDICATOR=" + (this->storedIndicator) +
+        "&STORED_TYPE=" + (this->storedType) +
+        "&STORED_ID=" + (this->storedId) +
         "&REBILLING=" + (this->doRebill) +
         "&REB_FIRST_DATE=" + (this->rebillFirstDate) +
         "&REB_EXPR=" + (this->rebillExpr) +
@@ -1382,7 +1390,7 @@ char* BluePay::process()
         "&STATUS=" + (this->rebillStatus);
     }
     // Add Response version to return
-    postData += "&RESPONSEVERSION=5";
+    postData += "&RESPONSEVERSION=8";
     
     // Add Level 2 data, if available.
     for( auto field : level2Info )
@@ -1458,6 +1466,7 @@ char* BluePay::process()
             std::strcpy(bank, responseFields["BANK_NAME"].c_str());
             std::strcpy(authCode, responseFields["AUTH_CODE"].c_str());
             std::strcpy(rebId, responseFields["REBID"].c_str());
+            std::strcpy(storedId, responseFields["STORED_ID"].c_str());
             custToken = responseFields["CUST_TOKEN"];
             break;
         } else if (this->URL != "https://secure.bluepay.com/interfaces/bp10emu") {
@@ -1592,6 +1601,15 @@ char* BluePay::getBank()
 char* BluePay::getAuthCode()
 {
   return this->authCode;
+}
+
+/// <summary>
+/// Returns STORED_ID from Response
+/// </summary>
+/// <returns></returns>
+char* BluePay::getStoredId()
+{
+  return this->storedId;
 }
 
 /// <summary>
