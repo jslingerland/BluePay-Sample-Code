@@ -23,6 +23,12 @@ void howToUseToken(){
 		mode
 	);
 
+	//payment.setStoredParameters(
+	//"F",//Stored Indicator
+	//"C",//Stored Type
+	//"TESTID526957756"//Stored Id
+	//);
+
 	// Sale Amount: $3.00
 	payment.sale("3.00", token);
 
@@ -39,6 +45,7 @@ void howToUseToken(){
 	    cout << string("Masked Payment Account: ") + payment.getMaskedPaymentAccount() + "\n";
 	    cout << string("Card Type: ") + payment.getCardType() + "\n";
 	    cout << string("Authorization Code: ") + payment.getAuthCode() + "\n";
+            //cout << string("Stored ID: ") + payment.getStoredId() + "\n";
 	}
 	else {
 	    cout << string("Error: ") + payment.getMessage();

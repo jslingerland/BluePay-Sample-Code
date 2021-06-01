@@ -35,6 +35,12 @@ void storePaymentInformation(){
 	    "test@bluepay.com" // Email Address
 	  );
 
+    //payment.setStoredParameters(
+    //        "F",//Stored Indicator
+    //        "C",//Stored Type
+    //        "TESTID526957756"//Stored Id
+    //      );
+
     payment.setCCInformation(
 	    "4111111111111111", // Card Number
 	    "1225", // Card Expire
@@ -57,6 +63,7 @@ void storePaymentInformation(){
         cout << string("Masked Payment Account: ") + payment.getMaskedPaymentAccount() + "\n";
         cout << string("Card Type: ") + payment.getCardType() + "\n";
         cout << string("Authorization Code: ") + payment.getAuthCode() + "\n";
+        //cout << string("Stored ID: ") + payment.getStoredId() + "\n";
     }
     else {
         cout << string("Error: ") + payment.getMessage();

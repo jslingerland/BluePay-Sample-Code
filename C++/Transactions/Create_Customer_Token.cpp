@@ -34,6 +34,13 @@ void createCustomerToken(){
         "1231231234", // Phone Number
         "test@bluepay.com" // Email Address
         );
+
+    //token.setStoredParameters(
+    //        "F",//Stored Indicator
+    //        "C",//Stored Type
+    //        "TESTID526957756"//Stored Id
+    //      );
+
     
     token.setCCInformation(
         "4111111111111111", // Card Number
@@ -89,6 +96,7 @@ void createCustomerToken(){
             cout << string("Masked Payment Account: ") + payment.getMaskedPaymentAccount() + "\n";
             cout << string("Card Type: ") + payment.getCardType() + "\n";
             cout << string("Authorization Code: ") + payment.getAuthCode() + "\n";
+            //cout << string("Stored ID: ") + payment.getStoredId() + "\n";
         }
         else {
             cout << string("Error: ") + payment.getMessage();
