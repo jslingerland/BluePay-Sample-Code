@@ -38,6 +38,9 @@ namespace Transactions
                 zip: "54321",
                 country: "USA",
                 phone: "123-123-12345",
+		//storedIndicator: "F",
+		//storedType:"C",
+		//storedId:"TESTID765456",
                 email: "test@bluepay.com"
             );
             
@@ -65,6 +68,7 @@ namespace Transactions
                 Console.WriteLine("Masked Payment Account: " + payment.GetMaskedPaymentAccount());
                 Console.WriteLine("Card Type: " + payment.GetCardType());
                 Console.WriteLine("Authorization Code: " + payment.GetAuthCode());
+                //Console.WriteLine("Stored ID: " + payment.GetStoredId());
             }
             else
             {
