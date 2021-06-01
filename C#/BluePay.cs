@@ -1,7 +1,7 @@
 /*
  * BluePay C#.NET Sample code.
  *
- * Updated: 2021-03-30
+ * Updated: 2021-06-01
  *
  * This code is Free.  You may use it, modify it and redistribute it.
  * If you do make modifications that are useful, Bluepay would love it if you donated
@@ -28,7 +28,7 @@ namespace BluePayLibrary
     /// </summary>
     public class BluePay
     {
-        public const string RELEASE_VERSION = "3.0.5";
+        public const string RELEASE_VERSION = "3.0.6";
                 
         // required for every transaction
         public string accountID = "";
@@ -61,6 +61,12 @@ namespace BluePayLibrary
         public string email = "";
         public string country = "";
         public string companyName = "";
+
+	//Stored Parameters(Optional)
+        public string storedIndicator = "";
+        public string storedType = "";
+        public string storedId= "";
+	
 
         // transaction variables
         public string amount = "";
@@ -162,8 +168,11 @@ namespace BluePayLibrary
         /// <param name="phone"></param>
         /// <param name="email"></param>
         /// <param name="companyName"></param>
+        /// <param name="storedIndicator"></param>
+        /// <param name="storedType"></param>
+        /// <param name="storedId"></param>
 
-        public void SetCustomerInformation(string firstName, string lastName, string address1 = null, string address2 = null, string city = null, string state = null, string zip = null, string country = null, string phone = null, string email = null, string companyName = null)
+        public void SetCustomerInformation(string firstName, string lastName, string address1 = null, string address2 = null, string city = null, string state = null, string zip = null, string country = null, string phone = null, string email = null, string companyName = null, string storedIndicator = null, string storedType = null, string storedId = null)
         {
             this.name1 = firstName;
             this.name2 = lastName;
@@ -176,6 +185,9 @@ namespace BluePayLibrary
             this.phone = phone;
             this.email = email;
             this.companyName = companyName;
+            this.storedIndicator = storedIndicator;
+            this.storedType = storedType;
+            this.storedId = storedId;
         }
 
         /// <summary>
@@ -1129,7 +1141,10 @@ namespace BluePayLibrary
                     "&AMOUNT_MISC=" + HttpUtility.UrlEncode(this.amountMisc) +
                     "&CUSTOMER_IP=" + System.Net.Dns.GetHostEntry("").AddressList[0].ToString() +
                     "&TPS_HASH_TYPE=" + HttpUtility.UrlEncode(this.tpsHashType) +
-                    "&RESPONSEVERSION=5";
+                    "&STORED_INDICATOR=" + HttpUtility.UrlEncode(this.storedIndicator) +
+                    "&STORED_TYPE=" + HttpUtility.UrlEncode(this.storedType) +
+                    "&STORED_ID=" + HttpUtility.UrlEncode(this.storedId) +
+                    "&RESPONSEVERSION=8";
                     if (this.swipeData != "")
                     {
                         Match matchTrack1And2 = track1And2.Match(this.swipeData);
@@ -1425,6 +1440,21 @@ namespace BluePayLibrary
             else
                 return "";
         }
+
+        /// <summary>
+        /// Returns STORED_ID from Response
+        /// </summary>
+        /// <returns></returns>
+        public string GetStoredId()
+        {
+            Regex r = new Regex(@"STORED_ID=([^&$]+)");
+            Match m = r.Match(response);
+            if (m.Success)
+                return (m.Value.Substring(10));
+            else
+                return "";
+        }
+
         /// <summary>
         /// Returns REBID or rebill_id from Response
         /// </summary>
