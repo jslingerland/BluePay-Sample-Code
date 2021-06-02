@@ -11,6 +11,7 @@ include('../BluePay.php');
 
 $accountID = "Merchant's Account ID Here";
 $secretKey = "Merchant's Secret Key Here";
+
 $mode = "TEST";
 
 $auth = new BluePay(
@@ -29,7 +30,10 @@ $auth->setCustomerInformation(array(
     'zip' =>'54321', 
     'country' => 'USA', 
     'phone' => '1231231234', 
-    'email' => 'test@bluepay.com' 
+    #'storedIndicator' => 'F',
+    #'storedType' => 'C',
+    #'storedId'   => 'TESTID526957756',
+    'email' => 'test@bluepay.com'
 ));
 
 $auth->setCCInformation(array(
@@ -58,7 +62,10 @@ if (strpos($auth->getMessage(), "Customer Tokens must be unique") !== false) {
         'zip' =>'54321', 
         'country' => 'USA', 
         'phone' => '1231231234', 
-        'email' => 'test@bluepay.com' 
+        #'storedIndicator' => 'F',
+        #'storedType' => 'C',
+        #'storedId'   => 'TESTID526957756',
+	'email' => 'test@bluepay.com'
     ));
 
     $auth->auth(array(
@@ -93,7 +100,9 @@ if($auth->isSuccessfulResponse()){
         'CVS Response: ' . $payment->getCVV2Response() . "\n" .
         'Masked Account: ' . $payment->getMaskedAccount() . "\n" .
         'Card Type: ' . $payment->getCardType() . "\n" .
-        'Authorization Code: ' . $payment->getAuthCode() . "\n";
+        #'Stored ID: ' . $payment->getStoredId() . "\n" .
+	'Authorization Code: ' . $payment->getAuthCode() . "\n";
+
     } else{
      echo $payment->getMessage() . "\n";
     }
