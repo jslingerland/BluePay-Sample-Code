@@ -31,6 +31,9 @@ store_payment.set_customer_information(
     city = "Testville",
     state = "IL",
     zipcode = "54321",
+    #stored_indicator = 'F',
+    #stored_type = 'C',
+    #stored_id = 'TESTID526957756',
     country = "USA"
 )
 
@@ -55,5 +58,6 @@ if store_payment.is_successful_response():
     print('Masked Payment Account: ' + store_payment.masked_account_response)
     print('Card Type: ' + store_payment.card_type_response)
     print('Auth Code: ' + store_payment.auth_code_response)
+    #print('Stored ID: ' + store_payment.stored_id_response)
 else:
     print(store_payment.message_response)
