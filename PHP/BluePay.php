@@ -2,7 +2,7 @@
 /*
  * BluePay PHP Sample code.
  *
- * Updated: 2021-03-30
+ * Updated: 2021-06-01
  *
  * This code is Free.  You may use it, modify it and redistribute it.
  * If you do make modifications that are useful, Bluepay would love it if you donated
@@ -31,6 +31,9 @@ class BluePay {
     private $companyName;
     private $phone;
     private $country;
+    private $storedId;
+    private $storedIndicator;
+    private $storedType;
 
     // Optional transaction fields
     private $customID1;
@@ -241,6 +244,15 @@ class BluePay {
         }
         if(isset($params["companyName"])) {
             $this->companyName = $params["companyName"];
+        }
+        if(isset($params["storedIndicator"])){
+            $this->storedIndicator =  $params["storedIndicator"];
+        }
+        if(isset($params["storedId"])){
+            $this->storedId =  $params["storedId"];
+        }
+        if(isset($params["storedType"])){
+            $this->storedType =  $params["storedType"];
         }
     }
 
@@ -813,7 +825,7 @@ class BluePay {
 
     public function process() {
         $post["MODE"] = $this->mode;
-        $post["RESPONSEVERSION"] = '5'; # Response version to be returned
+        $post["RESPONSEVERSION"] = '8'; # Response version to be returned
         if (!empty($this->custToken)){
             $post["CUST_TOKEN"] = $this->custToken;
         }
@@ -863,6 +875,9 @@ class BluePay {
                 $post["SWIPE"] = $this->trackData;  
                 $post["TAMPER_PROOF_SEAL"] = $this->calcTPS();  
                 $post["TPS_HASH_TYPE"] = $this->tpsHashType;
+                $post["STORED_INDICATOR"] = $this->storedIndicator;
+                $post["STORED_TYPE"] = $this->storedType;
+                $post["STORED_ID"] = $this->storedId;
                 if(isset($_SERVER["REMOTE_ADDR"])){
                     $post["CUSTOMER_IP"] = $_SERVER["REMOTE_ADDR"];
                 }
@@ -955,7 +970,7 @@ class BluePay {
         } // end Process function
 
     protected function parseResponse() {
-		$str = explode('?', trim($this->response))[1];
+	        $str = explode('?', trim($this->response))[1];
         parse_str($str, $output);
         $this->status = isset($output['Result']) ? $output['Result'] : null;
         $this->message = isset($output['MESSAGE']) ? $output['MESSAGE'] : null;
@@ -994,6 +1009,7 @@ class BluePay {
         $this->tpsHashType = isset($output['TPS_HASH_TYPE']) ? $output['TPS_HASH_TYPE'] : null;
 
         $this->custToken = isset($output['CUST_TOKEN']) ? $output['CUST_TOKEN'] : null;
+        $this->storedId = isset($output['STORED_ID']) ? $output['STORED_ID'] : null;
     }
 
     public function getResponse() { return $this->response; }
@@ -1028,6 +1044,8 @@ class BluePay {
     public function getAmount() { return $this->amount; }
 
     public function getCustToken() { return $this->custToken; }
+    public function getStoredId() { return $this->storedId; }
+
 
     // Returns true if the transaction was approved and not a duplicate
     public function isSuccessfulResponse() {
@@ -1036,5 +1054,5 @@ class BluePay {
     }
 }
 
-define("RELEASE_VERSION", '3.0.5');
+define("RELEASE_VERSION", '3.0.6');
 ?>
