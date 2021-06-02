@@ -167,4 +167,9 @@ class BluePay
     @RESPONSE_HASH['amount']
   end
 
+  # Return associated stored_id with the transaction
+  def get_stored_id
+    @RESPONSE_HASH['STORED_ID']
+  end
+
 end

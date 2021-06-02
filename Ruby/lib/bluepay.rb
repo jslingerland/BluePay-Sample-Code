@@ -1,7 +1,7 @@
 #
 # BluePay Ruby Sample code.
 #
-# Updated: 2021-03-30
+# Updated: 2021-06-01
 #
 # This code is Free.  You may use it, modify it and redistribute it.
 # If you do make modifications that are useful, Bluepay would love it if you donated
@@ -25,7 +25,7 @@ class BluePay
   # Make sure this is the correct path to your CA certificates directory
   RootCA = "/"
   RootCAFile = "cacert.pem"
-  RELEASE_VERSION = "3.0.5"
+  RELEASE_VERSION = "3.0.6"
 
   def initialize(params = {})
     @ACCOUNT_ID = params[:account_id]
@@ -131,6 +131,16 @@ class BluePay
     @PARAM_HASH['PHONE'] = params[:phone]
     @PARAM_HASH['EMAIL'] = params[:email]
     @PARAM_HASH['COMPANY_NAME'] = params[:company_name] || ''
+    @PARAM_HASH['STORED_INDICATOR'] = params[:stored_indicator] || ''
+    @PARAM_HASH['STORED_TYPE'] = params[:stored_type] || ''
+    @PARAM_HASH['STORED_ID'] = params[:stored_id] || ''
+  end
+
+  # Sets customer information for the transaction
+  def set_stored_parameters(params={})
+    @PARAM_HASH['STORED_INDICATOR'] = params[:stored_indicator] || ''
+    @PARAM_HASH['STORED_TYPE'] = params[:stored_type] || ''
+    @PARAM_HASH['STORED_ID'] = params[:stored_id] || ''
   end
 
   # Set customer Phone
@@ -191,6 +201,21 @@ class BluePay
   # Set AMOUNT_MISC field
   def amount_misc=(amount_misc)
     @PARAM_HASH['AMOUNT_MISC'] = amount_misc
+  end
+
+  # Set STORED_INDICATOR field
+  def stored_indicator=(stored_indicator)
+    @PARAM_HASH['STORED_INDICATOR'] = stored_indicator
+  end
+
+  # Set STORED_TYPE field
+  def stored_type=(stored_type)
+    @PARAM_HASH['STORED_TYPE'] = stored_type
+  end
+
+  # Set STORED_ID field
+  def stored_id=(stored_id)
+    @PARAM_HASH['STORED_ID'] = stored_id
   end
 
   # Adds information required for level 2 processing.
