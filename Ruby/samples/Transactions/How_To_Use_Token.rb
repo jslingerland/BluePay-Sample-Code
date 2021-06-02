@@ -19,6 +19,12 @@ payment = BluePay.new(
   mode: MODE
 )
 
+#payment.set_stored_parameters(
+#  stored_indicator: "F",
+#  stored_type: "C",
+#  stored_id: "TESTID526957756"
+#)
+
 payment.sale(
   amount: "3.00", 
   trans_id: TOKEN 
@@ -37,6 +43,7 @@ if payment.successful_transaction?
   puts "MASKED PAYMENT ACCOUNT: " + payment.get_masked_account
   puts "CARD TYPE: " + payment.get_card_type
   puts "AUTH CODE: " + payment.get_auth_code
+  #puts "STORED ID: " + payment.get_stored_id.to_s
 else
   puts payment.get_message
 end

@@ -28,7 +28,10 @@ auth.set_customer_information(
   zip_code: "54321", 
   country: "USA",
   phone: "123-123-1234", 
-  email: "test@bluepay.com"  
+  #stored_indicator: "F",
+  #stored_type: "C",
+  #stored_id: "TESTID526957756",
+  email: "test@bluepay.com"
 )
 
 auth.set_cc_information(
@@ -79,6 +82,7 @@ if auth.successful_transaction?
       puts "CARD TYPE: " + payment.get_card_type
       puts "AUTH CODE: " + payment.get_auth_code
       puts "CUSTOMER TOKEN: " + payment.get_cust_token
+      #puts "STORED ID: " + payment.get_stored_id.to_s
   else
     puts payment.get_message
   end
