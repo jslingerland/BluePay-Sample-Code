@@ -25,6 +25,12 @@ public class How_To_Use_Token {
       MODE
     );
 
+    //HashMap<String, String> customerParams = new HashMap<>();
+    //customerParams.put("storedIndicator", "F");
+    //customerParams.put("storedType", "C");
+    //customerParams.put("storedId", "TESTID12345");
+    //payment.setCustomerInformation(customerParams);
+
     // Sale Amount: $3.00
     HashMap<String, String> saleParams = new HashMap<>();
     saleParams.put("amount", "3.00"); 
@@ -49,6 +55,7 @@ public class How_To_Use_Token {
       System.out.println("Masked Payment Account: " + payment.getMaskedPaymentAccount());
       System.out.println("Card Type: " + payment.getCardType());   
       System.out.println("Authorization Code: " + payment.getAuthCode());
+      //System.out.println("Stored ID: " + payment.getStoredId());
     } else {
       System.out.println("Error: " + payment.getMessage());
     }

@@ -18,6 +18,7 @@ public class Charge_Customer_CC {
     
     String ACCOUNT_ID = "Merchant's Account ID Here";
     String SECRET_KEY = "Merchant's Secret Key Here";
+
     String MODE = "TEST";
 
     BluePay payment = new BluePay(
@@ -38,6 +39,9 @@ public class Charge_Customer_CC {
     customerParams.put("country", "USA");
     customerParams.put("phone", "123-123-12345");
     customerParams.put("email", "test@bluepay.com");
+    //customerParams.put("storedIndicator", "F");
+    //customerParams.put("storedType", "C");
+    //customerParams.put("storedId", "TESTID12345");
     payment.setCustomerInformation(customerParams);
 
     // Set Credit Card Information
@@ -70,6 +74,7 @@ public class Charge_Customer_CC {
       System.out.println("Masked Payment Account: " + payment.getMaskedPaymentAccount());
       System.out.println("Card Type: " + payment.getCardType());    
       System.out.println("Authorization Code: " + payment.getAuthCode());
+      //System.out.println("Stored ID: " + payment.getStoredId());
     } else {
       System.out.println("Error: " + payment.getMessage());
     }

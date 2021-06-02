@@ -36,6 +36,10 @@ public class Store_Payment_Information {
     customerParams.put("country", "USA");
     customerParams.put("phone", "123-123-12345");
     customerParams.put("email", "test@bluepay.com");
+    //customerParams.put("storedIndicator", "F");
+    //customerParams.put("storedType", "C");
+    //customerParams.put("storedId", "TESTID12345");
+
     auth.setCustomerInformation(customerParams);
 
     // Set Credit Card Information
@@ -102,6 +106,7 @@ public class Store_Payment_Information {
         System.out.println("Masked Payment Account: " + payment.getMaskedPaymentAccount());
         System.out.println("Card Type: " + payment.getCardType());    
         System.out.println("Authorization Code: " + payment.getAuthCode());
+        //System.out.println("Stored ID: " + payment.getStoredId());
       } else {
         System.out.println("Error: " + payment.getMessage());
       }
