@@ -12,6 +12,7 @@ use bluepay;
 
 my $account_id = "Merchant's Account ID Here";
 my $secret_key = "Merchant's Secret Key Here";
+
 my $mode = "TEST";
 my $token = "Transaction ID here"; 
 
@@ -20,7 +21,13 @@ my $payment = BluePay->new(
 	$secret_key, 
 	$mode
 );
-       
+
+#$payment->set_customer_information({
+#        stored_type => 'C', # Optional
+#        stored_indicator => 'F', # Optional
+#        stored_id => 'TESTID526957756' # Optional
+#});
+
 $payment->sale({
 	amount => '3.00',
 	trans_id => $token 
@@ -39,6 +46,7 @@ if ($payment->is_successful_response()){
 	print "MASKED PAYMENT ACCOUNT: " . $payment->{PAYMENT_ACCOUNT} . "\n";
 	print "CARD TYPE: " . $payment->{CARD_TYPE} . "\n";
 	print "AUTH CODE: " . $payment->{AUTH_CODE} . "\n";
+	#print "STORED ID: " . $payment->{RESPONSE_STORED_ID} . "\n";
 } else {
 	print $payment->{MESSAGE} . "\n";
 }

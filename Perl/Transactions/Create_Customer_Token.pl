@@ -12,6 +12,7 @@ use bluepay;
 
 my $account_id = "Merchant's Account ID Here";
 my $secret_key = "Merchant's Secret Key Here";
+
 my $mode = "TEST";
 
 my $auth = BluePay->new(
@@ -30,7 +31,11 @@ $auth->set_customer_information({
 	zip_code => '54321',
 	country => 'USA',
 	phone => '123-123-12345',
+	#stored_type => 'C', # Optional
+	#stored_indicator => 'F', # Optional
+	#stored_id => 'TESTID526957756', # Optional
 	email => 'test@bluepay.com'
+
 });
 
 $auth->set_cc_information({
@@ -80,6 +85,7 @@ if ($auth->is_successful_response()){
 		print "MASKED PAYMENT ACCOUNT: " . $payment->{PAYMENT_ACCOUNT} . "\n";
 		print "CARD TYPE: " . $payment->{CARD_TYPE} . "\n";
 		print "AUTH CODE: " . $payment->{AUTH_CODE} . "\n";
+		#print "STORED ID: " . $payment->{RESPONSE_STORED_ID} . "\n";
 	} else {
 		print $payment->{MESSAGE} . "\n";
 	}
