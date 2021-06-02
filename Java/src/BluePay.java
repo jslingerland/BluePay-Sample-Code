@@ -1,7 +1,7 @@
 /*
  * BluePay Java Sample code.
  *
- * Updated: 2021-03-30
+ * Updated: 2021-06-01
  *
  * This code is Free.  You may use it, modify it and redistribute it.
  * If you do make modifications that are useful, Bluepay would love it if you donated
@@ -38,7 +38,7 @@ import java.nio.charset.Charset;
 
 public class BluePay
 {
-  public static final String RELEASE_VERSION = "3.0.5";
+  public static final String RELEASE_VERSION = "3.0.6";
 
   // required parameters
   private String BP_URL = "";
@@ -83,6 +83,9 @@ public class BluePay
   private String TPS_HASH_TYPE = "HMAC_SHA512";
   private String NEW_CUST_TOKEN = "";
   private String CUST_TOKEN = "";
+  private String STORED_INDICATOR = "";
+  private String STORED_ID = "";
+  private String STORED_TYPE = "";
   
   // rebilling parameters
   private String REBILLING = "0";
@@ -351,6 +354,9 @@ public class BluePay
     PHONE = params.get("phone");
     EMAIL = params.get("email");
     COMPANY_NAME = params.get("companyName");
+    STORED_INDICATOR = params.get("storedIndicator");
+    STORED_TYPE = params.get("storedType");
+    STORED_ID = params.get("storedId");
   }
 
   /**
@@ -1141,7 +1147,7 @@ public class BluePay
   public HashMap<String,String> process() throws ClientProtocolException, IOException, NoSuchAlgorithmException {
     List <NameValuePair> nameValuePairs = new ArrayList <NameValuePair>();
 	  nameValuePairs.add(new BasicNameValuePair("MODE", BP_MODE));
-    nameValuePairs.add(new BasicNameValuePair("RESPONSEVERSION", "5")); 
+    nameValuePairs.add(new BasicNameValuePair("RESPONSEVERSION", "8")); 
 	  if (API.equals("bpdailyreport2")) {
   		  BP_URL = "https://secure.bluepay.com/interfaces/bpdailyreport2";
   		  nameValuePairs.add(new BasicNameValuePair("ACCOUNT_ID", BP_MERCHANT));
@@ -1203,6 +1209,9 @@ public class BluePay
         nameValuePairs.add(new BasicNameValuePair("REB_AMOUNT", REB_AMOUNT));
         nameValuePairs.add(new BasicNameValuePair("SWIPE", SWIPE));
         nameValuePairs.add(new BasicNameValuePair("TPS_HASH_TYPE", TPS_HASH_TYPE));
+        nameValuePairs.add(new BasicNameValuePair("STORED_INDICATOR", STORED_INDICATOR));
+        nameValuePairs.add(new BasicNameValuePair("STORED_TYPE", STORED_TYPE));
+        nameValuePairs.add(new BasicNameValuePair("STORED_ID", STORED_ID));
         if (PAYMENT_TYPE.equals("CREDIT")) {
         	  nameValuePairs.add(new BasicNameValuePair("CC_NUM", CARD_NUM));  
         	  nameValuePairs.add(new BasicNameValuePair("CC_EXPIRES", CARD_EXPIRE));
@@ -1484,7 +1493,15 @@ public class BluePay
       return null;
     }
   }
-  
+
+  public String getStoredId()
+  {
+    if(response.containsKey("STORED_ID")) {
+      return response.get("STORED_ID");
+    } else {
+      return null;
+    }
+  }
   /**
    * Returns the customer's bank used for the transaction
    *
