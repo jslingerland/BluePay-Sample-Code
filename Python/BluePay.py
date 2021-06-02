@@ -2,7 +2,7 @@
 #
 # BluePay Python Sample code.
 #
-# Updated: 2021-03-30
+# Updated: 2021-06-01
 #
 # This code is Free.  You may use it, modify it and redistribute it.
 # If you do make modifications that are useful, Bluepay would love it if you donated
@@ -27,7 +27,7 @@ import sys # PG: added this
 
 class BluePay:
 
-    RELEASE_VERSION = '3.0.5'
+    RELEASE_VERSION = '3.0.6'
     # Sets all the attributes to default to empty strings if not defined
     
     # Merchant fields
@@ -89,8 +89,8 @@ class BluePay:
     report_end_date = ''
     query_by_settlement = ''
     subaccounts_searched = ''
-	backend_id = ''
-	origin = ''
+    backend_id = ''
+    origin = ''
     do_not_escape = ''
     excludeErrors = ''
 
@@ -106,7 +106,12 @@ class BluePay:
     shpf_form_id = ''
     receipt_form_id = ''
     remote_url = ''
-    
+
+    # Stored Parameters
+    stored_indicator = ''
+    stored_type = ''
+    stored_id = ''
+
     # Response fields
     reb_status = ''
     rebill_id = ''
@@ -222,7 +227,22 @@ class BluePay:
             self.email = params['email']
         if 'company_name' in params:
             self.company_name = params['company_name']
-        
+        if 'stored_indicator' in params:
+            self.stored_indicator = params['stored_indicator']
+        if 'stored_type' in params:
+            self.stored_type = params['stored_type']
+        if 'stored_id' in params:
+            self.stored_id = params['stored_id']
+
+    #Sets only stored parameters. Needed in How_to_use_token.py because we are not setting other customer info in this script
+    def set_stored_parameters(self, **params):
+        if 'stored_indicator' in params:
+            self.stored_indicator = params['stored_indicator']
+        if 'stored_type' in params:
+            self.stored_type = params['stored_type']
+        if 'stored_id' in params:
+            self.stored_id = params['stored_id']
+
     # Sets payment type. Needed if using ACH tokens
     def set_payment_type(self, pay_type):
         self.payment_type = pay_type
@@ -372,9 +392,9 @@ class BluePay:
         self.report_end_date = params['report_end']
         self.subaccounts_searched = params['subaccounts_searched']
         if ('backend_id' in params):
-			self.backend_id = params['backend_id']
+            self.backend_id = params['backend_id']
         if ('origin' in params):
-			self.origin = params['origin']
+            self.origin = params['origin']
         if ('do_not_escape' in params):
             self.do_not_escape = params['do_not_escape'] 
         if ('exclude_errors' in params):
@@ -793,6 +813,9 @@ class BluePay:
                 'REB_CYCLES': self.reb_cycles,
                 'REB_AMOUNT': self.reb_amount,
                 'SWIPE': self.track_data,
+                'STORED_INDICATOR':self.stored_indicator,
+                'STORED_TYPE':self.stored_type,
+                'STORED_ID':self.stored_id,
                 'TPS_HASH_TYPE': self.tps_hash_type
             })
             try:
@@ -962,6 +985,8 @@ class BluePay:
         self.tps_hash_type_response = self.response['TPS_HASH_TYPE'][0] if 'TPS_HASH_TYPE' in self.response else ''
         # Returns customer token used or established by transaction
         self.cust_token_response = self.response['CUST_TOKEN'][0] if 'CUST_TOKEN' in self.response else ''
+        # Returns stored_id used or established by transaction
+        self.stored_id_response = self.response['STORED_ID'][0] if 'STORED_ID' in self.response else ''
 
 
  
