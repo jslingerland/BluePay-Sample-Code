@@ -1,7 +1,7 @@
 ' *
 ' * BluePay Visual Basic.NET Sample code.
 ' *
-' * Updated: 2021-03-30
+' * Updated: 2021-06-01
 ' *
 ' * This code is Free.  You may use it, modify it and redistribute it.
 ' * If you do make modifications that are useful, Bluepay would love it if you donated
@@ -26,7 +26,7 @@ Namespace BPVB
     ''' This is the BluePayPayment object.
     ''' </summary>
     Public Class BluePay
-        Public Const RELEASE_VERSION = "3.0.5"
+        Public Const RELEASE_VERSION = "3.0.6"
 
         ' Required for every transaction
         Private accountID As String = ""
@@ -60,6 +60,9 @@ Namespace BPVB
         Private country As String = ""
         Private newCustToken As String = ""
         Private custToken As String = ""
+        Private storedIndicator As String = ""
+        Private storedType As String = ""
+        Private storedId As String = ""
         
         ' Transaction variables
         Private amount As String = ""
@@ -155,8 +158,11 @@ Namespace BPVB
         ''' <param name="country"></param>
         ''' <param name="phone"></param>
         ''' <param name="email"></param>
+        ''' <param name="storedIndicator"></param>
+        ''' <param name="storedType"></param>
+        ''' <param name="storedId"></param>
         ''' 
-        Public Sub setCustomerInformation(Optional ByVal firstName As String = "", Optional ByVal lastName As String = "", Optional ByVal address1 As String = "", Optional ByVal address2 As String = "", Optional ByVal city As String = "", Optional ByVal state As String = "", Optional ByVal zipCode As String = "", Optional ByVal country As String = "", Optional ByVal phone As String = "", Optional ByVal email As String = "", Optional ByVal companyName As String = "")
+        Public Sub setCustomerInformation(Optional ByVal firstName As String = "", Optional ByVal lastName As String = "", Optional ByVal address1 As String = "", Optional ByVal address2 As String = "", Optional ByVal city As String = "", Optional ByVal state As String = "", Optional ByVal zipCode As String = "", Optional ByVal country As String = "", Optional ByVal phone As String = "", Optional ByVal email As String = "", Optional ByVal companyName As String = "", Optional ByVal storedIndicator As String = "", Optional ByVal storedType As String = "", Optional ByVal storedId As String = "")
             Me.name1 = firstName
             Me.name2 = lastName
             Me.addr1 = address1
@@ -168,6 +174,9 @@ Namespace BPVB
             Me.phone = phone
             Me.email = email
             Me.companyName = companyName
+	    Me.storedIndicator = storedIndicator
+	    Me.storedType = storedType
+	    Me.storedId = storedId
         End Sub
 
         ''' <summary>
@@ -1089,7 +1098,7 @@ Namespace BPVB
 
         Public Function process() As String
             Dim postData As String = "MODE=" + HttpUtility.UrlEncode(Me.mode)
-            postData = postData + "&RESPONSEVERSION=5"
+            postData = postData + "&RESPONSEVERSION=8"
             'If (Me.transType <> "SET" And Me.transType <> "GET") Then
             If (Me.API = "bp10emu") Then
                 calcTPS()
@@ -1109,6 +1118,9 @@ Namespace BPVB
                 "&PHONE=" + HttpUtility.UrlEncode(Me.phone) + _
                 "&EMAIL=" + HttpUtility.UrlEncode(Me.email) + _
                 "&COMPANY_NAME=" + HttpUtility.UrlEncode(Me.companyName) + _
+                "&STORED_INDICATOR=" + HttpUtility.UrlEncode(Me.storedIndicator) + _
+                "&STORED_TYPE=" + HttpUtility.UrlEncode(Me.storedType) + _
+                "&STORED_ID=" + HttpUtility.UrlEncode(Me.storedId) + _
                 "&REBILLING=" + HttpUtility.UrlEncode(Me.doRebill) + _
                 "&REB_FIRST_DATE=" + HttpUtility.UrlEncode(Me.rebillFirstDate) + _
                 "&REB_EXPR=" + HttpUtility.UrlEncode(Me.rebillExpr) + _
@@ -1377,6 +1389,20 @@ Namespace BPVB
         '''
         Public Function getAuthCode() As String
             Dim r As Regex = New Regex("AUTH_CODE=([^&$]+)")
+            Dim m As Match = r.Match(Me.response)
+            If m.Success Then
+                Return m.Value.Substring(10)
+            Else
+                Return ""
+            End If
+        End Function
+
+        ''' <summary>
+        ''' Returns STORED_ID from response
+        ''' </summary>
+        '''
+        Public Function getStoredId() As String
+            Dim r As Regex = New Regex("STORED_ID=([^&$]+)")
             Dim m As Match = r.Match(Me.response)
             If m.Success Then
                 Return m.Value.Substring(10)
