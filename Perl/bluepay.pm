@@ -1,7 +1,7 @@
 #
 # BluePay Perl Sample code.
 #
-# Updated: 2021-03-30
+# Updated: 2021-06-01
 #
 # This code is Free.  You may use it, modify it and redistribute it.
 # If you do make modifications that are useful, Bluepay would love it if you donated
@@ -11,7 +11,7 @@
 
 package BluePay;
 
-use constant RELEASE_VERSION => '3.0.5';
+use constant RELEASE_VERSION => '3.0.6';
 use strict;
 use warnings;
 # Required modules
@@ -137,7 +137,7 @@ sub process {
         . "&TAMPER_PROOF_SEAL="
         . uri_escape( $TAMPER_PROOF_SEAL || '' )
         . "&RESPONSEVERSION="
-        . uri_escape("5");
+        . uri_escape("8");
     
     # converts the object's attributes into a query string for the api request
     while ( my ( $key, $value ) = each(%$self) ) {
@@ -205,6 +205,7 @@ sub parse_response {
          # print $key; print "\n";
          my $key = uri_unescape($array[0]);
          my $value = uri_unescape($array[1]);
+	 $key = "RESPONSE_".$key if ( $key eq 'STORED_ID');
         $self->{$key} = $value;
     }
 }
@@ -248,6 +249,9 @@ sub set_customer_information{
     $self->{PHONE} = $params->{phone};
     $self->{EMAIL} = $params->{email};
     $self->{COMPANY_NAME} = $params->{company_name};
+    $self->{STORED_INDICATOR} = $params->{stored_indicator}; #Optional
+    $self->{STORED_TYPE} = $params->{stored_type}; #Optional
+    $self->{STORED_ID} = $params->{stored_id}; #Optional
 }
 
 # Set ACH Payment information 
@@ -470,7 +474,7 @@ sub get_transaction_report{
     $self->{REPORT_START_DATE} = $params->{report_start_date};
     $self->{REPORT_END_DATE} = $params->{report_end_date};
     $self->{QUERY_BY_HIERARCHY} = $params->{query_by_hierarchy};
-    $self->{BACKEND_ID} = $params->{backend_id} if $params->{backend_id}; # optional	
+    $self->{BACKEND_ID} = $params->{backend_id} if $params->{backend_id}; # optional
     $self->{ORIGIN} = $params->{origin} if $params->{origin}; # optional
     $self->{DO_NOT_ESCAPE} = $params->{do_not_escape}; # optional
     $self->{EXCLUDE_ERRORS} = $params->{exclude_errors}; # optional
