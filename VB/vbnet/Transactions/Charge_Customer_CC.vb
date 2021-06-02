@@ -36,6 +36,9 @@ Namespace Transactions
                 zipCode:="54321", 
                 country:="USA",
                 phone:="123-123-12345",
+                'storedIndicator:="F",
+                'storedType=:"C",
+                'storedId=:"TESTID987456",
                 email:="test@bluepay.com"
             )
 
@@ -58,6 +61,7 @@ Namespace Transactions
                 Console.Write("Masked Payment Account: " + payment.getMaskedPaymentAccount() + Environment.NewLine)
                 Console.Write("Card Type: " + payment.getCardType() + Environment.NewLine)
                 Console.Write("Authorization Code: " + payment.getAuthCode() + Environment.NewLine)
+                'Console.Write("Stored Id: " + payment.getStoredId() + Environment.NewLine)
             Else
                 Console.Write("Transaction Error: " + payment.getMessage() + Environment.NewLine)
             End If

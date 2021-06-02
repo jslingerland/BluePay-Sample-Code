@@ -26,6 +26,13 @@ Namespace Transactions
                 mode
             )
 
+            'payment.setCustomerInformation(
+            '    storedIndicator:="F",
+            '    storedType=:"C",
+            '    storedId=:"TESTID987456"
+            ')
+
+
             ' Creates a sale using the transaction id of a previous sale
             payment.sale(amount:="3.00", transactionID:= token)
 
@@ -40,6 +47,7 @@ Namespace Transactions
                 Console.Write("Masked Payment Account: " + payment.getMaskedPaymentAccount() + Environment.NewLine)
                 Console.Write("Card Type: " + payment.getCardType() + Environment.NewLine)
                 Console.Write("Authorization Code: " + payment.getAuthCode() + Environment.NewLine)
+                'Console.Write("Stored Id: " + payment.getStoredId() + Environment.NewLine)
             Else
                 Console.Write("Transaction Error: " + payment.getMessage() + Environment.NewLine)
             End If
