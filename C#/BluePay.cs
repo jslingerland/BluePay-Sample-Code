@@ -1,7 +1,7 @@
 /*
  * BluePay C#.NET Sample code.
  *
- * Updated: 2021-06-01
+ * Updated: 2021-07-06
  *
  * This code is Free.  You may use it, modify it and redistribute it.
  * If you do make modifications that are useful, Bluepay would love it if you donated
@@ -28,7 +28,7 @@ namespace BluePayLibrary
     /// </summary>
     public class BluePay
     {
-        public const string RELEASE_VERSION = "3.0.6";
+        public const string RELEASE_VERSION = "3.0.7";
                 
         // required for every transaction
         public string accountID = "";
@@ -54,6 +54,7 @@ namespace BluePayLibrary
         public string city = "";
         public string state = "";
         public string zip = "";
+        public string country = "";
 
         // optional for auth or sale
         public string addr2 = "";
@@ -1121,6 +1122,7 @@ namespace BluePayLibrary
                     "&CITY=" + HttpUtility.UrlEncode(this.city) +
                     "&STATE=" + HttpUtility.UrlEncode(this.state) +
                     "&ZIPCODE=" + HttpUtility.UrlEncode(this.zip) +
+                    "&COUNTRY=" + HttpUtility.UrlEncode(this.county) +
                     "&COMMENT=" + HttpUtility.UrlEncode(this.memo) +
                     "&PHONE=" + HttpUtility.UrlEncode(this.phone) +
                     "&EMAIL=" + HttpUtility.UrlEncode(this.email) +
