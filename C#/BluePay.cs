@@ -1122,7 +1122,7 @@ namespace BluePayLibrary
                     "&CITY=" + HttpUtility.UrlEncode(this.city) +
                     "&STATE=" + HttpUtility.UrlEncode(this.state) +
                     "&ZIPCODE=" + HttpUtility.UrlEncode(this.zip) +
-                    "&COUNTRY=" + HttpUtility.UrlEncode(this.county) +
+                    "&COUNTRY=" + HttpUtility.UrlEncode(this.country) +
                     "&COMMENT=" + HttpUtility.UrlEncode(this.memo) +
                     "&PHONE=" + HttpUtility.UrlEncode(this.phone) +
                     "&EMAIL=" + HttpUtility.UrlEncode(this.email) +
